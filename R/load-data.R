@@ -35,6 +35,7 @@ combdat <- fcdat |>
   filter(!model == "EuroCOVIDhub-ensemble") |>
   filter(forecast_date >= as.Date("2021-03-11")) |> #before: 2021-03-20
   filter(forecast_date <= as.Date("2023-03-11")) |>
+  mutate(forecast_date = as.IDate(forecast_date)) |>
   merge_forecasts_with_truth(truth) |>
   DT(, location_name := NULL) |>
   DT(, scenario_id := NULL) |>
