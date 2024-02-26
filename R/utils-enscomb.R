@@ -33,7 +33,7 @@ enscomb <- function(
     distinct() #|>
 
   if(nrow(combdat) < k){
-    return(NULL)
+    return(data.table())
   } else {
     combdat <- combdat |>
       list() |>
@@ -73,10 +73,15 @@ enscombcheck <- function(
     availproptime
 ){
 
+  if(nrow(combdat)==0){
+    return(list(data.table(), data.table()))
+  }
+
   loc <- substr(loctarg, 0, 2)
   targ <- substr(loctarg, 3, 100)
+  k <- unique(combdat$k)
 
-
+  num_ens <- length(unique(combdat$ensid))
   #availability indicator data
   fcdat_tocheck <- fcdat |>
     filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
@@ -106,14 +111,77 @@ enscombcheck <- function(
     DT(, proplessthan_apm := sum(ens_unavail)/max(.N), by = c("ensid"))
 
   filterens <- perfect_avail_dat |>
-    DT(proplessthan_apm >= availproptime) |>
+    DT(proplessthan_apm >= 1-availproptime) |>
     DT(, kick := 1) |>
     DT(, c("ensid", "kick")) |>
     unique()
 
-  return(filterens)
+  num_filt <- nrow(filterens)
 
-  combdat <- filterens[combdat, on = "ensid"] |>
+  combdat_filtered <- filterens[combdat, on = "ensid"] |>
     DT(is.na(kick)) |>
-    DT(, kick := NULL)
+    DT(, kick := NULL) |>
+    DT()
+
+  #return(combdat_filtered)
+  ens_unavail_bydate <- perfect_avail_dat |>
+    DT(, c("ensid", "forecast_date", "ens_unavail")) |>
+    DT(, location := loc) |>
+    DT(, target_type := targ) |>
+    DT(, k := k) |>
+    DT()
+
+  return(list(ens_unavail_bydate = ens_unavail_bydate,
+              combdat_filtered = combdat_filtered)
+         )
 }
+
+
+
+make_combens <- function(
+    enscombdat,
+    ens_unavail_dat,
+    fcdat
+){
+
+  DT <- `[`
+
+  ensids <- unique(enscombdat$ensid)
+
+  enscomb_preds <- lapply(ensids, function(ensidx){
+
+    avail_dates <- ens_unavail_dat |>
+      filter(ensid == ensidx, ens_unavail == 0) |>
+      select(c("forecast_date", "location", "target_type"))
+
+    ensmods <- enscombdat |>
+      filter(ensid == ensidx) |>
+      select(c("model"))
+
+    fcdat_avail_dates <- fcdat |>
+      setDT() |>
+      copy() |>
+      inner_join(avail_dates, by = c("forecast_date", "location", "target_type")) |>
+      inner_join(ensmods, by = c("model"))
+
+    median_ens <- fcdat_avail_dates |>
+      make_ensemble(summary_function = median,
+                    incl = unique(ensmods$model)) |>
+      mutate(ensid = ensidx)
+
+    mean_ens <- fcdat_avail_dates |>
+      make_ensemble(summary_function = mean,
+                    incl = unique(ensmods$model)) |>
+      mutate(ensid = ensidx)
+
+
+    return(rbind(median_ens, mean_ens))
+
+
+  })
+
+  allenscombs <- rbindlist(enscomb_preds)
+
+  return(allenscombs)
+}
+
