@@ -6,7 +6,7 @@ DT <- `[`
 source(here("ensvssize", "specs.R"))
 source(here("R", "utils-enscomb.R"))
 
-model_avail <- enscomb_specs$indmodel_avail
+#model_avail <- enscomb_specs$indmodel_avail
 start_date <- enscomb_specs$start_date
 end_date <- enscomb_specs$end_date
 ks <- enscomb_specs$ks
@@ -28,10 +28,12 @@ for(k in ks){
                                  model_avail = model_avail,
                                  k = k))
 
+  #filter out NULLs
+  combdat <- combdat[lapply(combdat, function(elem) !is.null(elem)) |> unlist()]
+  loctargets_save <- names(combdat)
 
-  sapply(loctargets,
-         function(loctarg) data.table::fwrite(combdat[[loctarg]], here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".csv"))))
+  sapply(loctargets_save,
+         function(loctarg) data.table::fwrite(combdat[[loctarg]], here("enscomb-data", paste0("enscomb_suggested_", loctarg, "_k", k, ".csv"))))
 
 
 }
-

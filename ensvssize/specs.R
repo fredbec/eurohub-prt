@@ -1,9 +1,23 @@
+#this file holds the main specifications used throughout the analysis of ensemble
+#vs size
+
 enscomb_specs <- list(
-  "indmodel_avail" = 0.7,
-  "availpropmods" = 0.6666,
-  "availproptime" = 0.1,
+  #threshold for individual model availability -> models below this threshold are filtered out
+  "indmodel_avail" = 0.5,
+  #threshold for model availability within ensemble at a given data, for ensemble to be considered 'available'
+  "availpropmods" = 0.75,
+  #same as above, just being more lenient with k = 3 (otherwise, all models would have to be available)
+  "availpropmodsk3" = 0.66,
+  #proportion of time an ensemble needs to be available to be eligible for pairwise comparison
+  "availproptime" = 0.5,
+  #forecast date to start analysis
   "start_date" = "2021-03-11",
+  #forecast date to end analysis
   "end_date" = "2022-03-11",
-  "ks" = seq(1, 12),
-  "loctargets" = c("DECases", "DEDeaths", "PLCases", "PLDeaths")
+  #values of k to consider
+  "ks" = seq(2,14),
+  #combinations of locations and targets to consider
+  "loctargets" = c("DECases", "DEDeaths", "PLCases", "PLDeaths"),
+  #maximum number of ensembles to consider for each location-target-combination
+  "maxens" = 350
 )
