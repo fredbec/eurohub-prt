@@ -96,6 +96,8 @@ enscombcheck <- function(
 
   fcdates <- unique(fcdat_tocheck$forecast_date)
 
+
+  #should better be named avail_dat; perfect_avail_dat is only first step
   perfect_avail_dat <- expand.grid(forecast_date = fcdates,
                                    ensid = unique(combdat$ensid),
                                    modelid = unique(combdat$modelid)) |>
@@ -103,11 +105,13 @@ enscombcheck <- function(
     left_join(fcdat_tocheck, by = c("model", "forecast_date")) |>
     setDT() |>
     DT(, avail := ifelse(is.na(avail), 0, 1)) |>
-    #calculate proportion of available models at any given forecast date, for each ensemble
-    DT(, prop_ensavail := sum(avail)/max(.N), by = c("forecast_date", "ensid")) |>
-    DT(, c("ensid", "forecast_date", "prop_ensavail")) |>
+    #calculate number of available models at any given forecast date, for each ensemble
+    DT(, num_ensavail := sum(avail), by = c("forecast_date", "ensid")) |>
+    #number of total models in each ensemble
+    DT(, num_inens := max(.N), by = c("forecast_date", "ensid")) |>
+    DT(, c("ensid", "forecast_date", "num_ensavail", "num_inens")) |>
     unique() |>
-    DT(, ens_unavail := as.numeric(prop_ensavail < availpropmods)) |>
+    DT(, ens_unavail := as.numeric(num_ensavail < num_inens - 1))
     DT(, proplessthan_apm := sum(ens_unavail)/max(.N), by = c("ensid"))
 
   filterens <- perfect_avail_dat |>
