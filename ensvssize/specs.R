@@ -19,5 +19,9 @@ enscomb_specs <- list(
   #combinations of locations and targets to consider
   "loctargets" = c("DECases", "DEDeaths", "PLCases", "PLDeaths"),
   #maximum number of ensembles to consider for each location-target-combination
-  "maxens" = 350
+  #"maxens" = 350,
+
+  "horizon" = 2,
+
+  "with_anomalies" = FALSE
 )
