@@ -111,7 +111,7 @@ enscombcheck <- function(
     DT(, num_inens := max(.N), by = c("forecast_date", "ensid")) |>
     DT(, c("ensid", "forecast_date", "num_ensavail", "num_inens")) |>
     unique() |>
-    DT(, ens_unavail := as.numeric(num_ensavail < num_inens - 1))
+    DT(, ens_unavail := as.numeric(num_ensavail < num_inens - availpropmods)) |>
     DT(, proplessthan_apm := sum(ens_unavail)/max(.N), by = c("ensid"))
 
   filterens <- perfect_avail_dat |>
