@@ -11,9 +11,9 @@ loctargets <- enscomb_specs$loctargets
 
 maxens <- 1000000
 
-qms <- c(0.3, 0.5)
-qes <- c(1, 0.75)
-qt <- c(0.5, 0.3)
+qms <- c(0.5)
+qes <- c(1, 0)
+qt <- c(0.5)
 param_combs <- expand.grid(qms, qes, qt)
 names(param_combs) <- c("qm", "qe", "qt")
 
@@ -41,8 +41,8 @@ res1 <- rbindlist(res) |>
 plot1 <- ggplot(res1, aes(x = k, y = nens, group = interaction(model_avail, availpropmods, availproptime))) +
   geom_line(aes(color = interaction(model_avail, availproptime),linetype = availpropmods), lwd = 1.01) +
   scale_x_continuous(breaks = 2:14) +
-  scale_linetype_manual(values = c("0.75" = "dashed", "1" = "solid")) +
-  facet_wrap(~loctarg, scales = "free") +
+  scale_linetype_manual(values = c("0" = "dashed", "1" = "solid")) +
+  facet_wrap(~loctarg, scales = "fixed") +
   scale_color_met_d("Hokusai1") +#+
   theme_minimal() %+replace%
   theme(legend.position = "bottom") +
@@ -59,7 +59,7 @@ res2 <- rbindlist(res) |>
 plot2 <- ggplot(res2, aes(x = k, y = nens, group = interaction(model_avail, availpropmods, availproptime))) +
   geom_line(aes(color = interaction(model_avail, availproptime),linetype = availpropmods), lwd = 1.01) +
   scale_x_continuous(breaks = 2:14) +
-  scale_linetype_manual(values = c("0.75" = "dashed", "1" = "solid")) +
+  scale_linetype_manual(values = c("0" = "dashed", "1" = "solid")) +
   facet_wrap(~loctarg, scales = "free") +
   scale_color_met_d("Hokusai1") +#+
   theme_minimal() %+replace%

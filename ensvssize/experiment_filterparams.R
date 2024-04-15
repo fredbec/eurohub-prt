@@ -1,6 +1,13 @@
 #IMPORTANT: for this to work, lines reading in specs such as model_avail
 #directly from specs.R file were commented out
 
+#run with following settings on 2024-02-25
+#qms <- c(0.3, 0.5)
+#qes <- c(1, 0.75)
+#qt <- c(0.5, 0.3)
+# thereafter changed to fixed settings for qt and qm to 0.5 each and changed qe to k_missing (0,1)
+
+
 library(here)
 library(data.table)
 source(here("ensvssize", "specs.R"))
@@ -10,9 +17,9 @@ loctargets <- enscomb_specs$loctargets
 
 maxens <- 1000000
 
-qms <- c(0.3, 0.5)
-qes <- c(1, 0.75)
-qt <- c(0.5, 0.3)
+qms <- c(0.5)
+qes <- c(0)
+qt <- c(0.5)
 param_combs <- expand.grid(qms, qes, qt)
 names(param_combs) <- c("qm", "qe", "qt")
 
@@ -31,7 +38,7 @@ for(pcomb in 1:nrow(param_combs)){
   if(availpropmods==1){
     availpropmodsk3 <- 1
   } else {
-    availpropmodsk3 <- 0.66
+    availpropmodsk3 <- 0
   }
 
   source(here("ensvssize", "suggested-ens.R"))
