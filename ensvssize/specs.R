@@ -5,9 +5,9 @@ enscomb_specs <- list(
   #threshold for individual model availability -> models below this threshold are filtered out
   "indmodel_avail" = 0.5,
   #threshold for model availability within ensemble at a given data, for ensemble to be considered 'available'
-  "availpropmods" = 0.75,
+  "availpropmods" = 0,
   #same as above, just being more lenient with k = 3 (otherwise, all models would have to be available)
-  "availpropmodsk3" = 0.66,
+  "availpropmodsk3" = 0,
   #proportion of time an ensemble needs to be available to be eligible for pairwise comparison
   "availproptime" = 0.5,
   #forecast date to start analysis
@@ -19,9 +19,9 @@ enscomb_specs <- list(
   #combinations of locations and targets to consider
   "loctargets" = c("DECases", "DEDeaths", "PLCases", "PLDeaths"),
   #maximum number of ensembles to consider for each location-target-combination
-  #"maxens" = 350,
+  "maxens" = 1000000000000,
 
-  "horizon" = 2,
+  "horizons" = c(1,2),
 
   "with_anomalies" = FALSE
 )

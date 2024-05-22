@@ -6,15 +6,15 @@ DT <- `[`
 source(here("ensvssize", "specs.R"))
 source(here("R", "utils-enscomb.R"))
 
-#model_avail <- enscomb_specs$indmodel_avail
+model_avail <- enscomb_specs$indmodel_avail
 start_date <- enscomb_specs$start_date
 end_date <- enscomb_specs$end_date
 ks <- enscomb_specs$ks
 loctargets <- enscomb_specs$loctargets
-#availpropmods <- enscomb_specs$availpropmods
-#availpropmodsk3 <- enscomb_specs$availpropmodsk3
-#availproptime <- enscomb_specs$availproptime
-#maxens <- enscomb_specs$maxens
+availpropmods <- enscomb_specs$availpropmods
+availpropmodsk3 <- enscomb_specs$availpropmodsk3
+availproptime <- enscomb_specs$availproptime
+maxens <- enscomb_specs$maxens
 
 fcdat <- fread(here("data", "depldat.csv")) |>
   filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
@@ -52,6 +52,9 @@ for(k in ks){
 
       #if "too many" ensembles, samle according to sample data
       if(length(prop_ensids) > maxens){
+        sink("heyhey.txt")
+        cat("oops")
+        sink()
         rdseed <- rdseeds |>
           DT(location == loc & target_type == targ & kval == k)
 
