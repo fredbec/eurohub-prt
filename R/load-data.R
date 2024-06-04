@@ -24,7 +24,7 @@ population <- fread(here("data", "population.csv"))
 period_cats <- fread(here("data", "period_cats.csv"))
 
 combdat <- fcdat |>
-  filter(location %in% c("PL", "DE")) |>
+  filter(location %in% c("DE", "PL", "FR", "CZ", "GB")) |>
   rename(prediction = value) |>
   mutate(forecast_date =
            lubridate::ceiling_date(forecast_date,
