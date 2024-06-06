@@ -6,7 +6,8 @@ This repo runs analyses on ensemble composition, using data from the European Co
 ## Contents of the repository
 This repo is organized as follows: 
 
-- `R`: Contains scripts needed to load and clean data from the Hub to prep for analyses. Also some utils-type R files containing functions that are loaded in executing scripts (either for data-cleaning scripts or for scripts in e.g. `ensvssize`, see below)
+- `R`: Contains scripts needed to load and clean data from the Hub to prep for analyses. Also some utils-type R files containing functions that are loaded in executing scripts (either for data-cleaning scripts or for scripts in e.g. `ensvssize`, see below).
+Data loading scripts are minimally adapted from https://github.com/epiforecasts/simplified-forecaster-evaluation.
 
 - `ensvssize`: Contains scripts that run an ensemble recombination experiment from available host of Hub models:
   - `master-enscomb.R`: loads the following scripts (all in this folder unless indicated otherwise):
