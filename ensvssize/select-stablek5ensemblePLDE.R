@@ -55,4 +55,4 @@ fullmodelset_red <- list(decases,
 
 names(fullmodelset_red) <- names(fullmodelset)
 
-saveRDS(fullmodelset_red, here("specs", "basesets.RDS"))
+saveRDS(fullmodelset_red, here("specs", "stablek5ensemblePLDE-modelsets.RDS"))

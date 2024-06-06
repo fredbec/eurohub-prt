@@ -35,4 +35,4 @@ ensemble_basesets <-
   DT(, c("location", "target_type", "model", "propavail")) |>
   DT(, c("location", "target_type", "model"))
 
-data.table::fwrite(ensemble_basesets, here("specs", "ensemble_basesets.csv"))
+data.table::fwrite(ensemble_basesets, here("specs", "stablek3ensemble_basesets.csv"))
