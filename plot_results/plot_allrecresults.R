@@ -8,10 +8,10 @@ source(here("ensvssize", "specs.R"))
 
 DT <- `[`
 
-loctargets <- c(enscomb_specs$loctargets, "DECases", "PLCases", "DEDeaths", "PLDeaths")
+loctargets <- enscomb_specs$loctargets
 ks <- enscomb_specs$ks
 targetplot <- "Cases"
-enstype <- "mean_ensemble"
+enstype <- "against_stablek3"
 
 
 plot_horizon_label <- function(length.out = 4){
@@ -41,7 +41,7 @@ for (k in ks){
   if(nrow(all_pwscores_med[[k-1]])>0){
     all_pwscores_med[[k-1]] <-  all_pwscores_med[[k-1]] |>
     DT(, k := k) |>
-    DT(compare_against == "EuroCOVIDhub-ensemble") |>
+    DT(compare_against == "stablek3_median_ensemble") |>
     DT(, meanrelskill := mean(scaled_rel_skill), by = "horizon")|>
     DT(, medrelskill := median(scaled_rel_skill), by = "horizon")|>
     DT(, minrelskill := min(scaled_rel_skill), by = "horizon")|>
@@ -73,7 +73,7 @@ colors = met.brewer(name="Hokusai3", n=3)
 
 ltypes <- c("Ensembles mean rel. skill"="solid","Hub Ensemble rel. skill (=1 by definition)"="dashed")
 colfills <- c("min-max range ensembles rel. skill" = 0.25, "q05-q95 range ensembles rel. skill" = 0.5)
-pdf(here("plot_results", paste0("ens_comb",targetplot, enstype,".pdf")), width = 8, height = 10)
+pdf(here("plot_results", paste0("ens_comb_stablek3_",targetplot, enstype,".pdf")), width = 8, height = 10)
 ggplot(data = all_pwscores |> DT(target_type == targetplot)) +
   geom_line(aes(x = k, y = meanrelskill, linetype = "Ensembles mean rel. skill", color = location), lwd = 1) +
   geom_ribbon(aes(x = k, ymin = minrelskill, ymax = maxrelskill, alpha = "min-max range ensembles rel. skill", fill = location)) +

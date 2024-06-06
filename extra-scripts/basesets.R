@@ -32,4 +32,7 @@ ensemble_basesets <-
   DT(, ord := 1:.N, by = c("location", "target_type")) |>
   DT(ord <= 3) |>
   DT(order(location, target_type)) |>
-  DT(, c("location", "target_type", "model", "propavail"))
+  DT(, c("location", "target_type", "model", "propavail")) |>
+  DT(, c("location", "target_type", "model"))
+
+data.table::fwrite(ensemble_basesets, here("specs", "ensemble_basesets.csv"))
