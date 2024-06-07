@@ -1,0 +1,15 @@
+ensid,model,modelid,k
+70,EuroCOVIDhub-baseline,1,14
+70,FIAS_FZJ-Epi1Ger,2,14
+70,IEM_Health-CovidProject,3,14
+70,ILM-EKF,4,14
+70,ITWW-county_repro,5,14
+70,Karlen-pypm,6,14
+70,MIT_CovidAnalytics-DELPHI,7,14
+70,UNIPV-BayesINGARCHX,8,14
+70,epiforecasts-EpiNow2,9,14
+70,itwm-dSEIR,10,14
+70,HZI-AgeExtendedSEIR,11,14
+70,MUNI-ARIMA,12,14
+70,RobertWalraven-ESG,13,14
+70,CovidMetrics-epiBATS,14,14
