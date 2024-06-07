@@ -1,0 +1,12 @@
+ensid,model,modelid,k
+1,EuroCOVIDhub-baseline,1,11
+1,ICM-agentModel,2,11
+1,IEM_Health-CovidProject,3,11
+1,ILM-EKF,4,11
+1,ITWW-county_repro,5,11
+1,MIT_CovidAnalytics-DELPHI,6,11
+1,MOCOS-agent1,7,11
+1,RobertWalraven-ESG,8,11
+1,epiforecasts-EpiNow2,9,11
+1,UMass-MechBayes,10,11
+1,MUNI-ARIMA,11,11
