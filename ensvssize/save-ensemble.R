@@ -121,7 +121,7 @@ for(k in ks){
     score() |>
       pairwise_comparison(by = c("model", "horizon"),
                           metric = "interval_score",
-                          baseline = "stablek3_median_ensemble")
+                          baseline = "EuroCOVIDhub-ensemble")
 
     if(!is.null(pwscores)){
 
