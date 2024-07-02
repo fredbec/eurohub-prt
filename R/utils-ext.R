@@ -10,7 +10,8 @@ make_ensemble <- function(data,
                           extra_vars = c("target_end_date",
                                          "population",
                                          "period_cat"),
-                          avail_threshold = NULL){
+                          avail_threshold = NULL,
+                          old_call = FALSE){
 
   #extract function name to make model name
   if(is.null(model_name)){
@@ -61,6 +62,15 @@ make_ensemble <- function(data,
   }
 
   models <- incl
+
+  if(old_call){
+
+    models<- unique(data$model)
+    indsexcl <- models %in% excl
+    models <- models[!indsexcl]
+
+
+  }
 
   #check if any ensembles in models (this should in general not be the case)
   is_ensemble <- grepl(".*ensemble.*", models)
