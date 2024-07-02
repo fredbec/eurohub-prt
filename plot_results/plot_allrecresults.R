@@ -11,8 +11,13 @@ DT <- `[`
 loctargets <- enscomb_specs$loctargets
 ks <- enscomb_specs$ks
 targetplot <- "Cases"
-enstype <- "against_stablek3"
+enstype <- "median_ensemble"
 
+if(enstype == "against_stablek3"){
+  cmpa <- "stablek3_median_ensemble"
+} else{
+  cmpa <- "EuroCOVIDhub-ensemble"
+}
 
 plot_horizon_label <- function(length.out = 4){
 
@@ -41,7 +46,7 @@ for (k in ks){
   if(nrow(all_pwscores_med[[k-1]])>0){
     all_pwscores_med[[k-1]] <-  all_pwscores_med[[k-1]] |>
     DT(, k := k) |>
-    DT(compare_against == "stablek3_median_ensemble") |>
+    DT(compare_against == cmpa) |>
     DT(, meanrelskill := mean(scaled_rel_skill), by = "horizon")|>
     DT(, medrelskill := median(scaled_rel_skill), by = "horizon")|>
     DT(, minrelskill := min(scaled_rel_skill), by = "horizon")|>
@@ -66,15 +71,19 @@ all_pwscores <- rbind(all_pwscores, all_pwscores_med)
 }
 
 all_pwscores <- all_pwscores |>
-  DT(,horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon"))
+  DT(,horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon")) |>
+  DT(, location := factor(location,
+                          levels = c("DE", "PL", "CZ", "FR", "GB"),
+                          labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
 
 colors = met.brewer(name="Hokusai3", n=3)
 
 
 ltypes <- c("Ensembles mean rel. skill"="solid","Hub Ensemble rel. skill (=1 by definition)"="dashed")
 colfills <- c("min-max range ensembles rel. skill" = 0.25, "q05-q95 range ensembles rel. skill" = 0.5)
-pdf(here("plot_results", paste0("ens_comb_stablek3_",targetplot, enstype,".pdf")), width = 8, height = 10)
+pdf(here("plot_results", paste0("ens_comb_",targetplot, enstype,".pdf")), width = 9.5, height = 12)
 ggplot(data = all_pwscores |> DT(target_type == targetplot)) +
+#ggplot(data = all_pwscores) +
   geom_line(aes(x = k, y = meanrelskill, linetype = "Ensembles mean rel. skill", color = location), lwd = 1) +
   geom_ribbon(aes(x = k, ymin = minrelskill, ymax = maxrelskill, alpha = "min-max range ensembles rel. skill", fill = location)) +
   geom_ribbon(aes(x = k, ymin = q05relskill, ymax = q95relskill, alpha = "q05-q95 range ensembles rel. skill", fill = location)) +
@@ -82,13 +91,14 @@ ggplot(data = all_pwscores |> DT(target_type == targetplot)) +
   scale_x_continuous(breaks = ks) + # Adjust the x-axis limits
   ylab("Scaled relative skill") +
   xlab("k - number of models in recombined ensemble") +
-  scale_fill_met_d("Hokusai1") +
-  scale_color_met_d("Hokusai1") +
+  scale_fill_met_d("Hokusai3") +
+  scale_color_met_d("Hokusai3") +
   scale_linetype_manual(name="",values=ltypes) +
   scale_alpha_manual(name="",values=colfills) +
   theme_masterthesis() %+replace%
   theme(plot.title = element_text(hjust = 0.5)) +
   guides(fill = "none", color = "none") +
   #ggtitle(loctarg) +
-  facet_grid(location ~ horizon)
+  facet_grid(location ~ target_type + horizon, scales = "fixed")
 dev.off()
+
