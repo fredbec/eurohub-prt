@@ -1,0 +1,501 @@
+target_end_date,target_type,location,location_name,anomaly
+2022-08-20,Deaths,GB,United Kingdom,large data revision
+2021-06-19,Cases,DE,Germany,large data revision
+2021-06-19,Deaths,DE,Germany,large data revision
+2021-06-26,Cases,DE,Germany,large data revision
+2021-06-26,Deaths,DE,Germany,large data revision
+2021-07-03,Deaths,DE,Germany,large data revision
+2021-07-10,Deaths,DE,Germany,large data revision
+2021-07-17,Deaths,DE,Germany,large data revision
+2021-07-24,Deaths,DE,Germany,large data revision
+2021-08-14,Deaths,DE,Germany,large data revision
+2021-08-21,Deaths,DE,Germany,large data revision
+2021-09-11,Deaths,DE,Germany,large data revision
+2021-09-18,Deaths,DE,Germany,large data revision
+2021-10-23,Cases,DE,Germany,large data revision
+2021-10-30,Cases,DE,Germany,large data revision
+2021-11-06,Cases,DE,Germany,large data revision
+2021-11-06,Deaths,DE,Germany,large data revision
+2021-11-13,Cases,DE,Germany,large data revision
+2021-11-13,Deaths,DE,Germany,large data revision
+2021-11-20,Cases,DE,Germany,large data revision
+2021-12-11,Deaths,DE,Germany,large data revision
+2021-12-18,Cases,DE,Germany,large data revision
+2021-12-18,Deaths,DE,Germany,large data revision
+2021-12-25,Cases,DE,Germany,large data revision
+2022-01-01,Cases,DE,Germany,large data revision
+2022-01-08,Cases,DE,Germany,large data revision
+2022-01-15,Cases,DE,Germany,large data revision
+2022-01-22,Cases,DE,Germany,large data revision
+2022-01-29,Cases,DE,Germany,large data revision
+2022-03-26,Cases,DE,Germany,large data revision
+2022-03-26,Deaths,DE,Germany,large data revision
+2021-03-20,Cases,DE,Germany,large data revision
+2021-03-27,Cases,DE,Germany,large data revision
+2021-03-20,Deaths,LT,Lithuania,large data revision
+2021-04-10,Deaths,LT,Lithuania,large data revision
+2021-04-10,Cases,DE,Germany,large data revision
+2021-04-10,Deaths,DE,Germany,large data revision
+2021-03-20,Cases,SK,Slovakia,large data revision
+2021-03-27,Cases,SK,Slovakia,large data revision
+2021-04-03,Cases,SK,Slovakia,large data revision
+2021-04-10,Cases,SK,Slovakia,large data revision
+2021-03-20,Deaths,FI,Finland,large data revision
+2021-03-27,Deaths,FI,Finland,large data revision
+2021-04-03,Cases,FI,Finland,large data revision
+2021-04-03,Deaths,FI,Finland,large data revision
+2021-04-10,Cases,FI,Finland,large data revision
+2021-04-10,Deaths,FI,Finland,large data revision
+2021-03-20,Cases,FR,France,large data revision
+2021-03-20,Deaths,FR,France,large data revision
+2021-04-10,Deaths,FR,France,large data revision
+2021-04-17,Cases,SK,Slovakia,large data revision
+2021-04-03,Deaths,CY,Cyprus,large data revision
+2021-04-10,Deaths,CY,Cyprus,large data revision
+2021-04-17,Deaths,CY,Cyprus,large data revision
+2021-04-17,Cases,FI,Finland,large data revision
+2021-04-17,Deaths,FI,Finland,large data revision
+2021-03-27,Deaths,AT,Austria,large data revision
+2021-04-03,Deaths,AT,Austria,large data revision
+2021-04-10,Deaths,AT,Austria,large data revision
+2021-04-17,Deaths,AT,Austria,large data revision
+2021-04-17,Deaths,FR,France,large data revision
+2021-04-24,Cases,SK,Slovakia,large data revision
+2021-04-24,Deaths,AT,Austria,large data revision
+2021-05-01,Cases,DE,Germany,large data revision
+2021-05-01,Deaths,DE,Germany,large data revision
+2021-05-01,Cases,SK,Slovakia,large data revision
+2021-04-24,Deaths,FI,Finland,large data revision
+2021-05-01,Deaths,FI,Finland,large data revision
+2021-05-01,Cases,CY,Cyprus,large data revision
+2021-05-01,Deaths,CY,Cyprus,large data revision
+2021-05-01,Deaths,AT,Austria,large data revision
+2021-05-08,Deaths,FI,Finland,large data revision
+2021-05-08,Cases,CY,Cyprus,large data revision
+2021-05-08,Deaths,CY,Cyprus,large data revision
+2021-05-15,Cases,DE,Germany,large data revision
+2021-05-08,Cases,SK,Slovakia,large data revision
+2021-05-15,Cases,SK,Slovakia,large data revision
+2021-05-15,Deaths,FI,Finland,large data revision
+2021-05-08,Cases,AT,Austria,large data revision
+2021-05-08,Deaths,AT,Austria,large data revision
+2021-05-15,Cases,AT,Austria,large data revision
+2021-05-15,Deaths,AT,Austria,large data revision
+2021-05-15,Cases,CY,Cyprus,large data revision
+2021-05-22,Cases,SK,Slovakia,large data revision
+2021-05-22,Cases,IE,Ireland,No data reported
+2021-05-22,Deaths,IE,Ireland,No data reported
+2021-05-22,Deaths,FI,Finland,large data revision
+2021-05-22,Deaths,CY,Cyprus,large data revision
+2021-05-15,Cases,NL,Netherlands,large data revision
+2021-05-22,Cases,AT,Austria,large data revision
+2021-05-22,Cases,FR,France,Removed double counting
+2021-05-22,Deaths,FR,France,large data revision
+2021-03-20,Deaths,AT,Austria,large data revision
+2021-03-20,Deaths,CH,Switzerland,large data revision
+2021-03-27,Deaths,CH,Switzerland,large data revision
+2021-04-03,Deaths,CH,Switzerland,large data revision
+2021-03-20,Deaths,CY,Cyprus,large data revision
+2021-03-20,Deaths,GB,United Kingdom,large data revision
+2021-03-27,Deaths,GB,United Kingdom,large data revision
+2021-04-03,Deaths,GB,United Kingdom,large data revision
+2021-03-20,Cases,LI,Liechtenstein,large data revision
+2021-03-20,Deaths,LI,Liechtenstein,large data revision
+2021-03-27,Cases,LI,Liechtenstein,large data revision
+2021-04-10,Deaths,CH,Switzerland,large data revision
+2021-04-10,Deaths,GB,United Kingdom,large data revision
+2021-04-10,Cases,LI,Liechtenstein,large data revision
+2021-04-17,Deaths,CH,Switzerland,large data revision
+2021-04-17,Deaths,GB,United Kingdom,large data revision
+2021-04-24,Deaths,GB,United Kingdom,large data revision
+2021-04-24,Cases,LI,Liechtenstein,large data revision
+2021-04-24,Deaths,LI,Liechtenstein,large data revision
+2021-05-01,Deaths,GB,United Kingdom,large data revision
+2021-05-08,Deaths,CH,Switzerland,large data revision
+2021-05-08,Deaths,GB,United Kingdom,large data revision
+2021-05-08,Cases,LI,Liechtenstein,large data revision
+2021-05-15,Deaths,GB,United Kingdom,large data revision
+2021-05-15,Cases,LI,Liechtenstein,large data revision
+2021-05-22,Deaths,CH,Switzerland,large data revision
+2021-05-22,Deaths,GB,United Kingdom,large data revision
+2021-05-22,Cases,LI,Liechtenstein,large data revision
+2021-05-29,Deaths,AT,Austria,large data revision
+2021-05-29,Cases,CY,Cyprus,large data revision
+2021-05-29,Deaths,CY,Cyprus,large data revision
+2021-05-29,Cases,FI,Finland,large data revision
+2021-05-29,Deaths,FI,Finland,large data revision
+2021-05-29,Deaths,GB,United Kingdom,large data revision
+2021-05-29,Cases,IE,Ireland,No data reported
+2021-05-29,Deaths,IE,Ireland,No data reported
+2021-05-29,Cases,IS,Iceland,large data revision
+2021-05-29,Deaths,IS,Iceland,large data revision
+2021-05-29,Cases,LI,Liechtenstein,large data revision
+2021-05-29,Cases,SK,Slovakia,large data revision
+2021-06-05,Cases,AT,Austria,large data revision
+2021-06-05,Deaths,AT,Austria,large data revision
+2021-06-05,Deaths,CH,Switzerland,large data revision
+2021-06-05,Cases,CY,Cyprus,large data revision
+2021-06-05,Deaths,CY,Cyprus,large data revision
+2021-06-05,Deaths,DE,Germany,large data revision
+2021-06-05,Deaths,FI,Finland,large data revision
+2021-06-05,Deaths,GB,United Kingdom,large data revision
+2021-06-05,Cases,IE,Ireland,"2 days missing, 1 day spike"
+2021-06-05,Deaths,IE,Ireland,No data reported
+2021-06-05,Cases,IS,Iceland,large data revision
+2021-06-05,Cases,NL,Netherlands,large data revision
+2021-06-05,Cases,SK,Slovakia,large data revision
+2021-06-12,Cases,AT,Austria,large data revision
+2021-06-12,Deaths,AT,Austria,large data revision
+2021-06-12,Deaths,CH,Switzerland,large data revision
+2021-06-12,Cases,CY,Cyprus,large data revision
+2021-06-12,Cases,ES,Spain,Historic cases added but not backdistributed in Catalonia
+2021-06-12,Deaths,FI,Finland,large data revision
+2021-06-12,Deaths,GB,United Kingdom,large data revision
+2021-06-12,Cases,IE,Ireland,Spike removed after case count backdistributed
+2021-06-12,Deaths,IE,Ireland,No data reported
+2021-06-12,Cases,IS,Iceland,large data revision
+2021-06-12,Cases,LI,Liechtenstein,large data revision
+2021-06-12,Cases,NL,Netherlands,large data revision
+2021-06-12,Cases,SK,Slovakia,large data revision
+2021-06-19,Cases,AT,Austria,large data revision
+2021-06-19,Deaths,AT,Austria,large data revision
+2021-06-19,Deaths,CH,Switzerland,large data revision
+2021-06-19,Deaths,CY,Cyprus,large data revision
+2021-06-19,Deaths,FI,Finland,large data revision
+2021-06-19,Deaths,GB,United Kingdom,large data revision
+2021-06-19,Cases,IS,Iceland,large data revision
+2021-06-19,Deaths,LT,Lithuania,large data revision
+2021-06-19,Cases,NL,Netherlands,large data revision
+2021-06-19,Cases,SK,Slovakia,large data revision
+2021-06-26,Cases,AT,Austria,large data revision
+2021-06-26,Deaths,AT,Austria,large data revision
+2021-06-26,Deaths,CH,Switzerland,large data revision
+2021-06-26,Cases,CY,Cyprus,large data revision
+2021-06-26,Cases,FI,Finland,large data revision
+2021-06-26,Deaths,GB,United Kingdom,large data revision
+2021-06-26,Cases,IS,Iceland,large data revision
+2021-06-26,Cases,SK,Slovakia,large data revision
+2021-07-03,Cases,AT,Austria,large data revision
+2021-07-03,Deaths,AT,Austria,large data revision
+2021-07-03,Deaths,CH,Switzerland,large data revision
+2021-07-03,Cases,FI,Finland,large data revision
+2021-07-03,Deaths,FI,Finland,large data revision
+2021-07-03,Deaths,GB,United Kingdom,large data revision
+2021-07-03,Deaths,GR,Greece,large data revision
+2021-07-03,Cases,IS,Iceland,large data revision
+2021-07-03,Cases,LI,Liechtenstein,large data revision
+2021-07-03,Deaths,LT,Lithuania,large data revision
+2021-07-03,Cases,NL,Netherlands,large data revision
+2021-07-03,Cases,SK,Slovakia,large data revision
+2021-07-10,Deaths,AT,Austria,large data revision
+2021-07-10,Deaths,CH,Switzerland,large data revision
+2021-07-10,Cases,CY,Cyprus,large data revision
+2021-07-10,Deaths,FI,Finland,large data revision
+2021-07-10,Deaths,GB,United Kingdom,large data revision
+2021-07-10,Cases,IS,Iceland,large data revision
+2021-07-10,Cases,LI,Liechtenstein,large data revision
+2021-07-10,Cases,NL,Netherlands,large data revision
+2021-07-10,Cases,SK,Slovakia,large data revision
+2021-07-17,Cases,AT,Austria,large data revision
+2021-07-17,Deaths,AT,Austria,large data revision
+2021-07-17,Deaths,CH,Switzerland,large data revision
+2021-07-17,Deaths,CY,Cyprus,large data revision
+2021-07-17,Cases,FI,Finland,large data revision
+2021-07-17,Deaths,FI,Finland,large data revision
+2021-07-17,Deaths,GB,United Kingdom,large data revision
+2021-07-17,Cases,IS,Iceland,large data revision
+2021-07-17,Cases,LI,Liechtenstein,large data revision
+2021-07-17,Deaths,LT,Lithuania,large data revision
+2021-07-17,Cases,SK,Slovakia,large data revision
+2021-07-24,Deaths,AT,Austria,large data revision
+2021-07-24,Deaths,CH,Switzerland,large data revision
+2021-07-24,Cases,CY,Cyprus,large data revision
+2021-07-24,Deaths,CY,Cyprus,large data revision
+2021-07-24,Cases,FI,Finland,large data revision
+2021-07-24,Deaths,FI,Finland,large data revision
+2021-07-24,Deaths,FR,France,large data revision
+2021-07-24,Deaths,GB,United Kingdom,large data revision
+2021-07-24,Cases,LI,Liechtenstein,large data revision
+2021-07-24,Deaths,LT,Lithuania,large data revision
+2021-07-24,Cases,NL,Netherlands,large data revision
+2021-07-24,Cases,NO,Norway,large data revision
+2021-07-24,Cases,SK,Slovakia,large data revision
+2021-07-31,Deaths,AT,Austria,large data revision
+2021-07-31,Deaths,CH,Switzerland,large data revision
+2021-07-31,Deaths,CY,Cyprus,large data revision
+2021-07-31,Cases,FI,Finland,large data revision
+2021-07-31,Deaths,FI,Finland,large data revision
+2021-07-31,Deaths,GB,United Kingdom,large data revision
+2021-07-31,Deaths,LT,Lithuania,large data revision
+2021-07-31,Cases,NL,Netherlands,large data revision
+2021-07-31,Cases,SK,Slovakia,large data revision
+2021-08-07,Deaths,AT,Austria,large data revision
+2021-08-07,Deaths,CH,Switzerland,large data revision
+2021-08-07,Cases,CY,Cyprus,large data revision
+2021-08-07,Cases,FI,Finland,large data revision
+2021-08-07,Deaths,FI,Finland,large data revision
+2021-08-07,Deaths,GB,United Kingdom,large data revision
+2021-08-07,Cases,LI,Liechtenstein,large data revision
+2021-08-07,Deaths,LT,Lithuania,large data revision
+2021-08-07,Cases,SK,Slovakia,large data revision
+2021-08-14,Cases,AT,Austria,large data revision
+2021-08-14,Deaths,AT,Austria,large data revision
+2021-08-14,Deaths,CY,Cyprus,large data revision
+2021-08-14,Deaths,FI,Finland,large data revision
+2021-08-14,Cases,FR,France,large data revision
+2021-08-14,Deaths,FR,France,large data revision
+2021-08-14,Deaths,GB,United Kingdom,large data revision
+2021-08-14,Cases,LI,Liechtenstein,large data revision
+2021-08-14,Deaths,LT,Lithuania,large data revision
+2021-08-14,Cases,SK,Slovakia,large data revision
+2021-08-21,Deaths,AT,Austria,large data revision
+2021-08-21,Deaths,CH,Switzerland,large data revision
+2021-08-21,Deaths,CY,Cyprus,large data revision
+2021-08-21,Deaths,FI,Finland,large data revision
+2021-08-21,Deaths,FR,France,large data revision
+2021-08-21,Deaths,GB,United Kingdom,large data revision
+2021-08-21,Cases,LI,Liechtenstein,large data revision
+2021-08-21,Cases,LT,Lithuania,large data revision
+2021-08-21,Cases,SK,Slovakia,large data revision
+2021-08-28,Deaths,AT,Austria,large data revision
+2021-08-28,Deaths,CH,Switzerland,large data revision
+2021-08-28,Deaths,CY,Cyprus,large data revision
+2021-08-28,Deaths,FI,Finland,large data revision
+2021-08-28,Deaths,FR,France,large data revision
+2021-08-28,Deaths,GB,United Kingdom,large data revision
+2021-08-28,Deaths,GR,Greece,large data revision
+2021-08-28,Cases,LI,Liechtenstein,large data revision
+2021-08-28,Cases,SK,Slovakia,large data revision
+2021-09-04,Deaths,AT,Austria,large data revision
+2021-09-04,Deaths,CY,Cyprus,large data revision
+2021-09-04,Deaths,FI,Finland,large data revision
+2021-09-04,Deaths,GB,United Kingdom,large data revision
+2021-09-04,Deaths,GR,Greece,large data revision
+2021-09-04,Cases,LI,Liechtenstein,large data revision
+2021-09-04,Cases,PT,Portugal,large data revision
+2021-09-04,Cases,SK,Slovakia,large data revision
+2021-09-11,Deaths,AT,Austria,large data revision
+2021-09-11,Cases,CY,Cyprus,large data revision
+2021-09-11,Deaths,CY,Cyprus,large data revision
+2021-09-11,Cases,FI,Finland,large data revision
+2021-09-11,Deaths,FI,Finland,large data revision
+2021-09-11,Deaths,GB,United Kingdom,large data revision
+2021-09-11,Deaths,GR,Greece,large data revision
+2021-09-11,Cases,LI,Liechtenstein,large data revision
+2021-09-11,Deaths,LI,Liechtenstein,large data revision
+2021-09-11,Cases,SK,Slovakia,large data revision
+2021-09-18,Deaths,AT,Austria,large data revision
+2021-09-18,Cases,CY,Cyprus,large data revision
+2021-09-18,Deaths,CY,Cyprus,large data revision
+2021-09-18,Deaths,FI,Finland,large data revision
+2021-09-18,Deaths,GB,United Kingdom,large data revision
+2021-09-18,Cases,LI,Liechtenstein,large data revision
+2021-09-18,Cases,SK,Slovakia,large data revision
+2021-09-25,Cases,AT,Austria,large data revision
+2021-09-25,Deaths,AT,Austria,large data revision
+2021-09-25,Cases,CY,Cyprus,large data revision
+2021-09-25,Deaths,CY,Cyprus,large data revision
+2021-09-25,Deaths,FI,Finland,large data revision
+2021-09-25,Cases,LI,Liechtenstein,large data revision
+2021-09-25,Cases,SK,Slovakia,large data revision
+2021-10-02,Deaths,AT,Austria,large data revision
+2021-10-02,Deaths,FI,Finland,large data revision
+2021-10-02,Deaths,GB,United Kingdom,large data revision
+2021-10-02,Cases,LI,Liechtenstein,large data revision
+2021-10-02,Cases,SK,Slovakia,large data revision
+2021-10-09,Deaths,AT,Austria,large data revision
+2021-10-09,Cases,FI,Finland,large data revision
+2021-10-09,Deaths,FI,Finland,large data revision
+2021-10-09,Deaths,GB,United Kingdom,large data revision
+2021-10-09,Cases,LI,Liechtenstein,large data revision
+2021-10-09,Cases,NL,Netherlands,large data revision
+2021-10-09,Cases,SK,Slovakia,large data revision
+2021-10-16,Deaths,AT,Austria,large data revision
+2021-10-16,Cases,FI,Finland,large data revision
+2021-10-16,Deaths,FI,Finland,large data revision
+2021-10-16,Deaths,GB,United Kingdom,large data revision
+2021-10-16,Cases,NL,Netherlands,large data revision
+2021-10-16,Cases,SK,Slovakia,large data revision
+2021-10-23,Deaths,AT,Austria,large data revision
+2021-10-23,Cases,FI,Finland,large data revision
+2021-10-23,Deaths,FI,Finland,large data revision
+2021-10-23,Deaths,GB,United Kingdom,large data revision
+2021-10-23,Cases,NL,Netherlands,large data revision
+2021-10-23,Cases,SK,Slovakia,large data revision
+2021-10-30,Cases,AT,Austria,large data revision
+2021-10-30,Deaths,AT,Austria,large data revision
+2021-10-30,Cases,FI,Finland,large data revision
+2021-10-30,Deaths,FI,Finland,large data revision
+2021-10-30,Deaths,GB,United Kingdom,large data revision
+2021-10-30,Cases,SK,Slovakia,large data revision
+2021-11-06,Cases,AT,Austria,large data revision
+2021-11-06,Deaths,AT,Austria,large data revision
+2021-11-06,Cases,DK,Denmark,large data revision
+2021-11-06,Deaths,DK,Denmark,large data revision
+2021-11-06,Deaths,FI,Finland,large data revision
+2021-11-06,Cases,NL,Netherlands,large data revision
+2021-11-06,Cases,SK,Slovakia,large data revision
+2021-11-13,Deaths,AT,Austria,large data revision
+2021-11-13,Cases,FI,Finland,large data revision
+2021-11-13,Deaths,FI,Finland,large data revision
+2021-11-13,Cases,SK,Slovakia,large data revision
+2021-11-20,Deaths,AT,Austria,large data revision
+2021-11-20,Cases,FI,Finland,large data revision
+2021-11-20,Deaths,FI,Finland,large data revision
+2021-11-20,Cases,NL,Netherlands,large data revision
+2021-11-27,Deaths,AT,Austria,large data revision
+2021-11-27,Cases,FI,Finland,large data revision
+2021-11-27,Deaths,GB,United Kingdom,large data revision
+2021-12-04,Cases,AT,Austria,large data revision
+2021-12-04,Deaths,AT,Austria,large data revision
+2021-12-04,Deaths,FI,Finland,large data revision
+2021-12-04,Deaths,GB,United Kingdom,large data revision
+2021-12-11,Cases,AT,Austria,large data revision
+2021-12-11,Deaths,AT,Austria,large data revision
+2021-12-11,Deaths,FI,Finland,large data revision
+2021-12-11,Cases,FR,France,large data revision
+2021-12-11,Deaths,FR,France,large data revision
+2021-12-11,Deaths,GB,United Kingdom,large data revision
+2021-12-18,Deaths,FI,Finland,large data revision
+2021-12-18,Deaths,GB,United Kingdom,large data revision
+2021-12-25,Deaths,AT,Austria,large data revision
+2021-12-25,Cases,DK,Denmark,large data revision
+2021-12-25,Deaths,DK,Denmark,large data revision
+2021-12-25,Cases,FI,Finland,large data revision
+2021-12-25,Deaths,FI,Finland,large data revision
+2021-12-25,Deaths,GB,United Kingdom,large data revision
+2022-01-01,Cases,AT,Austria,large data revision
+2022-01-01,Deaths,AT,Austria,large data revision
+2022-01-01,Cases,FI,Finland,large data revision
+2022-01-01,Deaths,FI,Finland,large data revision
+2022-01-01,Deaths,GB,United Kingdom,large data revision
+2022-01-08,Cases,AT,Austria,large data revision
+2022-01-08,Deaths,AT,Austria,large data revision
+2022-01-08,Cases,FI,Finland,large data revision
+2022-01-08,Deaths,FI,Finland,large data revision
+2022-01-08,Deaths,GB,United Kingdom,large data revision
+2022-01-08,Cases,LT,Lithuania,large data revision
+2022-01-08,Cases,NL,Netherlands,large data revision
+2022-01-08,Cases,PT,Portugal,large data revision
+2022-01-08,Deaths,PT,Portugal,large data revision
+2022-01-15,Cases,AT,Austria,large data revision
+2022-01-15,Cases,FI,Finland,large data revision
+2022-01-15,Deaths,FI,Finland,large data revision
+2022-01-15,Deaths,GB,United Kingdom,large data revision
+2022-01-15,Cases,LT,Lithuania,large data revision
+2022-01-22,Cases,AT,Austria,large data revision
+2022-01-22,Deaths,AT,Austria,large data revision
+2022-01-22,Cases,FI,Finland,large data revision
+2022-01-22,Deaths,FI,Finland,large data revision
+2022-01-22,Deaths,GB,United Kingdom,large data revision
+2022-01-22,Cases,LT,Lithuania,large data revision
+2022-01-29,Cases,AT,Austria,large data revision
+2022-01-29,Deaths,AT,Austria,large data revision
+2022-01-29,Deaths,GB,United Kingdom,large data revision
+2022-01-29,Cases,LT,Lithuania,large data revision
+2022-02-05,Deaths,AT,Austria,large data revision
+2022-02-05,Cases,ES,Spain,large data revision
+2022-02-05,Deaths,ES,Spain,large data revision
+2022-02-05,Deaths,GB,United Kingdom,large data revision
+2022-02-05,Cases,LT,Lithuania,large data revision
+2022-02-05,Cases,PT,Portugal,large data revision
+2022-02-12,Cases,ES,Spain,large data revision
+2022-02-12,Deaths,ES,Spain,large data revision
+2022-02-12,Deaths,GB,United Kingdom,large data revision
+2022-02-12,Cases,LT,Lithuania,large data revision
+2022-02-12,Cases,PL,Poland,large data revision
+2022-02-12,Cases,PT,Portugal,large data revision
+2022-02-19,Deaths,GB,United Kingdom,large data revision
+2022-02-19,Cases,LT,Lithuania,large data revision
+2022-02-19,Cases,NL,Netherlands,large data revision
+2022-02-19,Cases,PL,Poland,large data revision
+2022-02-19,Cases,PT,Portugal,large data revision
+2022-02-26,Cases,LT,Lithuania,large data revision
+2022-02-26,Cases,NL,Netherlands,large data revision
+2022-02-26,Deaths,NL,Netherlands,large data revision
+2022-02-26,Cases,PT,Portugal,large data revision
+2022-03-05,Cases,LT,Lithuania,large data revision
+2022-03-05,Deaths,LT,Lithuania,large data revision
+2022-03-05,Cases,NL,Netherlands,large data revision
+2022-03-05,Deaths,NL,Netherlands,large data revision
+2022-03-12,Deaths,GB,United Kingdom,large data revision
+2022-03-12,Cases,LT,Lithuania,large data revision
+2022-03-12,Deaths,LT,Lithuania,large data revision
+2022-03-12,Cases,PT,Portugal,large data revision
+2022-03-19,Deaths,AT,Austria,large data revision
+2022-03-19,Deaths,GB,United Kingdom,large data revision
+2022-03-19,Cases,LT,Lithuania,large data revision
+2022-03-19,Cases,PT,Portugal,large data revision
+2022-03-26,Cases,AT,Austria,large data revision
+2022-03-26,Deaths,GB,United Kingdom,large data revision
+2022-03-26,Cases,LT,Lithuania,large data revision
+2022-03-26,Cases,PT,Portugal,large data revision
+2022-04-02,Cases,AT,Austria,large data revision
+2022-04-02,Deaths,GB,United Kingdom,large data revision
+2022-04-02,Cases,LT,Lithuania,large data revision
+2022-04-09,Cases,AT,Austria,large data revision
+2022-04-09,Cases,ES,Spain,large data revision
+2022-04-09,Deaths,ES,Spain,large data revision
+2022-04-09,Deaths,GB,United Kingdom,large data revision
+2022-04-09,Cases,LT,Lithuania,large data revision
+2022-04-16,Cases,AT,Austria,large data revision
+2022-04-16,Deaths,AT,Austria,large data revision
+2022-04-16,Cases,ES,Spain,large data revision
+2022-04-16,Deaths,GB,United Kingdom,large data revision
+2022-04-16,Cases,LT,Lithuania,large data revision
+2022-04-16,Cases,PT,Portugal,large data revision
+2022-04-23,Deaths,AT,Austria,large data revision
+2022-04-23,Cases,ES,Spain,large data revision
+2022-04-23,Deaths,ES,Spain,large data revision
+2022-04-23,Deaths,GB,United Kingdom,large data revision
+2022-04-23,Cases,LT,Lithuania,large data revision
+2022-04-23,Cases,PT,Portugal,large data revision
+2022-04-30,Cases,AT,Austria,large data revision
+2022-04-30,Cases,ES,Spain,large data revision
+2022-04-30,Deaths,ES,Spain,large data revision
+2022-04-30,Deaths,GB,United Kingdom,large data revision
+2022-04-30,Cases,LT,Lithuania,large data revision
+2022-04-30,Cases,PT,Portugal,large data revision
+2022-05-07,Deaths,AT,Austria,large data revision
+2022-05-07,Cases,ES,Spain,large data revision
+2022-05-07,Deaths,ES,Spain,large data revision
+2022-05-07,Deaths,GB,United Kingdom,large data revision
+2022-05-07,Cases,LT,Lithuania,large data revision
+2022-05-07,Deaths,LT,Lithuania,large data revision
+2022-05-07,Cases,PT,Portugal,large data revision
+2022-05-14,Deaths,AT,Austria,large data revision
+2022-05-14,Deaths,GB,United Kingdom,large data revision
+2022-05-14,Cases,LT,Lithuania,large data revision
+2022-05-14,Deaths,LT,Lithuania,large data revision
+2022-05-14,Cases,LU,Luxembourg,large data revision
+2022-05-14,Cases,PT,Portugal,large data revision
+2022-05-21,Deaths,GB,United Kingdom,large data revision
+2022-05-21,Cases,LT,Lithuania,large data revision
+2022-05-21,Deaths,LT,Lithuania,large data revision
+2022-05-21,Cases,LU,Luxembourg,large data revision
+2022-05-21,Deaths,LU,Luxembourg,large data revision
+2022-05-21,Cases,PT,Portugal,large data revision
+2022-05-28,Deaths,GB,United Kingdom,large data revision
+2022-05-28,Cases,LT,Lithuania,large data revision
+2022-05-28,Deaths,LT,Lithuania,large data revision
+2022-05-28,Cases,LU,Luxembourg,large data revision
+2022-05-28,Deaths,LU,Luxembourg,large data revision
+2022-06-04,Deaths,GB,United Kingdom,large data revision
+2022-06-04,Cases,LT,Lithuania,large data revision
+2022-06-11,Deaths,GB,United Kingdom,large data revision
+2022-06-11,Cases,LT,Lithuania,large data revision
+2022-06-11,Deaths,LT,Lithuania,large data revision
+2022-06-18,Deaths,GB,United Kingdom,large data revision
+2022-06-18,Cases,LT,Lithuania,large data revision
+2022-06-18,Deaths,LT,Lithuania,large data revision
+2022-06-18,Cases,RO,Romania,large data revision
+2022-06-25,Deaths,GB,United Kingdom,large data revision
+2022-06-25,Cases,LT,Lithuania,large data revision
+2022-06-25,Deaths,LT,Lithuania,large data revision
+2022-07-09,Deaths,GB,United Kingdom,large data revision
+2022-07-16,Deaths,GB,United Kingdom,large data revision
+2022-07-23,Deaths,GB,United Kingdom,large data revision
+2022-07-30,Deaths,GB,United Kingdom,large data revision
+2022-08-06,Deaths,GB,United Kingdom,large data revision
+2022-08-13,Deaths,GB,United Kingdom,large data revision
+2021-03-06,Cases,ES,Spain,Negative case reporting
