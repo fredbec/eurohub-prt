@@ -16,9 +16,9 @@ availpropmodsk3 <- enscomb_specs$availpropmodsk3
 availproptime <- enscomb_specs$availproptime
 maxens <- enscomb_specs$maxens
 
-fcdat <- fread(here("data", "depldat.csv")) |>
-  filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
-  filter(forecast_date <= as.IDate(end_date))
+fcdat <- arrow::read_parquet(here("data", "depldat.parquet")) |>
+  filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
+  filter(forecast_date <= as.Date(end_date))
 
 rdseeds <- data.table::fread(here("enscomb-data", "rdseeds.csv"))
 
@@ -36,7 +36,7 @@ for(k in ks){
     loc <- substr(loctarg, 0, 2)
     targ <- substr(loctarg, 3, 100)
 
-    combdat <- data.table::fread(here("enscomb-data", paste0("enscomb_suggested_", loctarg, "_k", k, ".csv")))
+    combdat <- arrow::read_parquet(here("enscomb-data", paste0("enscomb_suggested_", loctarg, "_k", k, ".parquet")))
 
     results <- enscombcheck(fcdat,
                               combdat,
@@ -66,8 +66,8 @@ for(k in ks){
         results[[2]] <- inner_join(results[[2]], sampled_ensids, by = "ensid")
       }
 
-      data.table::fwrite(results[[1]], here("enscomb-data", paste0("ens_unavail_bydate_", loctarg, "_k", k, ".csv")))
-      data.table::fwrite(results[[2]], here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".csv")))
+      arrow::write_parquet(results[[1]], here("enscomb-data", paste0("ens_unavail_bydate_", loctarg, "_k", k, ".parquet")))
+      arrow::write_parquet(results[[2]], here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
     }
   }
 )
@@ -86,8 +86,8 @@ for(k in ks){
     loc <- substr(loctarg, 0, 2)
     targ <- substr(loctarg, 3, 100)
 
-    sugg <- data.table::fread(here("enscomb-data", paste0("enscomb_suggested_", loctarg, "_k", k, ".csv")))
-    filt <- data.table::fread(here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".csv")))
+    sugg <- arrow::read_parquet(here("enscomb-data", paste0("enscomb_suggested_", loctarg, "_k", k, ".parquet")))
+    filt <- arrow::read_parquet(here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
     nrow_sugg <- length(unique(sugg$ensid))
     nrow_filt <- length(unique(filt$ensid))
 

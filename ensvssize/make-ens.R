@@ -14,7 +14,7 @@ ks <- enscomb_specs$ks
 loctargets <- enscomb_specs$loctargets
 maxens <- enscomb_specs$maxens
 
-fcdat <- fread(here("data", "depldat.csv")) |>
+fcdat <- fread(here("data", "depldat.parquet")) |>
   filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.IDate(end_date))
 
@@ -31,8 +31,8 @@ for(k in ks){
 
     print(loctarg)
     #READ in data
-    ens_unavail_dat <- data.table::fread(here("enscomb-data", paste0("ens_unavail_bydate_", loctarg, "_k", k, ".csv")))
-    enscombdat <- data.table::fread(here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".csv")))
+    ens_unavail_dat <- arrow::read_parquet(here("enscomb-data", paste0("ens_unavail_bydate_", loctarg, "_k", k, ".parquet")))
+    enscombdat <- darrow::read_parquet(here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
     #make function call
 
 
@@ -40,7 +40,7 @@ for(k in ks){
                         ens_unavail_dat = ens_unavail_dat,
                         fcdat = fcdat)
 
-    data.table::fwrite(res, here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".csv")))
+    arrow::write_parquet(res, here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".parquet")))
     #write data
     }
   )

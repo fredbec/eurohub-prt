@@ -2,6 +2,7 @@ library(data.table)
 library(dplyr)
 library(here)
 library(ggplot2)
+library(arrow)
 DT <- `[`
 
 nfcsts <- 50
@@ -41,17 +42,18 @@ combdat <- fcdat |>
   DT(, scenario_id := NULL) |>
   DT(anomalies, on = c("location", "target_end_date", "target_type"), anomaly_code := i.anomaly) |>
   DT(, anomaly := !is.na(anomaly_code)) |>
+  DT(, anomaly_code := NULL) |>
   rescale_to_incidence_rate(population) |>
   DT(order(location, target_type, forecast_date, horizon, model, quantile)) |>
   setcolorder(c("model", "location", "target_type",
                 "forecast_date", "horizon", "target_end_date",
                 "quantile", "prediction", "true_value",
                 "prediction_pop", "true_value_pop",
-                "anomaly", "anomaly_code")) |>
+                "anomaly")) |>
   DT(period_cats, on = c("forecast_date"))
 
 
-data.table::fwrite(combdat, here("data", "depldat.csv"))
+arrow::write_parquet(combdat, here("data", "depldat.parquet"))
 
 
 

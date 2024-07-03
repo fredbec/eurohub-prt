@@ -5,37 +5,52 @@ library(dplyr)
 DT <- `[`
 source(here("ensvssize", "specs.R"))
 
+###################Serverpart###################
+if(grepl("*kit*", getwd())){ #if running code on server
+  args=(commandArgs(TRUE))
+  ind <- as.character(args[[1]])
+
+  if(ind == "multiple"){ #this is an adhoc solution to run all smaller locations in a single script
+    loctargets <- as.list(
+      c(as.character(args[[2]]),
+        as.character(args[[3]]),
+        as.character(args[[4]]),
+        as.character(args[[5]]),
+        as.character(args[[6]]),
+        as.character(args[[7]])))
+
+    ks <- c(
+      as.numeric(args[[8]]),
+      as.numeric(args[[9]]),
+      as.numeric(args[[10]]),
+      as.numeric(args[[11]]),
+      as.numeric(args[[12]]),
+      as.numeric(args[[13]]),
+      as.numeric(args[[14]]),
+      as.numeric(args[[15]]))
+  } else { #for Germany and Poland, running one k and loctarget at a time
+    loctargets <- as.list(as.character(args[[1]]))
+    ks <- c(as.numeric(args[[2]]))
+  }
+
+} else { # if running locally
+  ks <- enscomb_specs$ks
+  loctargets <- enscomb_specs$loctargets
+}
 
 start_date <- enscomb_specs$start_date
 end_date <- enscomb_specs$end_date
-ks <- enscomb_specs$ks
-loctargets <- enscomb_specs$loctargets
 score_horizon <- enscomb_specs$horizon
 model_types <- c("median_ensemble")
 with_anomalies <- enscomb_specs$with_anomalies
 
 
-ensdat <- fread(here("data", "stablek3ensemble.csv")) |>
+ensdat <- fread(here("data", "hubensemble.csv")) |>
   filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.IDate(end_date)) |>
   DT(horizon %in% score_horizon) |>
   DT(, c("location", "target_type", "model", "target_end_date", "quantile", "prediction", "true_value", "horizon"))
 
-
-#### new read in of hub ensemble and baseline
-hubdat <- fread(here("data", "hubensemble.csv")) |>
-  filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
-  filter(forecast_date <= as.IDate(end_date)) |>
-  DT(horizon %in% score_horizon) |>
-  DT(, c("location", "target_type", "model", "target_end_date", "quantile", "prediction", "true_value", "horizon"))
-
-baselinedat <- fread(here("data", "depldat.csv")) |>
-  filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
-  filter(forecast_date <= as.IDate(end_date)) |>
-  filter(model ==  "EuroCOVIDhub-baseline") |>
-  DT(horizon %in% score_horizon) |>
-  DT(, c("location", "target_type", "model", "target_end_date", "quantile", "prediction", "true_value", "horizon"))
-#### new read in of hub ensemble and baseline
 
 if(with_anomalies){
   #read in anomalies
@@ -67,27 +82,9 @@ for(k in ks){
     #and only keep relevant variables
     enssubdat <- ensdat |>
       setDT() |>
-      copy() |>
       DT(location == loc) |>
       DT(target_type == targ) |>
       DT(, c("model", "target_end_date", "quantile", "prediction", "true_value", "horizon"))
-
-    #### new read in of hub ensemble and baseline
-    hubsubdat <- hubdat |>
-      setDT() |>
-      copy() |>
-      DT(location == loc) |>
-      DT(target_type == targ) |>
-      DT(, c("model", "target_end_date", "quantile", "prediction", "true_value", "horizon"))
-
-    baselinesubdat <- baselinedat |>
-      setDT() |>
-      copy() |>
-      DT(location == loc) |>
-      DT(target_type == targ) |>
-      DT(, c("model", "target_end_date", "quantile", "prediction", "true_value", "horizon"))
-    #### new read in of hub ensemble and baseline
-
 
     #read in recombined ensemble data for given loc-targ and k
     dattoscore <- data.table::fread(here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".csv"))) |>
@@ -114,11 +111,7 @@ for(k in ks){
     #score and do pairwise comparisons
     pwscores <- dattoscore |>
       rbind(enssubdat) |>
-      #### new read in of hub ensemble and baseline
-      rbind(baselinesubdat) |>
-      rbind(hubsubdat) |>
-    #### new read in of hub ensemble and baseline
-    score() |>
+      score() |>
       pairwise_comparison(by = c("model", "horizon"),
                           metric = "interval_score",
                           baseline = "EuroCOVIDhub-ensemble")

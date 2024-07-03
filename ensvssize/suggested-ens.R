@@ -14,7 +14,7 @@ loctargets <- enscomb_specs$loctargets
 
 
 ####EDIT
-fcdat <- fread(here("data", "depldat.csv"))
+fcdat <- arrow::read_parquet(here("data", "depldat.parquet"))
 
 for(k in ks){
 
@@ -33,7 +33,7 @@ for(k in ks){
   loctargets_save <- names(combdat)
 
   sapply(loctargets_save,
-         function(loctarg) data.table::fwrite(combdat[[loctarg]], here("enscomb-data", paste0("enscomb_suggested_", loctarg, "_k", k, ".csv"))))
+         function(loctarg) arrow::write_parquet(combdat[[loctarg]], here("enscomb-data", paste0("enscomb_suggested_", loctarg, "_k", k, ".parquet"))))
 
 
 }
