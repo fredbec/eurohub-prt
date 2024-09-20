@@ -1,0 +1,239 @@
+---
+title: "Ensemble model diversity"
+output:
+  github_document: default
+---
+### Identifying model types within varying ensemble compositions
+
+#### Aim
+
+- Comparing performance of ensembles by the methodology of component models
+- Specifically comparing ensembles that combine across heterogeneous model types (among mechanistic, semi-mechanistic, or statistical), or whether the ensemble is of a single homogeneous model type 
+
+```{r set-up, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(knitr)
+library(here)
+library(arrow)
+library(purrr)
+library(readr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(forcats)
+theme_set(theme_bw())
+plot_cols <- c("Mechanistic" = "#e08214", 
+               "Semi-mechanistic" = "#c51b7d", 
+                "Statistical" = "#4393c3",
+                "Heterogeneous" = "grey50",
+                "Homogeneous" = "#1b7837")
+```
+
+```{r get-targets}
+# Get targets  ---------------------------------------------------
+# -- keep only deaths as we only classified models forecasting deaths
+source(here("ensvssize", "specs.R"))
+targets <- crossing("loc" = enscomb_specs$loctargets,
+                    "k" = enscomb_specs$ks) |>
+  mutate(target = paste(loc, k, sep = "_k")) |>
+  filter(grepl("Deaths", target)) |>
+  pull(target)
+
+# get model classifications
+model_class <- read_csv("https://raw.githubusercontent.com/epiforecasts/eval-by-method/main/data/model-classification.csv") |>
+  select(model, classification)
+```
+#### Methods
+
+- `r length(unique(model_class$model))` Euro Hub models forecasting deaths, classified by 3 coders
+- All available ensemble recombinations for 5 countries 
+- Ensemble method is the median
+- Performance metric is scaled relative skill against Hub median ensemble
+
+#### Results
+
+```{r get-model-ensemble-combinations}
+# Ensemble combinations ---------------------------------------------------
+# get ensemble component combinations
+models <- map_dfr(.x = targets,
+                   ~ read_parquet(here("enscomb-data",
+                                       paste0("enscomb_",
+                                              .x, ".parquet"))) |>
+                     mutate(target = .x))
+
+# Join to model classification
+# - restrict to deaths as we only classified models with death forecasts
+models <- models |>
+  left_join(model_class, by = "model")
+
+# count model classifications in each ensemble
+ensemble_mix <- models |>
+  group_by(ensid, target, k, classification) |>
+  count() |>
+  mutate(homog = k==n,
+         classification = ifelse(!homog, "Heterogeneous", 
+                                 classification)) |>
+  select(-n) |>
+  distinct()
+
+# Get scores  ---------------------------------------------------
+ensemble_method <- "median"
+scores <- map_dfr(.x = targets,
+                  ~ read_parquet(here("enscomb-data",
+                                      paste0(ensemble_method, "-pwscores"),
+                                      paste0("ens_comb_pwscores",
+                                             .x, ".parquet"))) |>
+                    mutate(target = .x))
+
+scores <- scores |>
+  filter(compare_against == "EuroCOVIDhub-ensemble" &
+           model != "EuroCOVIDhub-ensemble") |>
+  mutate(ensid = str_remove_all(model, "median_ensemble")) |>
+  select(target, ensid, horizon, scaled_rel_skill)
+```
+
+```{r join-scores}
+# Join scores and model type ----------------------------------------------
+ensemble_scores <- left_join(scores, ensemble_mix,
+                             by = c("ensid", "target")) |>
+  filter(!is.na(classification))
+
+# restrict to k < possible single-type ensembles
+k_max <- filter(ensemble_scores, homog) |>
+  group_by(target, horizon) |>
+  summarise(k = max(k))
+
+ensemble_scores <- filter(ensemble_scores,
+                          target %in% k_max$target) |>
+  # clean variables
+  mutate(location = str_remove_all(target, "Deaths_k[:digit:]"),
+         location = fct_infreq(location),
+         horizon = ordered(horizon, levels = c(1,2),
+                           labels = c("1 week", "2 week")),
+         classification = fct_infreq(classification),
+         homog = factor(homog,
+                        levels = c(FALSE, TRUE),
+                        labels = c("Heterogeneous", "Homogeneous")))
+```
+
+##### Available models
+
+Unique models used in ensemble combinations, by method classification and target:
+
+```{r plot-count, fig.dim=c(4,4)}
+# Descriptive -------------------------------------------
+# Count by classification
+models |>
+  separate_wider_delim(target, delim = "Deaths_k", names = c("loc", "k_")) |>
+  distinct(loc, model, classification) |>
+  mutate(loc = fct_infreq(loc)) |>
+  group_by(loc, classification) |>
+  count() |>
+  pivot_wider(names_from = loc, values_from = n) |> 
+  kable()
+```
+
+
+##### Ensemble scores by model classification
+
+Distribution of all ensemble scores by model classification, across all (five) location targets:
+
+```{r plot-by-type, fig.wid=8, fig.height=4}
+# Boxplot ensemble scores by model classification ---------------
+ensemble_scores |>
+  ggplot(aes(y = classification)) +
+  geom_boxplot(aes(x = scaled_rel_skill), varwidth = TRUE, outlier.alpha = 0.5) + 
+  geom_vline(aes(xintercept = 1), lty = 2) +
+  labs(y = NULL, x = "Scaled relative skill",
+       subtitle = "Ensemble scores by model composition",
+       caption = "Boxplot width scaled to the count of available ensembles") +
+  facet_wrap(~horizon)
+```
+
+##### Ensemble scores by number of components
+
+Plotting the mean and 90% range of performance of ensembles with increasing numbers of models, in comparison to the Hub ensemble (1).
+
+- Plotting homogeneous ensembles by their individual model type:
+
+```{r plot-summary-method}
+# Summarise scores --------------------------------------------------
+# code adapted from: plot_allrecresults.R
+summary_scores_k_class <- ensemble_scores |>
+  group_by(location, k, horizon, classification) |>
+  summarise(
+    n = n(),
+    meanrelskill = mean(scaled_rel_skill),
+    q05relskill = quantile(scaled_rel_skill, 0.05),
+    q95relskill = quantile(scaled_rel_skill, 0.95))
+# Plot side-by-side ---------------------------------------------------
+summary_scores_k_class |>
+  ggplot(aes(x = k, col = classification)) +
+  geom_point(aes(y = meanrelskill),
+             alpha = 0.8,
+             position = position_dodge(width=0.5)) +
+  geom_linerange(aes(ymin = q05relskill,
+                     ymax = q95relskill),
+                 alpha = 0.6,
+                 linewidth = 2,
+                 position = position_dodge(width=0.5)) +
+  scale_x_continuous(breaks = seq(1:max(k_max$k))) +
+  geom_hline(aes(yintercept = 1),
+             linetype = 2, alpha = 0.5) +
+  scale_color_manual(values = plot_cols) +
+  labs(subtitle = "European ensemble forecasts, deaths",
+       col = "Ensemble composition",
+       x = NULL, y = "Scaled relative skill") +
+  facet_grid(rows = vars(location),
+             cols = vars(horizon),
+             scales = "free_y") +
+  theme(legend.position = "bottom",
+        strip.background = element_rect(fill = NA, colour = NA))
+```
+
+- Plotting all homogeneous ensembles against all heterogeneous ensembles:
+
+```{r plot-summary}
+# Summarise scores --------------------------------------------------
+# code adapted from: plot_allrecresults.R
+summary_scores_k_homog <- ensemble_scores |>
+  group_by(location, k, horizon, homog) |>
+  summarise(
+    n = n(),
+    meanrelskill = mean(scaled_rel_skill),
+    q05relskill = quantile(scaled_rel_skill, 0.05),
+    q95relskill = quantile(scaled_rel_skill, 0.95))
+# Plot side-by-side ---------------------------------------------------
+summary_scores_k_homog |>
+  ggplot(aes(x = k, col = homog)) +
+  # geoms
+  geom_point(aes(y = meanrelskill),
+             alpha = 0.8,
+             position = position_dodge(width=0.5)) +
+  geom_linerange(aes(ymin = q05relskill,
+                     ymax = q95relskill),
+                 alpha = 0.6,
+                 linewidth = 2,
+                 position = position_dodge(width=0.5)) +
+  # formatting
+  scale_x_continuous(breaks = seq(1:max(k_max$k))) +
+  geom_hline(aes(yintercept = 1),
+             linetype = 2, alpha = 0.5) +
+  scale_color_manual(values = plot_cols) +
+  labs(subtitle = "European ensemble forecasts, deaths",
+       col = "Ensemble composition",
+       x = NULL, y = "Scaled relative skill") +
+  facet_grid(rows = vars(location),
+             cols = vars(horizon),
+             scales = "free_y") +
+  theme(legend.position = "bottom",
+        strip.background = element_rect(fill = NA, colour = NA))
+```
+
+
+
+```{r}
+#### Model performance by type
+
+```
