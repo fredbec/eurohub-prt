@@ -1,0 +1,27 @@
+\begin{table}
+\centering
+\begin{tabular}{lllcccccc}
+\hline \\[-0.9em]
+& & Agg. method & Average & Czech R. & Germany & France & U.K. & Poland\\[0.1em]
+\hline \hline \\[-0.9em]
+\multirow{8}{*}{\rotatebox[origin=c]{90}{Cases}}&\multirow{4}{*}{\rotatebox[origin=c]{90}{$k = 5$}} & median - unw. & 1.05 & 0.99 & 1.37 & 1 & 1.03 & 0.68\\
+ &  & median - weighted & 1.02 & 0.91 & 1.19 & 0.97 & 1.11 & 0.61\\[0.3em]
+ &  & mean - unw. & 1.14 & 1.02 & 1.21 & 1.09 & 1.23 & 0.97\\
+ &  & mean - weighted & 1.15 & 0.97 & 1.32 & 1.09 & 1.24 & 0.89\\[0.5em]
+ & \multirow{4}{*}{\rotatebox[origin=c]{90}{$k = 10$}} & median - unw. & 0.97 & -- & 0.97 & -- & -- & 0.96\\
+ &   & median - weighted & 0.94 & -- & 1.03 & -- & -- & 0.71\\[0.3em]
+ &  & mean - unw. & 0.96 & -- & 0.9 & -- & -- & 1.13\\
+ &  & mean - weighted & 1.03 & -- & 1.05 & -- & -- & 0.98\\[0.5em]
+\multirow{8}{*}{\rotatebox[origin=c]{90}{Deaths}}&\multirow{4}{*}{\rotatebox[origin=c]{90}{$k = 5$}} & median - unw. & 1.21 & 1.08 & 1.15 & 0.97 & 1.03 & 1.74\\
+ &  & median - weighted & 1.02 & 0.91 & 1.12 & 0.8 & 0.87 & 1.38\\[0.3em]
+ &  & mean - unw. & 1.33 & 0.99 & 1.24 & 1.42 & 1.05 & 1.77\\
+ &  & mean - weighted & 1.26 & 1.01 & 1.25 & 1.17 & 1.03 & 1.72\\[0.5em]
+ & \multirow{4}{*}{\rotatebox[origin=c]{90}{$k = 10$}} & median - unw. & 1.03 & -- & 1 & -- & -- & 1.05\\
+ &  & median - weighted & 1.09 & -- & 1.03 & -- & -- & 1.14\\[0.3em]
+ &  & mean - unw. & 1.32 & -- & 1.27 & -- & -- & 1.37\\
+ &  & mean - weighted & 1.38 & -- & 1.25 & -- & -- & 1.5\\
+\bottomrule
+\end{tabular}
+\caption{Average WIS of the (weighted) selection method, divided by the WIS of the benchmark (equally weighted median including all models). The selection method reduces the set of component forecasters to the number of $k$ best recent performers - different aggregation methods are applied to obtain the ensemble (weighted/unweighted mean/median). Scores are computed by averaging over all forecast dates for the respective combination of location and target series. The ``Average'' location refers to the setting where scores are averaged across all locations. Scores are missing whenever a location's model base was not large enough to support the analysis.}
+\label{tab:rel_wis_best_performers}
+\end{table}
