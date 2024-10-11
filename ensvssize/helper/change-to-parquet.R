@@ -15,5 +15,9 @@ for(k in ks){
 
     tmp <- data.table::fread(here("enscomb-data", "mean-pwscores", paste0("ens_comb_pwscores", loctarg, "_k", k, ".csv")))
     arrow::write_parquet(tmp, here("enscomb-data", "mean-pwscores", paste0("ens_comb_pwscores", loctarg, "_k", k, ".parquet")))
+
+    tmp <- data.table::fread(here("enscomb-data", "hubreplica-pwscores", paste0("ens_comb_pwscores", loctarg, "_k", k, ".csv")))
+    arrow::write_parquet(tmp, here("enscomb-data", "hubreplica-pwscores", paste0("ens_comb_pwscores", loctarg, "_k", k, ".parquet")))
+
   }
 }
