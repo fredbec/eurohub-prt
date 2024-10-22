@@ -9,7 +9,7 @@ source(here("ensvssize", "specs.R"))
 source(here("R", "utils-enscomb.R"))
 source(here("R", "utils-ext.R"))
 
-model_avail <- enscomb_specs$indmodel_avail
+model_avail <- 0 #enscomb_specs$indmodel_avail
 start_date <- enscomb_specs$start_date
 end_date <- enscomb_specs$end_date
 ks <- enscomb_specs$ks
