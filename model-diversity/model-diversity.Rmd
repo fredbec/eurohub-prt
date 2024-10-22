@@ -78,7 +78,7 @@ ensemble_mix <- models |>
   distinct()
 
 # Get scores  ---------------------------------------------------
-ensemble_method <- "median"
+ensemble_method <- "hubreplica"
 scores <- map_dfr(.x = targets,
                   ~ read_parquet(here("enscomb-data",
                                       paste0(ensemble_method, "-pwscores"),
@@ -87,8 +87,8 @@ scores <- map_dfr(.x = targets,
                     mutate(target = .x))
 
 scores <- scores |>
-  filter(compare_against == "EuroCOVIDhub-ensemble" &
-           model != "EuroCOVIDhub-ensemble") |>
+  filter(compare_against == "median-hubreplica" &
+           model != "median-hubreplica") |>
   mutate(ensid = str_remove_all(model, "median_ensemble")) |>
   select(target, ensid, horizon, scaled_rel_skill)
 ```
@@ -98,6 +98,20 @@ scores <- scores |>
 ensemble_scores <- left_join(scores, ensemble_mix,
                              by = c("ensid", "target")) |>
   filter(!is.na(classification))
+
+######Rike's part - begin
+# Count number of ensembles by homogeneous/heterogeneous type
+num_ensembles <- ensemble_scores |> 
+  select(target, homog, ensid, k) |> 
+  distinct() |> 
+  group_by(target, homog, k) |> 
+  summarise(N = n()) |>
+  mutate(location = substr(target, 1, 2)) |>
+  mutate(target = substr(target, 3, 7)) |>
+  mutate(homog = ifelse(homog, "Homogeneous", "Heterogeneous")) |>
+  filter(k <= 5) |>
+  mutate(k = paste0("k = ", k)) 
+######Rike's part - end
 
 # restrict to k < possible single-type ensembles
 k_max <- filter(ensemble_scores, homog) |>
@@ -233,7 +247,22 @@ summary_scores_k_homog |>
 
 
 
+```{r num-ensembles}
+###Rike's block
+#Plot number of ensembles
+ggplot(num_ensembles, aes(x = N, y = homog, fill = homog)) +
+  geom_bar(stat = "identity") +
+  facet_grid(location~ k, scales = "free") +
+  scale_fill_manual(values = plot_cols) +
+  #scale_fill_met_d("Hokusai2") +
+  geom_text(aes(label = N), hjust = 0.6)  +
+  guides(fill="none") +
+  labs(subtitle = "Number of ensembles by type and k, deaths", 
+       y = "")
+```
+
+
 ```{r}
 #### Model performance by type
-
 ```
+

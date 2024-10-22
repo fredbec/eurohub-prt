@@ -52,3 +52,5 @@ increasing numbers of models, in comparison to the Hub ensemble (1).
   ensembles:
 
 ![](model-diversity_files/figure-gfm/plot-summary-1.png)<!-- -->
+
+![](model-diversity_files/figure-gfm/num-ensembles-1.png)<!-- -->
