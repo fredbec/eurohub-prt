@@ -13,10 +13,13 @@ cmpa <- "EuroCOVIDhub-ensemble"
 
 loopdf <- expand.grid(loctarg = loctargets, k = ks, stringsAsFactors = FALSE)
 
+
 scores_distances <- pmap(loopdf, \(loctarg, k) {
 
   scores <- arrow::read_parquet(here("enscomb-data", "mean-pwscores", paste0("ens_comb_pwscores", loctarg, "_k", k, ".parquet")))
   distances <- arrow::read_parquet(here("distance-data", paste0("distances", loctarg, "_k", k, ".parquet")))
+  distances <- scoringutils:::as_scores(distances, metrics = "mean_distance")
+  pw_distances <- scoringutils::get_pairwise_comparisons(distances, metric = "mean_distance")
 
   cat(loctarg, k, nrow(scores), nrow(distances), "\n")
 
@@ -24,7 +27,6 @@ scores_distances <- pmap(loopdf, \(loctarg, k) {
     scores <- scores |>
     DT(, loctarg := loctarg) |>
     DT(, k := k) |>
-    DT(compare_against == cmpa) |>
     DT(, meanrelskill := mean(scaled_rel_skill), by = "horizon")|>
     DT(, medrelskill := median(scaled_rel_skill), by = "horizon")|>
     DT(, minrelskill := min(scaled_rel_skill), by = "horizon")|>
@@ -32,10 +34,10 @@ scores_distances <- pmap(loopdf, \(loctarg, k) {
     DT(, q05relskill := quantile(scaled_rel_skill, 0.05), by = "horizon") |>
     DT(, q95relskill := quantile(scaled_rel_skill, 0.95), by = "horizon") |>
     DT(grepl("^mean_ensemble", model), ensid := sub("[^0-9]+", "", model)) |>
-    DT(, c("model", "ensid", "horizon", "mean_scores_ratio", "relative_skill", "scaled_rel_skill", "k", "loctarg",
+    DT(, c("model", "ensid", "horizon", "relative_skill", "scaled_rel_skill", "k", "loctarg",
            "meanrelskill", "medrelskill", "minrelskill", "maxrelskill", "q05relskill", "q95relskill")) |>
     unique()
-    scores <- merge.data.table(scores, distances, by = c("ensid", "horizon"))
+    scores <- merge.data.table(scores, distances, by = c("model", "horizon"))
   }
 
   return(scores)
