@@ -2,6 +2,7 @@ library(scoringutils)
 library(data.table)
 library(here)
 library(dplyr)
+library(purrr)
 DT <- `[`
 source(here("ensvssize", "specs.R"))
 
@@ -48,9 +49,9 @@ with_anomalies <- enscomb_specs$with_anomalies
 ensdat <- fread(here("data", "hubensemble.csv")) |>
   filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.IDate(end_date)) |>
-  DT(horizon %in% score_horizon) |>
-  DT(, c("location", "target_type", "model", "target_end_date", "quantile", "prediction", "true_value", "horizon"))
-
+  DT(horizon %in% score_horizon)
+# set k = 0 for hubensemble
+ensdat[, k := 0]
 
 if(with_anomalies){
   #read in anomalies
@@ -69,58 +70,47 @@ if(with_anomalies){
     DT(, anom := NULL)
 }
 
+all_data <- map(as.list(loctargets), \(loctarg) {
+  dattoscore <- map(ks, \(k) {
+   #read in recombined ensemble data for given loc-targ and k
+   dt <- arrow::read_parquet(here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".parquet")))
+   if (nrow(dt) == 0) return(NULL)
+   dt |>
+     DT(, k := k) |>
+     DT(model %in% model_types) |>
+     DT(horizon %in% score_horizon)
+  })
+  return(rbindlist(dattoscore))
+})
 
+dattoscore <- rbindlist(all_data) |>
+  DT(, model := paste0(model, ensid))
 
-for(k in ks){
+if(with_anomalies){
+  #join with anomalies and filter for instances that don't exist in anomaly data
+  #i.e. these are the instances that aren't an anomaly
+  dattoscore <- anoms |>
+    DT(dattoscore, on = c("location", "target_type", "target_end_date"))|>
+    DT(is.na(anom)) |>
+    DT(, anom := NULL)
+}
 
-  print(k)
-  lapply(as.list(loctargets), function(loctarg){
-    loc <- substr(loctarg, 0, 2)
-    targ <- substr(loctarg, 3, 100)
+#append hub ensemble data to recombined ensemble data (data have the same format)
+#score and do pairwise comparisons
+dattoscore <- dattoscore |>
+  rbind(ensdat, fill = TRUE) |>
+  DT(, c("location", "forecast_date", "k", "quantile", "horizon", "target_type", "model", "prediction", "true_value"))
 
-    #filter hub ensemble data for the given location-target combination
-    #and only keep relevant variables
-    enssubdat <- ensdat |>
-      setDT() |>
-      DT(location == loc) |>
-      DT(target_type == targ) |>
-      DT(, c("model", "target_end_date", "quantile", "prediction", "true_value", "horizon"))
+## score by location / target
+scores <- map(loctargets, \(loctarg) {
+  loc <- substr(loctarg, 0, 2)
+  targ <- substr(loctarg, 3, 100)
+  dattoscore |>
+    DT(location == loc) |>
+    DT(target_type == targ) |>
+    score()
+})
 
-    #read in recombined ensemble data for given loc-targ and k
-    dattoscore <- data.table::fread(here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".csv"))) |>
-      DT(model %in% model_types) |>
-      DT(horizon %in% score_horizon) |>
-      DT(, model := paste0(model, ensid))
-
-    if(with_anomalies){
-      #join with anomalies and filter for instances that don't exist in anomaly data
-      #i.e. these are the instances that aren't an anomaly
-      dattoscore <- anoms |>
-        DT(dattoscore, on = c("location", "target_type", "target_end_date"))|>
-        DT(is.na(anom)) |>
-        DT(, anom := NULL)
-
-    }
-
-    #select recombined ensembles for only relevant variables
-    dattoscore <- dattoscore |>
-      DT(, c("model", "target_end_date", "quantile", "prediction", "true_value", "horizon"))
-
-
-    #append hub ensemble data to recombined ensemble data (data have the same format)
-    #score and do pairwise comparisons
-    pwscores <- dattoscore |>
-      rbind(enssubdat) |>
-      score() |>
-      pairwise_comparison(by = c("model", "horizon"),
-                          metric = "interval_score",
-                          baseline = "EuroCOVIDhub-ensemble")
-
-    if(!is.null(pwscores)){
-
-      data.table::fwrite(pwscores, here("enscomb-data", paste0("ens_comb_pwscores", loctarg, "_k", k, ".csv")))
-      rm(pwscores)
-    }
-  }
-  )
+pw <- map(scores, \(score)) {
+  pairwise_comparison(scores)
 }
