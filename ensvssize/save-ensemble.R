@@ -111,6 +111,6 @@ scores <- map(loctargets, \(loctarg) {
     score()
 })
 
-pw <- map(scores, \(score)) {
-  pairwise_comparison(scores)
+pw <- map(scores, \(score) {
+  pairwise_comparison(score)
 }
