@@ -11,11 +11,13 @@ DT <- `[`
 loctargets <- enscomb_specs$loctargets
 ks <- enscomb_specs$ks
 targetplot <- "Cases"
-enstype <- "median_ensemble"
+enstype <- "EuroCOVIDhub-ensemble"
 
 if(enstype == "against_stablek3"){
   cmpa <- "stablek3_median_ensemble"
-} else{
+} else if (enstype == "hubreplica-ensemble"){
+  cmpa <- "median-hubreplica"
+} else {
   cmpa <- "EuroCOVIDhub-ensemble"
 }
 
@@ -39,9 +41,7 @@ for(loctarg in loctargets){
   all_pwscores_med <- vector(mode = "list", length = length(ks))
 for (k in ks){
 
-  all_pwscores_med[[k-1]] <- data.table::fread(here("ensvssize", "serverrun", enstype, paste0("ens_comb_pwscores", loctarg, "_k", k, ".csv")))
-
-  print(k)
+  all_pwscores_med[[k-1]] <- data.table::fread(here("enscomb-data", "mean-pwscores", paste0("ens_comb_pwscores", loctarg, "_k", k, ".csv")))
 
   if(nrow(all_pwscores_med[[k-1]])>0){
     all_pwscores_med[[k-1]] <-  all_pwscores_med[[k-1]] |>
@@ -74,31 +74,55 @@ all_pwscores <- all_pwscores |>
   DT(,horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon")) |>
   DT(, location := factor(location,
                           levels = c("DE", "PL", "CZ", "FR", "GB"),
-                          labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
+                          labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br."))) |>
+  DT(model != "median-hubreplica") #hub ensemble is not one of the recombined models
 
 colors = met.brewer(name="Hokusai3", n=3)
 
 
-ltypes <- c("Ensembles mean rel. skill"="solid","Hub Ensemble rel. skill (=1 by definition)"="dashed")
+colors_manual <- met.brewer("Hokusai3", 5)
+locnames <- all_pwscores$location |> unique() |> as.character() |> sort()
+locnames[2] <- "Germany"
+locnames[3] <- "France"
+names(colors_manual) <- locnames
+
+txtsize <- 14
+
+ltypes <- c("Ensembles mean rel. skill"="solid","Benchmark rel. skill (=1 by definition)"="dashed")
 colfills <- c("min-max range ensembles rel. skill" = 0.25, "q05-q95 range ensembles rel. skill" = 0.5)
-pdf(here("plot_results", paste0("ens_comb_",targetplot, enstype,".pdf")), width = 9.5, height = 12)
-ggplot(data = all_pwscores |> DT(target_type == targetplot)) +
+pdf(here("plot_results", paste0("ens_comb_","together", enstype,".pdf")), width = 12, height = 13)
+ggplot(data = all_pwscores) +
 #ggplot(data = all_pwscores) +
   geom_line(aes(x = k, y = meanrelskill, linetype = "Ensembles mean rel. skill", color = location), lwd = 1) +
   geom_ribbon(aes(x = k, ymin = minrelskill, ymax = maxrelskill, alpha = "min-max range ensembles rel. skill", fill = location)) +
   geom_ribbon(aes(x = k, ymin = q05relskill, ymax = q95relskill, alpha = "q05-q95 range ensembles rel. skill", fill = location)) +
-  geom_hline(aes(yintercept = 1, linetype = "Hub Ensemble rel. skill (=1 by definition)")) +
+  geom_hline(aes(yintercept = 1, linetype = "Benchmark rel. skill (=1 by definition)")) +
   scale_x_continuous(breaks = ks) + # Adjust the x-axis limits
   ylab("Scaled relative skill") +
   xlab("k - number of models in recombined ensemble") +
-  scale_fill_met_d("Hokusai3") +
-  scale_color_met_d("Hokusai3") +
+
+  scale_fill_manual(values = colors_manual) +
+  scale_color_manual(values = colors_manual) +
+  #scale_fill_met_d("Hokusai3") +
+  #scale_color_met_d("Hokusai3") +
   scale_linetype_manual(name="",values=ltypes) +
   scale_alpha_manual(name="",values=colfills) +
   theme_masterthesis() %+replace%
-  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.title = element_text(hjust = 0.5),
+        #axis.text.x = element_blank(),
+        #axis.text.x = element_text(size = textsize_y, angle = 90, hjust = .5, vjust = .5, face = "plain"),
+        #strip.text = element_text(size = 8),
+
+        axis.text.x = element_text(size = txtsize),
+        axis.text.y = element_text(size = txtsize),
+        axis.title.x = element_text(size = txtsize, vjust = -2),
+        axis.title.y = element_text(size = txtsize, angle = 90, vjust = 2),
+        strip.text = element_text(size=txtsize),
+        legend.text=element_text(size=txtsize),
+        legend.title=element_blank(),
+        legend.box="vertical") +
   guides(fill = "none", color = "none") +
   #ggtitle(loctarg) +
-  facet_grid(location ~ target_type + horizon, scales = "fixed")
+  facet_grid(location ~ target_type + horizon, scales = "free")
 dev.off()
 
