@@ -31,14 +31,15 @@ if(grepl("*kit*", getwd())){ #if running code on server
       as.numeric(args[[15]]))
   } else { #for Germany and Poland, running one k and loctarget at a time
     loctargets <- as.list(as.character(args[[1]]))
-    ks <- c(as.numeric(args[[2]]))
+    #ks <- c(as.numeric(args[[2]]))
   }
 
 } else { # if running locally
-  ks <- enscomb_specs$ks
+  #ks <- enscomb_specs$ks
   loctargets <- enscomb_specs$loctargets
 }
 
+ks <- enscomb_specs$ks
 start_date <- enscomb_specs$start_date
 end_date <- enscomb_specs$end_date
 score_horizon <- enscomb_specs$horizon
@@ -46,9 +47,9 @@ model_types <- c("median_ensemble")
 with_anomalies <- enscomb_specs$with_anomalies
 
 
-ensdat <- fread(here("data", "hubensemble.csv")) |>
-  filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
-  filter(forecast_date <= as.IDate(end_date)) |>
+ensdat <- fread(here("data", "median_hubreplica_ensemble.csv")) |>
+  filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
+  filter(forecast_date <= as.Date(end_date)) |>
   DT(horizon %in% score_horizon)
 # set k = 0 for hubensemble
 ensdat[, k := 0]
@@ -73,7 +74,7 @@ if(with_anomalies){
 all_data <- map(as.list(loctargets), \(loctarg) {
   dattoscore <- map(ks, \(k) {
    #read in recombined ensemble data for given loc-targ and k
-   dt <- arrow::read_parquet(here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".parquet")))
+   dt <- data.table::fread(here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".csv")))
    if (nrow(dt) == 0) return(NULL)
    dt |>
      DT(, k := k) |>
@@ -98,6 +99,7 @@ if(with_anomalies){
 #append hub ensemble data to recombined ensemble data (data have the same format)
 #score and do pairwise comparisons
 dattoscore <- dattoscore |>
+  DT(, c("location", "forecast_date", "k", "quantile", "horizon", "target_type", "model", "prediction", "true_value")) |>
   rbind(ensdat, fill = TRUE) |>
   DT(, c("location", "forecast_date", "k", "quantile", "horizon", "target_type", "model", "prediction", "true_value"))
 
@@ -108,9 +110,20 @@ scores <- map(loctargets, \(loctarg) {
   dattoscore |>
     DT(location == loc) |>
     DT(target_type == targ) |>
+    DT(, model := paste0(model, "_k", k)) |>
     score()
 })
+
+
+#sampling
+smpl <- c(sample(unique(scores[[1]]$model), 15), "median-hubreplica_k0")
+scores[[1]] <- scores[[1]] |>
+  DT(model %in% smpl)
+
 
 pw <- map(scores, \(score) {
   pairwise_comparison(score)
 })
+
+data.table::fwrite(pw, file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "allk", ".csv")))
+
