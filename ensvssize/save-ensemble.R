@@ -115,7 +115,10 @@ if(with_anomalies){
 dattoscore <- dattoscore |>
   DT(, c("location", "forecast_date", "k", "quantile", "horizon", "target_type", "model", "prediction", "true_value")) |>
   rbind(ensdat, fill = TRUE) |>
-  DT(, c("location", "forecast_date", "k", "quantile", "horizon", "target_type", "model", "prediction", "true_value"))
+  DT(, c("location", "forecast_date", "k", "quantile", "horizon", "target_type", "model", "prediction", "true_value")) |>
+  DT(, target_end_date := forecast_date + (horizon-1)*7 + 5) |>
+  DT(, model := paste0(model, "_k", k)) |>
+  DT(, forecast_date := NULL)
 
 ## score by location / target
 scores <- map(loctargets, \(loctarg) {
@@ -124,19 +127,22 @@ scores <- map(loctargets, \(loctarg) {
   dattoscore |>
     DT(location == loc) |>
     DT(target_type == targ) |>
-    DT(, model := paste0(model, "_k", k)) |>
+    #remove unnecessary columns
+    #this only leaves horizon, model, target_end_date (for identifying instances), as well as quantile, prediction, true_value
+    DT(,location := NULL) |>
+    DT(,target_type := NULL) |>
+    DT(, k := NULL)  |>
     DT(, model := ifelse(model == "median-hubreplica_k0", "median-hubreplica", model)) |>
-    score()
-})
+    score() |>
+    pairwise_comparison(score,
+                        by = c("model", "horizon"),
+                        metric = "interval_score",
+                        baseline = "median-hubreplica")|>
+    DT(compare_against == "median-hubreplica")
+}) |>
+  rbindlist() |>
+  DT()
 
-
-
-pw <- map(scores, \(score) {
-  pairwise_comparison(score,
-                      by = c("model", "horizon"),
-                      metric = "interval_score",
-                      baseline = "median-hubreplica")
-})
 
 data.table::fwrite(pw[[1]], file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "allk", "rdseed", rdseed, "propens", propens, ".csv")))
 
