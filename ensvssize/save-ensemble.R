@@ -46,6 +46,10 @@ score_horizon <- enscomb_specs$horizon
 model_types <- c("median_ensemble")
 with_anomalies <- enscomb_specs$with_anomalies
 
+rdseed <- 42
+
+set.seed(rdseed)
+
 
 ensdat <- fread(here("data", "median_hubreplica_ensemble.csv")) |>
   filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
@@ -73,13 +77,22 @@ if(with_anomalies){
 
 all_data <- map(as.list(loctargets), \(loctarg) {
   dattoscore <- map(ks, \(k) {
-   #read in recombined ensemble data for given loc-targ and k
-   dt <- data.table::fread(here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".csv")))
-   if (nrow(dt) == 0) return(NULL)
-   dt |>
-     DT(, k := k) |>
-     DT(model %in% model_types) |>
-     DT(horizon %in% score_horizon)
+    #read in recombined ensemble data for given loc-targ and k
+    dt <- data.table::fread(here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".csv")))
+    if (nrow(dt) == 0) return(NULL)
+
+    if(k %in% 3:8){
+      prop_ensids <- unique(dt$ensid)
+      keep_ensids <- sample(prop_ensids, ceiling(0.99*length(prop_ensids)))
+    } else {
+      keep_ensids <- unique(dt$ensid)
+    }
+
+    dt |>
+      DT(, k := k) |>
+      DT(model %in% model_types) |>
+      DT(ensid %in% keep_ensids) |>
+      DT(horizon %in% score_horizon)
   })
   return(rbindlist(dattoscore))
 })
@@ -111,19 +124,18 @@ scores <- map(loctargets, \(loctarg) {
     DT(location == loc) |>
     DT(target_type == targ) |>
     DT(, model := paste0(model, "_k", k)) |>
+    DT(, model := ifelse(model == "median-hubreplica_k0", "median-hubreplica", model)) |>
     score()
 })
 
 
-#sampling
-smpl <- c(sample(unique(scores[[1]]$model), 15), "median-hubreplica_k0")
-scores[[1]] <- scores[[1]] |>
-  DT(model %in% smpl)
-
 
 pw <- map(scores, \(score) {
-  pairwise_comparison(score)
+  pairwise_comparison(score,
+                      by = c("model", "horizon"),
+                      metric = "interval_score",
+                      baseline = "median-hubreplica")
 })
 
-data.table::fwrite(pw, file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "allk", ".csv")))
+data.table::fwrite(pw[[1]], file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "allk", "rdseed", rdssed, ".csv")))
 
