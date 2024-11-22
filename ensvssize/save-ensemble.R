@@ -31,6 +31,8 @@ if(grepl("*kit*", getwd())){ #if running code on server
       as.numeric(args[[15]]))
   } else { #for Germany and Poland, running one k and loctarget at a time
     loctargets <- as.list(as.character(args[[1]]))
+    rdseed <- as.numeric(args[[2]])
+    propens <- as.numeric(args[[3]])
     #ks <- c(as.numeric(args[[2]]))
   }
 
@@ -46,7 +48,6 @@ score_horizon <- enscomb_specs$horizon
 model_types <- c("median_ensemble")
 with_anomalies <- enscomb_specs$with_anomalies
 
-rdseed <- 42
 
 set.seed(rdseed)
 
@@ -83,7 +84,7 @@ all_data <- map(as.list(loctargets), \(loctarg) {
 
     if(k %in% 3:8){
       prop_ensids <- unique(dt$ensid)
-      keep_ensids <- sample(prop_ensids, ceiling(0.99*length(prop_ensids)))
+      keep_ensids <- sample(prop_ensids, ceiling(propens*length(prop_ensids)))
     } else {
       keep_ensids <- unique(dt$ensid)
     }
@@ -137,5 +138,5 @@ pw <- map(scores, \(score) {
                       baseline = "median-hubreplica")
 })
 
-data.table::fwrite(pw[[1]], file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "allk", "rdseed", rdssed, ".csv")))
+data.table::fwrite(pw[[1]], file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "allk", "rdseed", rdseed, "propens", propens, ".csv")))
 
