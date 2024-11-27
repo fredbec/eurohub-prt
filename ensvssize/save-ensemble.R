@@ -144,5 +144,5 @@ scores <- map(loctargets, \(loctarg) {
   DT()
 
 
-data.table::fwrite(pw[[1]], file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "allk", "rdseed", rdseed, "propens", propens, ".csv")))
+data.table::fwrite(scores, file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "allk", "rdseed", rdseed, "propens", propens, ".csv")))
 
