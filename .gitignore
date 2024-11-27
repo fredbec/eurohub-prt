@@ -47,3 +47,34 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+#csv files that are too large for GitHub
+enscomb-data/ens_comb_pwscores*.csv
+enscomb-data/predictions_enscomb*.csv
+
+enscomb-data/median-pwscores/ens_comb_pwscores*.csv
+enscomb-data/mean-pwscores/ens_comb_pwscores*.csv
+enscomb-data/hubreplica-pwscores/ens_comb_pwscores*.csv
+
+#old versions of these files
+enscomb-data/old
+enscomb-data/old020724
+enscomb-data/exp_params
+
+#data files that don't need to be on GitHub
+data/backup
+data/old
+data/depldat.csv
+data/forecasts.csv
+data/forecasts_unprocessed.csv
+data/metadata.csv
+data/period_cats.csv
+data/population.csv
+data/truth.csv
+data/scores_period.csv
+data/stablek3ensemble.csv
+ensvssize/serverrun
+
+#misc files that don't need to be on GitHub
+bestperform_freqCap.JPG
+team-metadata.csv
