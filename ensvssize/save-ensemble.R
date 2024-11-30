@@ -6,38 +6,20 @@ library(purrr)
 DT <- `[`
 source(here("ensvssize", "specs.R"))
 
-###################Serverpart###################
-if(grepl("*kit*", getwd())){ #if running code on server
+#if running code on server
+if(grepl("*kit*", getwd())){
   args=(commandArgs(TRUE))
-  ind <- as.character(args[[1]])
-
-  if(ind == "multiple"){ #this is an adhoc solution to run all smaller locations in a single script
-    loctargets <- as.list(
-      c(as.character(args[[2]]),
-        as.character(args[[3]]),
-        as.character(args[[4]]),
-        as.character(args[[5]]),
-        as.character(args[[6]]),
-        as.character(args[[7]])))
-
-    ks <- c(
-      as.numeric(args[[8]]),
-      as.numeric(args[[9]]),
-      as.numeric(args[[10]]),
-      as.numeric(args[[11]]),
-      as.numeric(args[[12]]),
-      as.numeric(args[[13]]),
-      as.numeric(args[[14]]),
-      as.numeric(args[[15]]))
-  } else { #for Germany and Poland, running one k and loctarget at a time
     loctargets <- as.list(as.character(args[[1]]))
+
+    #if sampling ensembles (to make code run faster in testing situations)
+    #this always assumes that something is passed
+    #if not wanting to sample, just provide anything for rdseed and set propens
+    #to 1, then nothing is sampled
     rdseed <- as.numeric(args[[2]])
+    #proportion of ensembles to sample
     propens <- as.numeric(args[[3]])
-    #ks <- c(as.numeric(args[[2]]))
-  }
 
 } else { # if running locally
-  #ks <- enscomb_specs$ks
   loctargets <- enscomb_specs$loctargets
 }
 
@@ -45,10 +27,12 @@ ks <- enscomb_specs$ks
 start_date <- enscomb_specs$start_date
 end_date <- enscomb_specs$end_date
 score_horizon <- enscomb_specs$horizon
-model_types <- c("median_ensemble")
 with_anomalies <- enscomb_specs$with_anomalies
+#which ensemble type to run pairwise comparisons on
+#either median_ensemble or mean_ensemble
+model_types <- c("median_ensemble")
 
-
+#set random seed
 set.seed(rdseed)
 
 
@@ -82,10 +66,10 @@ all_data <- map(as.list(loctargets), \(loctarg) {
     dt <- data.table::fread(here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".csv")))
     if (nrow(dt) == 0) return(NULL)
 
-    if(k %in% 3:8){
+    if(k %in% 3:8){ #sample in these ranges of k, where the number of recombinations is highest
       prop_ensids <- unique(dt$ensid)
       keep_ensids <- sample(prop_ensids, ceiling(propens*length(prop_ensids)))
-    } else {
+    } else { #keep all ensids
       keep_ensids <- unique(dt$ensid)
     }
 
@@ -144,5 +128,9 @@ scores <- map(loctargets, \(loctarg) {
   DT()
 
 
-data.table::fwrite(scores, file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "allk", "rdseed", rdseed, "propens", propens, ".csv")))
+if(propens == 1){ #leave out random seed from filename, since no randomness is happening
+  data.table::fwrite(scores, file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], ".csv")))
+} else {
+  data.table::fwrite(scores, file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "rdseed", rdseed, "propens", propens, ".csv")))
+}
 
