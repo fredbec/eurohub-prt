@@ -66,8 +66,6 @@ data/period_cats.csv
 data/population.csv
 data/truth.csv
 data/scores_period.csv
-ensvssize/serverrun
 
 #misc files that don't need to be on GitHub
-bestperform_freqCap.JPG
 team-metadata.csv
