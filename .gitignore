@@ -52,13 +52,7 @@ rsconnect/
 enscomb-data/ens_comb_pwscores*.csv
 enscomb-data/predictions_enscomb*.csv
 
-enscomb-data/median-pwscores/ens_comb_pwscores*.csv
-enscomb-data/mean-pwscores/ens_comb_pwscores*.csv
-enscomb-data/hubreplica-pwscores/ens_comb_pwscores*.csv
-
 #old versions of these files
-enscomb-data/old
-enscomb-data/old020724
 enscomb-data/exp_params
 
 #data files that don't need to be on GitHub
