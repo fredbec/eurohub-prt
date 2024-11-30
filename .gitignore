@@ -66,7 +66,6 @@ data/period_cats.csv
 data/population.csv
 data/truth.csv
 data/scores_period.csv
-data/stablek3ensemble.csv
 ensvssize/serverrun
 
 #misc files that don't need to be on GitHub
