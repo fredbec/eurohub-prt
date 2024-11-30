@@ -21,6 +21,8 @@ if(grepl("*kit*", getwd())){
 
 } else { # if running locally
   loctargets <- enscomb_specs$loctargets
+  rdseed <- Sys.time()
+  propens <- 1
 }
 
 ks <- enscomb_specs$ks
@@ -39,9 +41,25 @@ set.seed(rdseed)
 ensdat <- fread(here("data", "median_hubreplica_ensemble.csv")) |>
   filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.Date(end_date)) |>
-  DT(horizon %in% score_horizon)
-# set k = 0 for hubensemble
+  DT(horizon %in% score_horizon) |>
+  DT(, availability := NULL) |>
+  DT(, model_type := NULL)
+
+baselinedat <- fread(here("data", "depldat.csv")) |>
+  filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
+  filter(forecast_date <= as.Date(end_date)) |>
+  DT(model == "EuroCOVIDhub-baseline") |>
+  DT(, prediction_pop := NULL) |>
+  DT(, true_value_pop := NULL) |>
+  DT(, anomaly := NULL) |>
+  DT(, anomaly_code := NULL)
+
+
+# set k = 0 for hubensemble and baseline
 ensdat[, k := 0]
+baselinedat[, k := 0]
+
+ensdat <- rbind(ensdat, baselinedat)
 
 if(with_anomalies){
   #read in anomalies
@@ -121,8 +139,7 @@ scores <- map(loctargets, \(loctarg) {
     pairwise_comparison(score,
                         by = c("model", "horizon"),
                         metric = "interval_score",
-                        baseline = "median-hubreplica")|>
-    DT(compare_against == "median-hubreplica")
+                        baseline = "median-hubreplica")
 }) |>
   rbindlist() |>
   DT()
