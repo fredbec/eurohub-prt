@@ -148,6 +148,6 @@ scores <- map(loctargets, \(loctarg) {
 if(propens == 1){ #leave out random seed from filename, since no randomness is happening
   data.table::fwrite(scores, file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], ".csv")))
 } else {
-  data.table::fwrite(scores, file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "rdseed", rdseed, "propens", propens, ".csv")))
+  data.table::fwrite(scores, file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "rdseed", rdseed, "propens", 100*propens, ".csv")))
 }
 
