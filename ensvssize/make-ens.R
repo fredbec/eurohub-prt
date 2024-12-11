@@ -14,7 +14,7 @@ ks <- enscomb_specs$ks
 loctargets <- enscomb_specs$loctargets
 maxens <- enscomb_specs$maxens
 
-fcdat <- fread(here("data", "depldat.parquet")) |>
+fcdat <- arrow::read_parquet(here("data", "depldat.parquet")) |>
   filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.IDate(end_date))
 
@@ -32,7 +32,7 @@ for(k in ks){
     print(loctarg)
     #READ in data
     ens_unavail_dat <- arrow::read_parquet(here("enscomb-data", paste0("ens_unavail_bydate_", loctarg, "_k", k, ".parquet")))
-    enscombdat <- darrow::read_parquet(here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
+    enscombdat <- arrow::read_parquet(here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
     #make function call
 
 
