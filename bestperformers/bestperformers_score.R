@@ -253,3 +253,92 @@ mytab_wide <- mytab |>
 
 kable(mytab_wide, format = "latex", booktabs = TRUE,
       caption = "Performance Values by Location, Target, and Model")
+
+#new code for plot
+mytab_weighted <- mytab |>
+  filter(grepl("weighted*", model)) |>
+  mutate(model = gsub("weighted.", "", model)) |>
+  mutate(model = ifelse(model == "median_ensemble", "median ens.", "mean ens.")) |>
+  mutate(nmod = paste0("k = ", nmod)) |>
+  mutate(fac2 = paste0(nmod,", ", model)) |>
+  mutate(location = factor(location,
+                          levels = c("Average", "DE", "PL", "CZ", "FR", "GB"),
+                          labels = c("Aggregate", "Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
+
+
+library(patchwork)
+textsize_y <- 10
+
+plot1 <- ggplot(aes(x = location, y = fac2), data = mytab_weighted) +
+  geom_tile(aes(fill = relval)) +
+  scale_fill_continuous_divergingx("BrBG", mid = 1, limits = c(0.74,1.31), rev = TRUE) +
+  theme_masterthesis()  %+replace%
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 9, angle = 0),
+        axis.text.y = element_text(size = textsize_y +2),
+        axis.title.x = element_text(size = textsize_y, angle = 45, vjust = -2),
+        axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
+        strip.text = element_text(size=textsize_y),
+        legend.text=element_text(size=textsize_y-2),
+        plot.margin = margin(t=20,b=5,r=20,l=20, unit = "pt"),
+        plot.title = element_text(hjust = 0.5,
+                                  size = textsize_y + 3,
+                                  vjust = 2),
+        plot.subtitle = element_text(hjust = 0.5,
+                                     size = textsize_y-2,
+                                     vjust = 6)) +
+  geom_text(aes(label = round(relval, 2)), size = 4, color = "black") +
+  facet_wrap(~target_type) +
+  ylab("") +
+  xlab("") +
+  ggtitle("Weighted ensembles")+
+  guides(
+    fill = guide_colorbar(
+      barwidth = 10,  # Width of the color bar (in 'npc' units, normalized plot coordinates)
+      barheight = 1.5 # Height of the color bar
+    ))
+
+mytab_unweighted <- mytab |>
+  filter(!grepl("weighted*", model)) |>
+  mutate(model = ifelse(model == "median_ensemble", "median ens.", "mean ens.")) |>
+  mutate(nmod = paste0("k = ", nmod)) |>
+  mutate(fac2 = paste0(nmod,", ", model)) |>
+  mutate(location = factor(location,
+                           levels = c("Average", "DE", "PL", "CZ", "FR", "GB"),
+                           labels = c("Aggregate", "Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
+
+plot2 <- ggplot(aes(x = location, y = fac2), data = mytab_unweighted) +
+  geom_tile(aes(fill = relval)) +
+  scale_fill_continuous_divergingx("BrBG", mid = 1, limits = c(0.74,1.31), rev = TRUE) +
+  theme_masterthesis()  %+replace%
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 9, angle = 0),
+        axis.text.y = element_text(size = textsize_y +2),
+        axis.title.x = element_text(size = textsize_y, angle = 45, vjust = -2),
+        axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
+        strip.text = element_text(size=textsize_y),
+        legend.text=element_text(size=textsize_y-2),
+        plot.margin = margin(t=20,b=5,r=20,l=20, unit = "pt"),
+        plot.title = element_text(hjust = 0.5,
+                                  size = textsize_y + 3,
+                                  vjust = 2)) +
+  geom_text(aes(label = round(relval, 2)), size = 4, color = "black") +
+  facet_wrap(~target_type) +
+  ylab("") +
+  xlab("") +
+  ggtitle("Equally weighted ensembles") +
+  guides(
+    fill = guide_colorbar(
+      barwidth = 10,  # Width of the color bar (in 'npc' units, normalized plot coordinates)
+      barheight = 1.5 # Height of the color bar
+    ))
+plot2
+pdf("bestperform_poster.pdf", width = 9.5, height = 7)
+plot1 /
+  plot2 +
+  plot_layout(guides = "collect")  &
+  theme(legend.position = "bottom")
+
+dev.off()
+
+
