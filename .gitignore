@@ -51,9 +51,14 @@ rsconnect/
 #csv files that are too large for GitHub
 enscomb-data/ens_comb_pwscores*.csv
 enscomb-data/predictions_enscomb*.csv
+enscomb-data/pwscores/ens_comb_pwscores*.csv
+enscomb-data/pwscores/predictions_enscomb*.csv
+enscomb-data/pwscores/old
+enscomb-data/pwscores/old2
 
 #old versions of these files
 enscomb-data/exp_params
+plot_results/old
 
 #data files that don't need to be on GitHub
 data/backup
