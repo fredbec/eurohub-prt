@@ -9,38 +9,41 @@ DT <- `[`
 
 loctargets <- enscomb_specs$loctargets
 ks <- enscomb_specs$ks
-cmpa <- "EuroCOVIDhub-ensemble"
+cmpa <- "median-hubreplica"
 
-loopdf <- expand.grid(loctarg = loctargets, k = ks, stringsAsFactors = FALSE)
-
-
-scores_distances <- pmap(loopdf, \(loctarg, k) {
-
-  scores <- arrow::read_parquet(here("enscomb-data", "mean-pwscores", paste0("ens_comb_pwscores", loctarg, "_k", k, ".parquet")))
-  distances <- arrow::read_parquet(here("distance-data", paste0("distances", loctarg, "_k", k, ".parquet")))
-  distances <- scoringutils:::as_scores(distances, metrics = "mean_distance")
-  pw_distances <- scoringutils::get_pairwise_comparisons(distances, metric = "mean_distance")
-
-  cat(loctarg, k, nrow(scores), nrow(distances), "\n")
-
-  if(nrow(scores)>0){
-    scores <- scores |>
-    DT(, loctarg := loctarg) |>
-    DT(, k := k) |>
-    DT(, meanrelskill := mean(scaled_rel_skill), by = "horizon")|>
-    DT(, medrelskill := median(scaled_rel_skill), by = "horizon")|>
-    DT(, minrelskill := min(scaled_rel_skill), by = "horizon")|>
-    DT(, maxrelskill := max(scaled_rel_skill), by = "horizon") |>
-    DT(, q05relskill := quantile(scaled_rel_skill, 0.05), by = "horizon") |>
-    DT(, q95relskill := quantile(scaled_rel_skill, 0.95), by = "horizon") |>
-    DT(grepl("^mean_ensemble", model), ensid := sub("[^0-9]+", "", model)) |>
-    DT(, c("model", "ensid", "horizon", "relative_skill", "scaled_rel_skill", "k", "loctarg",
-           "meanrelskill", "medrelskill", "minrelskill", "maxrelskill", "q05relskill", "q95relskill")) |>
-    unique()
-    scores <- merge.data.table(scores, distances, by = c("model", "horizon"))
-  }
-
-  return(scores)
+scores_distances <- map(loctargets, \(loctarg) {
+  cat(loctarg, "\n")
+  scores <- arrow::read_parquet(
+    here(
+      "enscomb-data", "pwscores",
+      paste0("ens_comb_pwscores", loctarg, ".parquet")
+    )
+  )
+  comparison <- map(ks, \(k) {
+    cat(k, "\n")
+    distances <- arrow::read_parquet(
+      here(
+        "distance-data", paste0("distances", loctarg, "_k", k, ".parquet")
+      )
+    ) |>
+      scoringutils:::as_scores(metrics = "mean_distance") |>
+      mutate(model = sub("mean_ensemble", "median_ensemble", model)) |>
+      mutate(model = paste0(model, "_k", k))
+    if (nrow(distances) > 0) {
+      pw_distances <- scoringutils::get_pairwise_comparisons(
+        distances, metric = "mean_distance", by = "horizon"
+      ) |>
+        select(model, horizon, mean_distance_relative_skill) |>
+        unique()
+      k_scores <- scores |>
+        filter(grepl(paste0("_k", k, "$"), model))
+      merge.data.table(k_scores, pw_distances, by = c("model", "horizon")) |>
+        mutate(k = k)
+    } else {
+      NULL
+    }
+  }) |>
+    rbindlist(fill = TRUE)
 })
 
 scores_distances <- rbindlist(scores_distances) |>
@@ -48,15 +51,16 @@ scores_distances <- rbindlist(scores_distances) |>
   DT(, target_type := substr(loctarg, 3, 8))
 
 scores_distances <- scores_distances |>
-  DT(,horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon")) |>
+  DT(, horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon")) |>
   DT(, location := factor(location,
-                          levels = c("DE", "PL", "CZ", "FR", "GB"),
-                          labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
+    levels = c("DE", "PL", "CZ", "FR", "GB"),
+    labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br."))
+  )
 
 p <- ggplot(
-       scores_distances[horizon == "2-week horizon"], 
-       aes(x = mean_distance, y = relative_skill)
-     ) + 
+  scores_distances[horizon == "2-week horizon"],
+  aes(x = mean_distance, y = relative_skill)
+) +
   geom_jitter() +
   theme_bw() +
   facet_wrap(location ~ target_type, scales = "free") +
