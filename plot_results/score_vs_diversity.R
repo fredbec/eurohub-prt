@@ -27,18 +27,19 @@ scores_distances <- map(loctargets, \(loctarg) {
       )
     ) |>
       scoringutils:::as_scores(metrics = "mean_distance") |>
-      mutate(model = sub("mean_ensemble", "median_ensemble", model)) |>
-      mutate(model = paste0(model, "_k", k))
+      DT(, model := sub("mean_ensemble", "median_ensemble", model)) |>
+      DT(, model := paste0(model, "_k", k))
     if (nrow(distances) > 0) {
       pw_distances <- scoringutils::get_pairwise_comparisons(
         distances, metric = "mean_distance", by = "horizon"
       ) |>
-        select(model, horizon, mean_distance_relative_skill) |>
+        DT(, list(model, horizon, mean_distance_relative_skill)) |>
         unique()
       k_scores <- scores |>
-        filter(grepl(paste0("_k", k, "$"), model))
+        DT(grepl(paste0("_k", k, "$"), model))
       merge.data.table(k_scores, pw_distances, by = c("model", "horizon")) |>
-        mutate(k = k)
+        DT(, k := k) |>
+	DT(, loctarg := loctarg)
     } else {
       NULL
     }
@@ -59,18 +60,19 @@ scores_distances <- scores_distances |>
 
 p <- ggplot(
   scores_distances[horizon == "2-week horizon"],
-  aes(x = mean_distance, y = relative_skill)
+  aes(x = mean_distance_relative_skill, y = relative_skill)
 ) +
   geom_jitter() +
   theme_bw() +
-  facet_wrap(location ~ target_type, scales = "free") +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  xlab("Mean Cramér distance") + ylab("Relative skill")
+  facet_wrap(location ~ target_type) +
+  xlab("Relative mean Cramér distance") + ylab("Relative skill")
 
 ggsave(here("plot_results", "distance_vs_skill.pdf"))
 
 scores_distances[,
-  list(pearson = cor(mean_distance, relative_skill)),
+  list(pearson = cor(mean_distance_relative_skill, relative_skill)),
   by = c("location", "target_type")
-]
+][, mean(pearson)]
+## [1] 0.004306724
+
+saveRDS(scores_distances, here("plot_results", "scores_distances.rds"))
