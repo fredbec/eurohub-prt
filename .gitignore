@@ -52,6 +52,7 @@ rsconnect/
 enscomb-data/ens_comb_pwscores*.csv
 enscomb-data/predictions_enscomb*.csv
 enscomb-data/pwscores/ens_comb_pwscores*.csv
+enscomb-data/pwscores-mean_ensemble/ens_comb_pwscores*.csv
 enscomb-data/pwscores/predictions_enscomb*.csv
 enscomb-data/pwscores/old
 enscomb-data/pwscores/old2

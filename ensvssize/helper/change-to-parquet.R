@@ -17,4 +17,12 @@ for(loctarg in loctargets){
   arrow::write_parquet(tmp, here("enscomb-data", "pwscores", paste0("ens_comb_pwscores", loctarg,".parquet")))
 
   rm(tmp)
+
+  tmp <- data.table::fread(here("enscomb-data", "pwscores-mean_ensemble", paste0("ens_comb_pwscores", loctarg,".csv")))
+
+  tmp <- tmp |>
+    DT(compare_against == "median-hubreplica")
+  arrow::write_parquet(tmp, here("enscomb-data", "pwscores-mean_ensemble", paste0("ens_comb_pwscores", loctarg,".parquet")))
+
+  rm(tmp)
 }
