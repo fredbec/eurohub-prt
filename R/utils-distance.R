@@ -30,10 +30,12 @@ pairwise_distance <- function(
       model_split <- split(unit, by = "model")
       combinations <- combn(model_split, 2, simplify = FALSE)
       data.table(
-	ensid = ensidx,
-	horizon = unique(unit$horizon),
-	forecast_date = unique(unit$forecast_date),
-	distances = list(lapply(combinations, cramer_distance_two_models))
+        ensid = ensidx,
+        horizon = unique(unit$horizon),
+        forecast_date = unique(unit$forecast_date),
+        location = unique(unit$location),
+        target_type = unique(unit$target_type),
+        distances = list(lapply(combinations, cramer_distance_two_models))
       )
     })
 
@@ -43,15 +45,17 @@ pairwise_distance <- function(
   if (length(ens_distances) > 0) {
     allensdistances <- rbindlist(ens_distances) |>
       DT(, list(
-        mean_distance = mean(unlist(distances)), 
-        median_distance = median(unlist(distances))
-      ), by = c("ensid", "horizon"))
+        mean_distance = mean(unlist(distances))
+      ), by = c("ensid", "horizon", "forecast_date", "location", "target_type"))
+    setnames(allensdistances, "ensid", "model")
+    allensdistances[, model := paste0("mean_ensemble", model)]
   } else {
     allensdistances <- data.table(
-      ensid = character(0),
+      model = character(0),
       horizon = integer(0),
-      mean_distance = numeric(0),
-      median_distance = numeric(0)
+      forecast_date = as.Date(character(0)),
+      location = character(0),
+      target_type = character(0)
     )
   }
 
