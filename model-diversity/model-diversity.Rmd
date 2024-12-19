@@ -30,19 +30,11 @@ plot_cols <- c("Mechanistic" = "#e08214",
                 "Homogeneous" = "#1b7837")
 ```
 
-```{r get-targets}
-# Get targets  ---------------------------------------------------
-# -- keep only deaths as we only classified models forecasting deaths
+```{r load-data}
 source(here("ensvssize", "specs.R"))
-targets <- crossing("loc" = enscomb_specs$loctargets,
-                    "k" = enscomb_specs$ks) |>
-  mutate(target = paste(loc, k, sep = "_k")) |>
-  filter(grepl("Deaths", target)) |>
-  pull(target)
-
-# get model classifications
-model_class <- read_csv("https://raw.githubusercontent.com/epiforecasts/eval-by-method/main/data/model-classification.csv") |>
-  select(model, classification)
+ensemble_scores <- arrow::read_parquet(here("model-diversity", "enscomb_scores_with_classification.parquet"))
+model_class <- arrow::read_parquet(here("model-diversity", "component_model_classification.parquet"))
+models <- arrow::read_parquet(here("model-diversity", "enscomb_with_classification.parquet"))
 ```
 #### Methods
 
@@ -52,52 +44,11 @@ model_class <- read_csv("https://raw.githubusercontent.com/epiforecasts/eval-by-
 - Performance metric is scaled relative skill against Hub median ensemble
 
 #### Results
-
-```{r get-model-ensemble-combinations}
-# Ensemble combinations ---------------------------------------------------
-# get ensemble component combinations
-models <- map_dfr(.x = targets,
-                   ~ read_parquet(here("enscomb-data",
-                                       paste0("enscomb_",
-                                              .x, ".parquet"))) |>
-                     mutate(target = .x))
-
-# Join to model classification
-# - restrict to deaths as we only classified models with death forecasts
-models <- models |>
-  left_join(model_class, by = "model")
-
-# count model classifications in each ensemble
-ensemble_mix <- models |>
-  group_by(ensid, target, k, classification) |>
-  count() |>
-  mutate(homog = k==n,
-         classification = ifelse(!homog, "Heterogeneous", 
-                                 classification)) |>
-  select(-n) |>
-  distinct()
-
-# Get scores  ---------------------------------------------------
-ensemble_method <- "hubreplica"
-scores <- map_dfr(.x = targets,
-                  ~ read_parquet(here("enscomb-data",
-                                      paste0(ensemble_method, "-pwscores"),
-                                      paste0("ens_comb_pwscores",
-                                             .x, ".parquet"))) |>
-                    mutate(target = .x))
-
-scores <- scores |>
-  filter(compare_against == "median-hubreplica" &
-           model != "median-hubreplica") |>
-  mutate(ensid = str_remove_all(model, "median_ensemble")) |>
-  select(target, ensid, horizon, scaled_rel_skill)
-```
-
-```{r join-scores}
-# Join scores and model type ----------------------------------------------
-ensemble_scores <- left_join(scores, ensemble_mix,
-                             by = c("ensid", "target")) |>
-  filter(!is.na(classification))
+```{r count-enstypes}
+# restrict to k < possible single-type ensembles
+k_max <- filter(ensemble_scores, homog == "Homogeneous") |>
+  group_by(target, horizon) |>
+  summarise(k = max(k)) 
 
 ######Rike's part - begin
 # Count number of ensembles by homogeneous/heterogeneous type
@@ -108,27 +59,9 @@ num_ensembles <- ensemble_scores |>
   summarise(N = n()) |>
   mutate(location = substr(target, 1, 2)) |>
   mutate(target = substr(target, 3, 7)) |>
-  mutate(homog = ifelse(homog, "Homogeneous", "Heterogeneous")) |>
   filter(k <= 5) |>
-  mutate(k = paste0("k = ", k)) 
+  mutate(k = paste0("k = ", k))
 ######Rike's part - end
-
-# restrict to k < possible single-type ensembles
-k_max <- filter(ensemble_scores, homog) |>
-  group_by(target, horizon) |>
-  summarise(k = max(k))
-
-ensemble_scores <- filter(ensemble_scores,
-                          target %in% k_max$target) |>
-  # clean variables
-  mutate(location = str_remove_all(target, "Deaths_k[:digit:]"),
-         location = fct_infreq(location),
-         horizon = ordered(horizon, levels = c(1,2),
-                           labels = c("1 week", "2 week")),
-         classification = fct_infreq(classification),
-         homog = factor(homog,
-                        levels = c(FALSE, TRUE),
-                        labels = c("Heterogeneous", "Homogeneous")))
 ```
 
 ##### Available models
