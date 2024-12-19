@@ -34,9 +34,8 @@ plot_cols <- c("Mechanistic" = "#e08214",
 # Get targets  ---------------------------------------------------
 # -- keep only deaths as we only classified models forecasting deaths
 source(here("ensvssize", "specs.R"))
-targets <- crossing("loc" = enscomb_specs$loctargets,
-                    "k" = enscomb_specs$ks) |>
-  mutate(target = paste(loc, k, sep = "_k")) |>
+targets <- crossing("loc" = enscomb_specs$loctargets) |>
+  mutate(target = loc) |> #for compatibility with merging later on
   filter(grepl("Deaths", target)) |>
   pull(target)
 
@@ -56,7 +55,15 @@ model_class <- read_csv("https://raw.githubusercontent.com/epiforecasts/eval-by-
 ```{r get-model-ensemble-combinations}
 # Ensemble combinations ---------------------------------------------------
 # get ensemble component combinations
-models <- map_dfr(.x = targets,
+#component combinations have k in file name (pwscores don't), so need another
+#version of targets here
+targets_comp_combinations <- crossing("loc" = enscomb_specs$loctargets,
+                                      "k" = enscomb_specs$ks) |>
+  mutate(target = paste(loc, k, sep = "_k")) |>
+  filter(grepl("Deaths", target)) |>
+  pull(target)
+
+models <- map_dfr(.x = targets_comp_combinations,
                    ~ read_parquet(here("enscomb-data",
                                        paste0("enscomb_",
                                               .x, ".parquet"))) |>
@@ -78,18 +85,21 @@ ensemble_mix <- models |>
   distinct()
 
 # Get scores  ---------------------------------------------------
-ensemble_method <- "hubreplica"
 scores <- map_dfr(.x = targets,
                   ~ read_parquet(here("enscomb-data",
-                                      paste0(ensemble_method, "-pwscores"),
+                                      "pwscores",
                                       paste0("ens_comb_pwscores",
                                              .x, ".parquet"))) |>
-                    mutate(target = .x))
+                    mutate(target = paste0(.x, "_k", str_extract(model, "(?<=_k)\\d+")))) #for merging compatibility
 
 scores <- scores |>
+  #only keep rows with reference to full ensemble 
+  #and kick out data for full ensemble itself (only interested in ensemble recombinations)
   filter(compare_against == "median-hubreplica" &
            model != "median-hubreplica") |>
+  #remove "median_ensemble" from ensid, as well as k (info for this is in target already), for merging
   mutate(ensid = str_remove_all(model, "median_ensemble")) |>
+  mutate(ensid = gsub("_k[0-9]*", "", ensid)) |> #remove k number from ensid
   select(target, ensid, horizon, scaled_rel_skill)
 ```
 
