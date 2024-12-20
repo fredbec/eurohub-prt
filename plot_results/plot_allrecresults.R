@@ -45,7 +45,7 @@ bsmod <- NULL
 for(loctarg in loctargets){
   all_pwscores_med <- vector(mode = "list", length = length(ks))
 
-    all_pwscores_med <- data.table::fread(here("enscomb-data", "pwscores", paste0("ens_comb_pwscores", loctarg, ".csv")))
+    all_pwscores_med <- data.table::fread(here("enscomb-data", "pwscores-mean_ensemble", paste0("ens_comb_pwscores", loctarg, ".csv")))
 
     loc <- substr(loctarg, 0, 2)
     targ <- substr(loctarg, 3, 100)
@@ -96,28 +96,28 @@ all_pwscores <- all_pwscores |>
 
 colors = met.brewer(name="Hokusai3", n=3)
 
-textsize_y <- 16
+textsize_y <- 14
 
-ltypes <- c("recombined\nensembles\nmedian rel. skill"="solid","Hub ensemble\nrel. skill\n(=1 by definition)"="dashed", "Baseline\nrel. skill" = "dotted")
-colfills <- c("min-max range\nensembles rel. skill" = 0.28, "q05-q95 range\nensembles rel. skill" = 0.45)
-pdf(here("plot_results", paste0("ens_comb_","pwscores",".pdf")), width = 12, height = 10)
+ltypes <- c("recombined ensembles\nmedian scaled rel. skill"="solid","Hub ensemble scaled\nrel. skill (=1 by definition)"="dashed", "Baseline scaled\nrelative skill" = "dotted")
+colfills <- c("min-max range: recombined\nensembles scaled rel. skill" = 0.28, "5%-95% quantile: recombined\nensembles scaled rel. skill" = 0.45)
+pdf(here("plot_results", paste0("ens_comb_","pwscores_pivot_meanens",".pdf")), width = 12, height = 8)
 ggplot(data = all_pwscores) +
 #ggplot(data = all_pwscores) +
-  geom_line(aes(x = k, y = medrelskill, linetype = "recombined\nensembles\nmedian rel. skill", color = location), lwd = 1) +
-  geom_ribbon(aes(x = k, ymin = minrelskill, ymax = maxrelskill, alpha = "min-max range\nensembles rel. skill", fill = location)) +
-  geom_ribbon(aes(x = k, ymin = q05relskill, ymax = q95relskill, alpha = "q05-q95 range\nensembles rel. skill", fill = location)) +
-  geom_hline(aes(yintercept = 1, linetype = "Hub ensemble\nrel. skill\n(=1 by definition)")) +
-  geom_hline(aes(yintercept = scaled_rel_skill, linetype = "Baseline\nrel. skill"), data = bsmod) +
+  geom_line(aes(x = k, y = medrelskill, linetype = "recombined ensembles\nmedian scaled rel. skill", color = location), lwd = 1, show.legend = F) +
+  geom_ribbon(aes(x = k, ymin = minrelskill, ymax = maxrelskill, alpha = "min-max range: recombined\nensembles scaled rel. skill", fill = location)) +
+  geom_ribbon(aes(x = k, ymin = q05relskill, ymax = q95relskill, alpha = "5%-95% quantile: recombined\nensembles scaled rel. skill", fill = location)) +
+  geom_hline(aes(yintercept = 1, linetype = "Hub ensemble scaled\nrel. skill (=1 by definition)"), show.legend = F) +
+  geom_hline(aes(yintercept = scaled_rel_skill, linetype = "Baseline scaled\nrelative skill"), data = bsmod) +
   scale_x_continuous(breaks = ks) + # Adjust the x-axis limits
   ylab("Scaled relative skill") +
   xlab("k - number of models in recombined ensemble") +
-  scale_fill_met_d("Degas") +
-  scale_color_met_d("Degas") +
+  scale_fill_met_d("Veronese") +
+  scale_color_met_d("Veronese") +
   scale_linetype_manual(name="",values=ltypes) +
   scale_alpha_manual(name="",values=colfills) +
   theme_masterthesis()  %+replace%
   theme(legend.title = element_blank(),
-        axis.text.x = element_text(size = 13),
+        axis.text.x = element_text(size = 11),
         axis.text.y = element_text(size = textsize_y),
         axis.title.x = element_text(size = textsize_y, vjust = -2),
         axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
@@ -131,7 +131,7 @@ ggplot(data = all_pwscores) +
                                      size = textsize_y-2,
                                      vjust = 6)) +
   guides(fill = "none", color = "none") +
+  guides(linetype = guide_legend(override.aes = list(size = 1))) +
   #ggtitle(loctarg) +
-  facet_grid(location ~ target_type + horizon, scales = "free")
+  facet_grid(target_type + horizon ~ location, scales = "free")
 dev.off()
-

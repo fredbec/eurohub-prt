@@ -4,6 +4,7 @@ library(patchwork)
 library(knitr)
 library(tidyr)
 library(kableExtra)
+library(colorspace)
 library(MetBrewer)
 
 library(here)
@@ -31,6 +32,7 @@ plot_location_label <- c(`PL` = "Poland", `DE` = "Germany",
 
 all_evals <- NULL
 for(nm in c(3,5,8,10)){
+
   bestperforms_mean <- data.table::fread(here("bestperformers-data",
                                               paste0("best_performers_ensemble_mean_nmod", nm, ".csv"))) |>
     mutate(nmod = nm) |>
@@ -66,7 +68,6 @@ for(nm in c(3,5,8,10)){
     comp_avg_by_extra(comp_avg_by = c("target_type", "location")) |>
     mutate(nmod = nm)
 
-
   eval_median <- fast_eval(bestperforms_median, median_ens,
                            su_cols = su_cols,
                            strat_by = c("model", "location", "target_type", "forecast_date"),
@@ -85,7 +86,6 @@ for(nm in c(3,5,8,10)){
     mutate(location = ifelse(is.na(location), "Average", location)) |>
     comp_avg_by_extra(comp_avg_by = c("target_type", "location")) |>
     mutate(nmod = nm)
-
 
   eval_invscore_median <- fast_eval(bestperforms_invscore_median, median_ens,
                                     su_cols = su_cols,
@@ -218,7 +218,7 @@ overall_plot <-
               heights = c(1, 1,1,1)) &
   plot_annotation(tag_levels = 'I')
 
-pdf(here("plots", "best_performers_boxplot_cscale.pdf"),
+pdf(here("plots", "best_performers_boxplot_cscale_new.pdf"),
     height = 15, width = 12)
 overall_plot
 dev.off()
@@ -260,27 +260,27 @@ mytab_weighted <- mytab |>
   mutate(model = gsub("weighted.", "", model)) |>
   mutate(model = ifelse(model == "median_ensemble", "median ens.", "mean ens.")) |>
   mutate(nmod = paste0("k = ", nmod)) |>
-  mutate(fac2 = paste0(nmod,", ", model)) |>
+  mutate(fac2 = paste0(nmod,",\n", model)) |>
   mutate(location = factor(location,
                           levels = c("Average", "DE", "PL", "CZ", "FR", "GB"),
                           labels = c("Aggregate", "Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
 
 
 library(patchwork)
-textsize_y <- 10
+textsize_y <- 14
 
 plot1 <- ggplot(aes(x = location, y = fac2), data = mytab_weighted) +
   geom_tile(aes(fill = relval)) +
-  scale_fill_continuous_divergingx("BrBG", mid = 1, limits = c(0.74,1.31), rev = TRUE) +
+  scale_fill_continuous_divergingx("BrBG", mid = 1, limits = c(0.6,1.78), rev = TRUE) +
   theme_masterthesis()  %+replace%
   theme(legend.title = element_blank(),
-        axis.text.x = element_text(size = 9, angle = 0),
-        axis.text.y = element_text(size = textsize_y +2),
+        axis.text.x = element_text(size = 12, angle = 45, vjust = 1, hjust=1),
+        axis.text.y = element_text(size = 12),
         axis.title.x = element_text(size = textsize_y, angle = 45, vjust = -2),
         axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
         strip.text = element_text(size=textsize_y),
         legend.text=element_text(size=textsize_y-2),
-        plot.margin = margin(t=20,b=5,r=20,l=20, unit = "pt"),
+        plot.margin = margin(t=0,b=0,r=0,l=0, unit = "pt"),
         plot.title = element_text(hjust = 0.5,
                                   size = textsize_y + 3,
                                   vjust = 2),
@@ -294,7 +294,7 @@ plot1 <- ggplot(aes(x = location, y = fac2), data = mytab_weighted) +
   ggtitle("Weighted ensembles")+
   guides(
     fill = guide_colorbar(
-      barwidth = 10,  # Width of the color bar (in 'npc' units, normalized plot coordinates)
+      barwidth = 20,  # Width of the color bar (in 'npc' units, normalized plot coordinates)
       barheight = 1.5 # Height of the color bar
     ))
 
@@ -302,23 +302,23 @@ mytab_unweighted <- mytab |>
   filter(!grepl("weighted*", model)) |>
   mutate(model = ifelse(model == "median_ensemble", "median ens.", "mean ens.")) |>
   mutate(nmod = paste0("k = ", nmod)) |>
-  mutate(fac2 = paste0(nmod,", ", model)) |>
+  mutate(fac2 = paste0(nmod,",\n", model)) |>
   mutate(location = factor(location,
                            levels = c("Average", "DE", "PL", "CZ", "FR", "GB"),
                            labels = c("Aggregate", "Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
 
 plot2 <- ggplot(aes(x = location, y = fac2), data = mytab_unweighted) +
   geom_tile(aes(fill = relval)) +
-  scale_fill_continuous_divergingx("BrBG", mid = 1, limits = c(0.74,1.31), rev = TRUE) +
+  scale_fill_continuous_divergingx("BrBG", mid = 1, limits = c(0.6,1.78), rev = TRUE) +
   theme_masterthesis()  %+replace%
   theme(legend.title = element_blank(),
-        axis.text.x = element_text(size = 9, angle = 0),
-        axis.text.y = element_text(size = textsize_y +2),
+        axis.text.x = element_text(size = 12, angle = 45, vjust = 1, hjust=1),
+        axis.text.y = element_blank(),
         axis.title.x = element_text(size = textsize_y, angle = 45, vjust = -2),
         axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
         strip.text = element_text(size=textsize_y),
         legend.text=element_text(size=textsize_y-2),
-        plot.margin = margin(t=20,b=5,r=20,l=20, unit = "pt"),
+        plot.margin = margin(t=0,b=0,r=0,l=0, unit = "pt"),
         plot.title = element_text(hjust = 0.5,
                                   size = textsize_y + 3,
                                   vjust = 2)) +
@@ -329,13 +329,11 @@ plot2 <- ggplot(aes(x = location, y = fac2), data = mytab_unweighted) +
   ggtitle("Equally weighted ensembles") +
   guides(
     fill = guide_colorbar(
-      barwidth = 10,  # Width of the color bar (in 'npc' units, normalized plot coordinates)
+      barwidth = 20,  # Width of the color bar (in 'npc' units, normalized plot coordinates)
       barheight = 1.5 # Height of the color bar
     ))
-plot2
-pdf("bestperform_poster.pdf", width = 9.5, height = 7)
-plot1 /
-  plot2 +
+pdf("plot_results", "bestperform_tileplot.pdf", width = 13, height = 4.25)
+plot1 + plot2 +
   plot_layout(guides = "collect")  &
   theme(legend.position = "bottom")
 

@@ -573,7 +573,7 @@ make_eval <- function(target,
   #score target
   target_score <- target |>
     dplyr::select(all_of(su_cols)) |> #remove redundant cols before scoring
-    scoringutils::score() |>
+    scoringutils::score(metrics = "interval_score") |>
     scoringutils::summarise_scores(by = strat_by) |>
     dplyr::select(all_of(c(strat_by, scoring_fun))) |>
     dplyr::rename(target_val = scoring_fun)
@@ -581,7 +581,7 @@ make_eval <- function(target,
   #score current
   current_score <- current |>
     dplyr::select(all_of(su_cols)) |> #remove redundant cols before scoring
-    scoringutils::score() |>
+    scoringutils::score(metrics = "interval_score") |>
     scoringutils::summarise_scores(by = strat_by) |>
     dplyr::select(all_of(c(strat_by, scoring_fun))) |>
     dplyr::rename(current_val = scoring_fun) |>
@@ -617,10 +617,11 @@ best_performers_boxplot <- function(best_performers_data,
   locnames <- best_performers_data$location
   locnames <- locnames[locnames != "Average"]
 
-  colors_manual <- met.brewer("Hokusai3", 5)
-  names(colors_manual) <- unique(locnames)
+  colors_manual <- met.brewer("Veronese", 5)
+  #names(colors_manual) <- unique(locnames)
+  names(colors_manual) <- c("DE", "PL", "CZ", "FR", "GB")
 
-  colors_manual[6] <- met.brewer("Hokusai3", 6)[6]
+  colors_manual[6] <- met.brewer("Veronese", 6)[6]
   names(colors_manual)[6] <- "Average"
 
 
