@@ -14,7 +14,7 @@ start_date <- enscomb_specs$start_date
 end_date <- enscomb_specs$end_date
 ks <- enscomb_specs$ks
 loctargets <- enscomb_specs$loctargets
-cscale <- "Hokusai3"
+cscale <- "Veronese"
 
 ####EDIT
 fcdat <- fread(here("data", "depldat.csv"))
@@ -67,15 +67,27 @@ availdat <- fcdat |>
 
 
 colors_manual <- met.brewer(cscale, 5)
-names(colors_manual) <- unique(availdat$location)
+names(colors_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")
 
 
 avail_plot <- ggplot(aes(x = forecast_date, y = n, group = location, color = location), data = availdat) +
   geom_line(lwd = 0.85, position = position_dodge(width = 12)) +
   scale_color_manual(values = colors_manual) +
   theme_masterthesis() %+replace%
-  theme(legend.title=element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 11, angle = 45, hjust = 1, vjust = 1),
+        axis.text.y = element_text(size = textsize_y),
+        axis.title.x = element_text(size = textsize_y, vjust = -2),
+        axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
+        strip.text = element_text(size=textsize_y),
+        legend.text=element_text(size=textsize_y-2),
+        plot.margin = margin(t=20,b=5,r=20,l=20, unit = "pt"),
+        plot.title = element_text(hjust = 0.5,
+                                  size = textsize_y + 3,
+                                  vjust = 5),
+        plot.subtitle = element_text(hjust = 0.5,
+                                     size = textsize_y-2,
+                                     vjust = 6)) +
   facet_wrap(~target_type)+
   ggplot2::scale_x_date(date_breaks = "1 month",
                         date_labels = "%b %y",
@@ -83,4 +95,4 @@ avail_plot <- ggplot(aes(x = forecast_date, y = n, group = location, color = loc
   xlab("Forecast Date") +
   ylab("Number of Component Models")
 
-ggsave(here("plots", "availabilityofmodels.pdf"), height = 4, width = 8.0)
+ggsave(here("plots", "availabilityofmodels.pdf"), height = 4, width = 8.5)
