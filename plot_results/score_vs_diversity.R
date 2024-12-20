@@ -2,8 +2,10 @@ library(ggplot2)
 library(data.table)
 library(here)
 library(purrr)
+library(MetBrewer)
 
 source(here("ensvssize", "specs.R"))
+source(here("R", "utils-ext.R"))
 
 DT <- `[`
 
@@ -39,7 +41,7 @@ scores_distances <- map(loctargets, \(loctarg) {
         DT(grepl(paste0("_k", k, "$"), model))
       merge.data.table(k_scores, pw_distances, by = c("model", "horizon")) |>
         DT(, k := k) |>
-	DT(, loctarg := loctarg)
+        DT(, loctarg := loctarg)
     } else {
       NULL
     }
@@ -54,24 +56,59 @@ scores_distances <- rbindlist(scores_distances) |>
 scores_distances <- scores_distances |>
   DT(, horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon")) |>
   DT(, location := factor(location,
-    levels = c("DE", "PL", "CZ", "FR", "GB"),
-    labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br."))
+                          levels = c("DE", "PL", "CZ", "FR", "GB"),
+                          labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br."))
   )
 
-p <- ggplot(
-  scores_distances[horizon == "2-week horizon"],
-  aes(x = mean_distance_relative_skill, y = relative_skill)
-) +
-  geom_jitter() +
-  theme_bw() +
-  facet_wrap(location ~ target_type) +
-  xlab("Relative mean Cramér distance") + ylab("Relative skill")
 
-ggsave(here("plot_results", "distance_vs_skill.pdf"))
+##############Plotting
+p <- function(score_dist_data,
+              plot_horizon){
+  textsize_y <- 12
+  colors_manual <- met.brewer("Veronese", 5)
+  names(colors_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")
+  size_manual <- c(0.35, 0.5, rep(0.75, 3))
+  names(size_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")
+  alpha_manual <- c(0.25, 0.3, 0.7, 0.7, 0.7)
+  names(size_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")
+
+  plot_horizon <- paste0(plot_horizon, "-week horizon")
+  scp <- ggplot(
+    score_dist_data[horizon == plot_horizon],
+    aes(x = mean_distance_relative_skill, y = relative_skill)
+  ) +
+    geom_jitter(aes(color = location, size = location, alpha = location)) +
+    scale_color_manual(values = colors_manual) +
+    scale_size_manual(values = size_manual) +
+    scale_alpha_manual(values = alpha_manual) +
+    theme_masterthesis() %+replace%
+    theme(legend.title = element_blank(),
+          axis.text.x = element_text(size = 11),
+          axis.text.y = element_text(size = textsize_y),
+          axis.title.x = element_text(size = textsize_y, vjust = -1),
+          axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
+          strip.text = element_text(size=textsize_y),
+          legend.text=element_text(size=textsize_y-2),
+          plot.title = element_text(hjust = 0.5,
+                                    size = textsize_y + 3,
+                                    vjust = 5),
+          plot.subtitle = element_text(hjust = 0.5,
+                                       size = textsize_y-2,
+                                       vjust = 6)) +
+    facet_grid(target_type + horizon ~ location, scales = "free") +
+    xlab("Relative mean Cramér distance") +
+    ylab("Relative skill") +
+    guides(color = "none", size = "none", alpha = "none")
+  return(scp)
+}
+p(scores_distances, 1)
+ggsave(here("plot_results", "distance_vs_skill_1week.pdf"), width = 13, height = 4.25)
+p(scores_distances, 2)
+ggsave(here("plot_results", "distance_vs_skill_2week.pdf"), width = 13, height = 4.25)
 
 scores_distances[,
-  list(pearson = cor(mean_distance_relative_skill, relative_skill)),
-  by = c("location", "target_type")
+                 list(pearson = cor(mean_distance_relative_skill, relative_skill)),
+                 by = c("location", "target_type")
 ][, mean(pearson)]
 ## [1] 0.004306724
 
