@@ -28,7 +28,7 @@ plot_horizon_label <- function(length.out = 4){
            `DE`= "Germany",
            `FR`= "France",
            `CZ`= "Czech Rep.",
-           `GB`= "Great Br.")
+           `GB`= "United Kingd.")
 
   return(phl[1:length.out])
 }
@@ -86,13 +86,13 @@ bsmod <- bsmod |>
   DT(,horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon")) |>
   DT(, location := factor(location,
                           levels = c("DE", "PL", "CZ", "FR", "GB"),
-                          labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
+                          labels = c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")))
 
 all_pwscores <- all_pwscores |>
   DT(,horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon")) |>
   DT(, location := factor(location,
                           levels = c("DE", "PL", "CZ", "FR", "GB"),
-                          labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
+                          labels = c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")))
 
 relmedscores <- all_pwscores |>
   DT(,c("horizon", "k", "medrelskill", "location", "target_type")) |>
@@ -144,7 +144,8 @@ ggplot(data = all_pwscores) +
         axis.text.y = element_text(size = textsize_y),
         axis.title.x = element_text(size = textsize_y, vjust = -2),
         axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
-        strip.text = element_text(size=textsize_y),
+        strip.text = element_text(size=textsize_y,
+                                  margin = unit(rep(8, 4), "pt")),
         legend.text=element_text(size=textsize_y-2),
         plot.margin = margin(t=20,b=5,r=20,l=20, unit = "pt"),
         plot.title = element_text(hjust = 0.5,

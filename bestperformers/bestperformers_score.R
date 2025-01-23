@@ -218,10 +218,10 @@ overall_plot <-
               heights = c(1, 1,1,1)) &
   plot_annotation(tag_levels = 'I')
 
-pdf(here("plots", "best_performers_boxplot_cscale_new.pdf"),
-    height = 15, width = 12)
-overall_plot
-dev.off()
+#pdf(here("plots", "best_performers_boxplot_cscale_new.pdf"),
+#    height = 15, width = 12)
+#overall_plot
+#dev.off()
 
 
 mytab <- all_evals |>
@@ -263,7 +263,7 @@ mytab_weighted <- mytab |>
   mutate(fac2 = paste0(nmod,",\n", model)) |>
   mutate(location = factor(location,
                           levels = c("Average", "DE", "PL", "CZ", "FR", "GB"),
-                          labels = c("Aggregate", "Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
+                          labels = c("Average", "Germany", "Poland", "Czech Rep.", "France", "United Kingd.")))
 
 
 library(patchwork)
@@ -271,7 +271,7 @@ textsize_y <- 14
 
 plot1 <- ggplot(aes(x = location, y = fac2), data = mytab_weighted) +
   geom_tile(aes(fill = relval)) +
-  scale_fill_continuous_divergingx("BrBG", mid = 1, limits = c(0.6,1.78), rev = TRUE) +
+  scale_fill_continuous_divergingx("BrBG", mid = 1, limits = c(0.74,1.31), rev = TRUE) + #0.6,1.78 for appendix
   theme_masterthesis()  %+replace%
   theme(legend.title = element_blank(),
         axis.text.x = element_text(size = 12, angle = 45, vjust = 1, hjust=1),
@@ -305,11 +305,11 @@ mytab_unweighted <- mytab |>
   mutate(fac2 = paste0(nmod,",\n", model)) |>
   mutate(location = factor(location,
                            levels = c("Average", "DE", "PL", "CZ", "FR", "GB"),
-                           labels = c("Aggregate", "Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
+                           labels = c("Aggregate", "Germany", "Poland", "Czech Rep.", "France", "United Kingd.")))
 
 plot2 <- ggplot(aes(x = location, y = fac2), data = mytab_unweighted) +
   geom_tile(aes(fill = relval)) +
-  scale_fill_continuous_divergingx("BrBG", mid = 1, limits = c(0.6,1.78), rev = TRUE) +
+  scale_fill_continuous_divergingx("BrBG", mid = 1, limits = c(0.74,1.31), rev = TRUE) +  #0.6,1.78 for appendix #0.74,1.31 for main
   theme_masterthesis()  %+replace%
   theme(legend.title = element_blank(),
         axis.text.x = element_text(size = 12, angle = 45, vjust = 1, hjust=1),
@@ -332,7 +332,7 @@ plot2 <- ggplot(aes(x = location, y = fac2), data = mytab_unweighted) +
       barwidth = 20,  # Width of the color bar (in 'npc' units, normalized plot coordinates)
       barheight = 1.5 # Height of the color bar
     ))
-pdf("plot_results", "bestperform_tileplot.pdf", width = 13, height = 4.25)
+pdf(here("plot_results", "bestperform_tileplot.pdf"), width = 13, height = 4.25)
 plot1 + plot2 +
   plot_layout(guides = "collect")  &
   theme(legend.position = "bottom")

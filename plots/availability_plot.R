@@ -63,11 +63,11 @@ availdat <- fcdat |>
   DT(,  n := .N, by = c("forecast_date", "location", "target_type")) |>
   DT(, location := factor(location,
                          levels = c("DE", "PL", "CZ", "FR", "GB"),
-                         labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
+                         labels = c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")))
 
 
 colors_manual <- met.brewer(cscale, 5)
-names(colors_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")
+names(colors_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")
 
 
 avail_plot <- ggplot(aes(x = forecast_date, y = n, group = location, color = location), data = availdat) +

@@ -54,10 +54,10 @@ scores_distances <- rbindlist(scores_distances) |>
   DT(, target_type := substr(loctarg, 3, 8))
 
 scores_distances <- scores_distances |>
-  DT(, horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon")) |>
+  #DT(, horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon")) |>
   DT(, location := factor(location,
                           levels = c("DE", "PL", "CZ", "FR", "GB"),
-                          labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br."))
+                          labels = c("Germany", "Poland", "Czech Rep.", "France", "United Kingd."))
   )
 
 
@@ -66,11 +66,11 @@ p <- function(score_dist_data,
               plot_horizon){
   textsize_y <- 12
   colors_manual <- met.brewer("Veronese", 5)
-  names(colors_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")
+  names(colors_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")
   size_manual <- c(0.35, 0.5, rep(0.75, 3))
-  names(size_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")
+  names(size_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")
   alpha_manual <- c(0.25, 0.3, 0.7, 0.7, 0.7)
-  names(size_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")
+  names(size_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")
 
   plot_horizon <- paste0(plot_horizon, "-week horizon")
   scp <- ggplot(
