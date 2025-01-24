@@ -305,7 +305,7 @@ mytab_unweighted <- mytab |>
   mutate(fac2 = paste0(nmod,",\n", model)) |>
   mutate(location = factor(location,
                            levels = c("Average", "DE", "PL", "CZ", "FR", "GB"),
-                           labels = c("Aggregate", "Germany", "Poland", "Czech Rep.", "France", "United Kingd.")))
+                           labels = c("Average", "Germany", "Poland", "Czech Rep.", "France", "United Kingd.")))
 
 plot2 <- ggplot(aes(x = location, y = fac2), data = mytab_unweighted) +
   geom_tile(aes(fill = relval)) +
