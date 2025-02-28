@@ -11,6 +11,8 @@ library(forcats)
 plot_cols <- c("Heterogeneous" = "grey30",
                "Homogeneous" = "#165e2d")
 
+source(here("R", "utils-ext.R"))
+
 min_num_ensembles <- 10
 
 ensemble_scores <- arrow::read_parquet(here("model-diversity", "enscomb_scores_with_classification.parquet"))
@@ -89,7 +91,8 @@ boxplots_summary <- summary_scores_k_homog |>
   facet_grid(rows = vars(location),
              cols = vars(horizon),
              scales = "free_y") +
-  theme(legend.position = "bottom",
+    theme_masterthesis() +
+    theme(legend.position = "bottom",
         strip.background = element_rect(fill = NA, colour = NA)) +
   geom_text(aes(x = k, y = vpos, label = label), data = labeldat, size = 2.2)
 

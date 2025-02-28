@@ -6,8 +6,10 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(stringr)
+library(forcats)
 
 source(here("ensvssize", "specs.R"))
+source(here("R", "utils-modeldiversity.R"))
 
 
 # Get targets  ---------------------------------------------------
@@ -19,7 +21,10 @@ targets <- crossing("loc" = enscomb_specs$loctargets) |>
 
 # get model classifications
 model_class <- read_csv("https://raw.githubusercontent.com/epiforecasts/eval-by-method/main/data/model-classification.csv") |>
-  select(model, classification)
+  classify_models() |> #applies majority vote; from Kath's project, here locally saved in utils-modeldiversity
+  filter(!is.na(classification)) |> #all models used here are classified
+  select(model, classification) |>
+  mutate(classification = as.character(classification)) #needed for function later on
 
 # Ensemble combinations ---------------------------------------------------
 # get ensemble component combinations
