@@ -31,6 +31,7 @@ num_ensembles <- ensemble_scores |>
   summarise(N = n()) |>
   mutate(location = substr(target, 1, 2)) |>
   mutate(target_type = substr(target, 3, 8)) |>
+  mutate(target_type = gsub("_", "", target_type)) |>
   filter(k <= 5) |>
   group_by(target_type, location, k) |>
   mutate(Nmin = min(N)) |>
@@ -38,38 +39,61 @@ num_ensembles <- ensemble_scores |>
   select(target_type, location, N, k, homog) |>
   pivot_wider(values_from = N, names_from = homog, names_prefix = "N_")
 
-
+#only keep instances in ensemble_scores with enough models (as given by num_ensembles)
 ensemble_scores <- ensemble_scores |>
-  mutate(target_type = "Deaths") |>
+  mutate(location = substr(target, 1, 2)) |>
+  mutate(target_type = substr(target, 3, 8)) |>
+  mutate(target_type = gsub("_", "", target_type)) |>
   inner_join(num_ensembles, by = c("target_type", "location", "k"))
 
-summary_scores_k_homog <- ensemble_scores |>
-  group_by(location, k, horizon, homog) |>
-  summarise(
-    n = n(),
-    medianrelskill = median(scaled_rel_skill),
-    maxrelskill = max(scaled_rel_skill),
-    minrelskill = min(scaled_rel_skill),
-    q05relskill = quantile(scaled_rel_skill, 0.05),
-    q95relskill = quantile(scaled_rel_skill, 0.95))
-
-labeldat = num_ensembles |>
-  pivot_longer(cols = c("N_Heterogeneous", "N_Homogeneous"), names_to = "homog", values_to = "N") |>
-  mutate(homog = gsub("N_", "", homog)) |>
-  mutate(label = paste0("N=",N)) |>
-  mutate(vpos = ifelse(location == "DE", 1.95, 2.4)) |>
-  mutate(k = ifelse(homog == "Homogeneous", k+0.22, k-0.21)) #only relevant for positioning in plot!
 
 
-  data.frame(k = c(2.5),
-                      vpos = 2,
-                      location = "DE",
-                      target_type = "Deaths",
-                      homog = "Homogenerous",
-                      label = "N=50")
 
-# Plot side-by-side ---------------------------------------------------
-boxplots_summary <- summary_scores_k_homog |>
+make_boxplot_data <- function(ens_scores_data,
+                             num_ens_data,
+                             tgttype){
+
+  summary_scores_data_homog <- ens_scores_data |>
+    filter(target_type == tgttype) |>
+    group_by(location, k, horizon, homog) |>
+    summarise(
+      n = n(),
+      medianrelskill = median(scaled_rel_skill),
+      maxrelskill = max(scaled_rel_skill),
+      minrelskill = min(scaled_rel_skill),
+      q05relskill = quantile(scaled_rel_skill, 0.05),
+      q95relskill = quantile(scaled_rel_skill, 0.95)) |>
+    mutate(location := factor(location,
+                            levels = c("DE", "PL", "CZ", "FR", "GB"),
+                            labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br.")))
+
+  labeldat = num_ens_data |>
+    mutate(location := factor(location,
+                              levels = c("DE", "PL", "CZ", "FR", "GB"),
+                              labels = c("Germany", "Poland", "Czech Rep.", "France", "Great Br."))) |>
+    filter(target_type == tgttype) |>
+    pivot_longer(cols = c("N_Heterogeneous", "N_Homogeneous"), names_to = "homog", values_to = "N") |>
+    mutate(homog = gsub("N_", "", homog)) |>
+    mutate(label = paste0("N=",N)) |>
+    mutate(vpos = ifelse(location == "DE", 1.95, 2.4)) |>
+    mutate(k = ifelse(homog == "Homogeneous", k+0.22, k-0.21)) #only relevant for positioning in plot!
+
+  return(list(sum_scores = summary_scores_data_homog |>
+                mutate(target_type = tgttype),
+              labeldat = labeldat |>
+           mutate(target_type = tgttype)))
+
+}
+
+dat_deaths <- make_boxplot_data(ensemble_scores, num_ensembles, "Deaths")
+dat_cases <- make_boxplot_data(ensemble_scores, num_ensembles, "Cases")
+
+alldat_scores <- rbind(dat_deaths$sum_scores, dat_cases$sum_scores)
+alldat_labels <- rbind(dat_deaths$labeldat, dat_cases$labeldat)
+
+
+
+retplot <- alldat_scores |>
   ggplot(aes(x = k, col = homog)) +
   # geoms
   geom_point(aes(y = medianrelskill),
@@ -86,16 +110,27 @@ boxplots_summary <- summary_scores_k_homog |>
              linetype = 2, alpha = 0.5) +
   scale_color_manual(values = plot_cols) +
   labs(#subtitle = "European ensemble forecasts, deaths",
-       col = "Ensemble composition",
-       x = NULL, y = "Scaled relative skill") +
-  facet_grid(rows = vars(location),
-             cols = vars(horizon),
+    col = "Ensemble composition",
+    x = NULL, y = "Scaled relative skill") +
+  facet_grid(rows = vars(target_type, horizon),
+             cols = vars(location),
              scales = "free_y") +
-    theme_masterthesis() +
-    theme(legend.position = "bottom",
+  theme_masterthesis() +
+  theme(legend.position = "bottom",
         strip.background = element_rect(fill = NA, colour = NA)) +
-  geom_text(aes(x = k, y = vpos, label = label), data = labeldat, size = 2.2)
+geom_text(aes(x = k, y = vpos, label = label), data = alldat_labels, size = 2.2)
 
-pdf(here("plot_results", "ens_type_vs_scores.pdf"), width = 6, height = 4)
-boxplots_summary
+
+pdf(here("plot_results", "ens_type_vs_scores.pdf"), width = 7.5, height = 6)
+retplot
 dev.off()
+
+ensemble_scores |>
+  group_by(homog, k, location) |>
+  summarise(
+    n = n(),
+    medianrelskill = mean(scaled_rel_skill),
+    maxrelskill = max(scaled_rel_skill),
+    minrelskill = min(scaled_rel_skill),
+    q05relskill = quantile(scaled_rel_skill, 0.05),
+    q95relskill = quantile(scaled_rel_skill, 0.95))

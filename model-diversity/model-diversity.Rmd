@@ -38,7 +38,7 @@ models <- arrow::read_parquet(here("model-diversity", "enscomb_with_classificati
 ```
 #### Methods
 
-- `r length(unique(model_class$model))` Euro Hub models forecasting deaths, classified by 3 coders
+- `r length(unique(model_class$model))` Euro Hub models forecasting deaths and cases, classified by 3 coders
 - All available ensemble recombinations for 5 countries 
 - Ensemble method is the median
 - Performance metric is scaled relative skill against Hub median ensemble
@@ -71,13 +71,20 @@ Unique models used in ensemble combinations, by method classification and target
 ```{r plot-count, fig.dim=c(4,4)}
 # Descriptive -------------------------------------------
 # Count by classification
-models |>
-  separate_wider_delim(target, delim = "Deaths_k", names = c("loc", "k_")) |>
-  distinct(loc, model, classification) |>
-  mutate(loc = fct_infreq(loc)) |>
-  group_by(loc, classification) |>
+mym <- models |>
+  tidyr::separate(target, 
+                  into = c("location_target", "k"), sep = "_k", remove = FALSE) |>
+  mutate(k = as.integer(k))  |>
+  mutate(
+    location = sub("^(..).*", "\\1", location_target),
+    target = sub("^..(.*)", "\\1", location_target)
+  ) |> 
+  distinct(location, target, model, classification) |>
+  mutate(location_target = paste0(location,"_", target)) |>
+  mutate(location_target = fct_infreq(location_target)) |>
+  group_by(location_target, classification) |>
   count() |>
-  pivot_wider(names_from = loc, values_from = n) |> 
+  pivot_wider(names_from = location_target, values_from = n) |> 
   kable()
 ```
 
@@ -89,13 +96,20 @@ Distribution of all ensemble scores by model classification, across all (five) l
 ```{r plot-by-type, fig.wid=8, fig.height=4}
 # Boxplot ensemble scores by model classification ---------------
 ensemble_scores |>
+  tidyr::separate(target, 
+                  into = c("location_target", "k"), sep = "_k", remove = FALSE) |>
+  mutate(k = as.integer(k))  |>
+  mutate(
+    location = sub("^(..).*", "\\1", location_target),
+    target = sub("^..(.*)", "\\1", location_target)
+  ) |> 
   ggplot(aes(y = classification)) +
   geom_boxplot(aes(x = scaled_rel_skill), varwidth = TRUE, outlier.alpha = 0.5) + 
   geom_vline(aes(xintercept = 1), lty = 2) +
   labs(y = NULL, x = "Scaled relative skill",
        subtitle = "Ensemble scores by model composition",
        caption = "Boxplot width scaled to the count of available ensembles") +
-  facet_wrap(~horizon)
+  facet_wrap(~horizon+target)
 ```
 
 ##### Ensemble scores by number of components
@@ -108,7 +122,14 @@ Plotting the mean and 90% range of performance of ensembles with increasing numb
 # Summarise scores --------------------------------------------------
 # code adapted from: plot_allrecresults.R
 summary_scores_k_class <- ensemble_scores |>
-  group_by(location, k, horizon, classification) |>
+  tidyr::separate(target, 
+                  into = c("location_target", "k"), sep = "_k", remove = FALSE) |>
+  mutate(k = as.integer(k))  |>
+  mutate(
+    location = sub("^(..).*", "\\1", location_target),
+    target = sub("^..(.*)", "\\1", location_target)
+  ) |>
+  group_by(location, target, k, horizon, classification) |>
   summarise(
     n = n(),
     meanrelskill = mean(scaled_rel_skill),
@@ -132,7 +153,7 @@ summary_scores_k_class |>
   labs(subtitle = "European ensemble forecasts, deaths",
        col = "Ensemble composition",
        x = NULL, y = "Scaled relative skill") +
-  facet_grid(rows = vars(location),
+  facet_grid(rows = vars(location, target),
              cols = vars(horizon),
              scales = "free_y") +
   theme(legend.position = "bottom",
@@ -144,8 +165,15 @@ summary_scores_k_class |>
 ```{r plot-summary}
 # Summarise scores --------------------------------------------------
 # code adapted from: plot_allrecresults.R
-summary_scores_k_homog <- ensemble_scores |>
-  group_by(location, k, horizon, homog) |>
+summary_scores_k_homog <- ensemble_scores|>
+  tidyr::separate(target, 
+                  into = c("location_target", "k"), sep = "_k", remove = FALSE) |>
+  mutate(k = as.integer(k))  |>
+  mutate(
+    location = sub("^(..).*", "\\1", location_target),
+    target = sub("^..(.*)", "\\1", location_target)
+  ) |>
+  group_by(location, target, k, horizon, homog) |>
   summarise(
     n = n(),
     meanrelskill = mean(scaled_rel_skill),
@@ -171,7 +199,7 @@ summary_scores_k_homog |>
   labs(subtitle = "European ensemble forecasts, deaths",
        col = "Ensemble composition",
        x = NULL, y = "Scaled relative skill") +
-  facet_grid(rows = vars(location),
+  facet_grid(rows = vars(location, target),
              cols = vars(horizon),
              scales = "free_y") +
   theme(legend.position = "bottom",
@@ -185,7 +213,7 @@ summary_scores_k_homog |>
 #Plot number of ensembles
 ggplot(num_ensembles, aes(x = N, y = homog, fill = homog)) +
   geom_bar(stat = "identity") +
-  facet_grid(location~ k, scales = "free") +
+  facet_grid(location+target~ k, scales = "free") +
   scale_fill_manual(values = plot_cols) +
   #scale_fill_met_d("Hokusai2") +
   geom_text(aes(label = N), hjust = 0.6)  +

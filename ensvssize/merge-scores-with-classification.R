@@ -16,7 +16,7 @@ source(here("R", "utils-modeldiversity.R"))
 # -- keep only deaths as we only classified models forecasting deaths
 targets <- crossing("loc" = enscomb_specs$loctargets) |>
   mutate(target = loc) |> #for compatibility with merging later on
-  filter(grepl("Deaths", target)) |>
+  #filter(grepl("Deaths", target)) |>
   pull(target)
 
 # get model classifications
@@ -33,7 +33,7 @@ model_class <- read_csv("https://raw.githubusercontent.com/epiforecasts/eval-by-
 targets_comp_combinations <- crossing("loc" = enscomb_specs$loctargets,
                                       "k" = enscomb_specs$ks) |>
   mutate(target = paste(loc, k, sep = "_k")) |>
-  filter(grepl("Deaths", target)) |>
+  #filter(grepl("Deaths", target)) |>
   pull(target)
 
 models <- map_dfr(.x = targets_comp_combinations,
