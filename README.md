@@ -1,7 +1,8 @@
-# eurohub-prt
+# The influence of ensemble size and composition on the performance of combined real-time COVID-19 forecasts
 
 This repo runs analyses on ensemble composition, using data from the European Covid-19 Forecast Hub (henceforth "Hub"), see https://github.com/european-modelling-hubs/covid19-forecast-hub-europe.
 
+This codebase accompanies work available on medrxiv at: https://www.medrxiv.org/content/10.1101/2025.08.09.25331484v1.full-text
 
 ## Contents of the repository
 This repo is organized as follows: 
