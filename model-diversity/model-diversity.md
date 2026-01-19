@@ -13,7 +13,8 @@ Ensemble model diversity
 
 #### Methods
 
-- 39 Euro Hub models forecasting deaths, classified by 3 coders
+- 103 Euro Hub models forecasting deaths and cases, classified by 3
+  coders
 - All available ensemble recombinations for 5 countries
 - Ensemble method is the median
 - Performance metric is scaled relative skill against Hub median
@@ -25,12 +26,6 @@ Ensemble model diversity
 
 Unique models used in ensemble combinations, by method classification
 and target:
-
-| classification   |  DE |  PL |  CZ |  FR |  GB |
-|:-----------------|----:|----:|----:|----:|----:|
-| Mechanistic      |   7 |   5 |   3 |   2 |   2 |
-| Semi-mechanistic |   3 |   3 |   2 |   2 |   2 |
-| Statistical      |   3 |   3 |   3 |   3 |   3 |
 
 ##### Ensemble scores by model classification
 
