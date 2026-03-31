@@ -531,7 +531,7 @@ comp_avg_by_extra <- function(fast_eval_result,
 make_eval <- function(target,
                       current,
                       su_cols,
-                      scoring_fun = "interval_score",
+                      scoring_fun = "wis",
                       strat_by = c("model", "target_type","location",
                                    "horizon", "forecast_date"),
                       return_anti_join = FALSE){
@@ -591,7 +591,10 @@ make_eval <- function(target,
   #score target
   target_score <- target |>
     dplyr::select(all_of(su_cols)) |> #remove redundant cols before scoring
-    scoringutils::score(metrics = "interval_score") |>
+    scoringutils::as_forecast_quantile(predicted = "prediction",
+                                       observed = "true_value",
+                                       quantile_level = "quantile") |>
+    scoringutils::score() |>
     scoringutils::summarise_scores(by = strat_by) |>
     dplyr::select(all_of(c(strat_by, scoring_fun))) |>
     dplyr::rename(target_val = scoring_fun)
@@ -599,7 +602,10 @@ make_eval <- function(target,
   #score current
   current_score <- current |>
     dplyr::select(all_of(su_cols)) |> #remove redundant cols before scoring
-    scoringutils::score(metrics = "interval_score") |>
+    scoringutils::as_forecast_quantile(predicted = "prediction",
+                                       observed = "true_value",
+                                       quantile_level = "quantile") |>
+    scoringutils::score() |>
     scoringutils::summarise_scores(by = strat_by) |>
     dplyr::select(all_of(c(strat_by, scoring_fun))) |>
     dplyr::rename(current_val = scoring_fun) |>
