@@ -78,14 +78,17 @@ best_performers_ensemble <- function(data,
       dplyr::filter(n >= window - may_miss) |> #threshold to include model
       dplyr::ungroup() |>
       dplyr::select(all_of(su_cols)) |>
+      scoringutils::as_forecast_quantile(predicted = "prediction",
+                                         observed = "true_value",
+                                         quantile_level = "quantile") |>
       scoringutils::score() |>
-      scoringutils::pairwise_comparison(
-        by = c("model", "location", "target_type"),
+      scoringutils::get_pairwise_comparisons(compare = "model",
+        by = c("location", "target_type"),
         baseline = "EuroCOVIDhub-baseline") |>
       dplyr::filter(compare_against == "EuroCOVIDhub-baseline",
                     model != "EuroCOVIDhub-baseline") |>
       dplyr::group_by(location, target_type) |>
-      dplyr::slice_min(order_by = scaled_rel_skill, #only keep best performers
+      dplyr::slice_min(order_by = wis_relative_skill, #only keep best performers
                        n = nmods) |>
       dplyr::select(model, location, target_type)
 
@@ -176,6 +179,9 @@ best_performers_ensemble <- function(data,
 
   ##score ensemble
   score_best_ens <- bestperf_ens |>
+    scoringutils::as_forecast_quantile(predicted = "prediction",
+                                       observed = "true_value",
+                                       quantile_level = "quantile") |>
     scoringutils::score() |>
     scoringutils::summarise_scores(
       by = c("model", "target_type",
@@ -308,15 +314,24 @@ inverse_score_weights <- function(data,
                       target_type = unique(dat$target_type),
                       forecast_date = unique(dat$forecast_date),
                       horizon = horizons)) |>
-    rbindlist() |>
-    left_join(tg_end_map, by = c("forecast_date", "horizon"))
-
+    bind_rows() |>
+    mutate(
+      forecast_date = as.Date(forecast_date)
+    ) |>
+    left_join(
+      tg_end_map |>
+        mutate(
+          forecast_date = as.Date(forecast_date)
+        ),
+      by = c("forecast_date", "horizon")
+    )
   names(full_sets)[1] <- at_level
 
   #print(horizons)
 
   #compute ivnerse score weights
   inv_score_weights <- score_data |>
+    mutate(forecast_date = as.Date(forecast_date)) |>
     #get data from window
     #keep in unresolved horizon forecasts for counting (remove after)
     filter(forecast_date %in% curr_dates) |>
@@ -340,7 +355,10 @@ inverse_score_weights <- function(data,
                                    maxscore, interval_score)) |>
     select(-c(present, maxscore)) |>
     #join with exponential smoothing values
-    left_join(smoothing_vals,
+    left_join(smoothing_vals |>
+                mutate(
+                  forecast_date = as.Date(forecast_date)
+                ),
               by = c("forecast_date", "target_end_date", "horizon")) |>
     #calculate inverse scores
     group_by(across(all_of(c(at_level, "location", "target_type")))) |>
@@ -354,7 +372,7 @@ inverse_score_weights <- function(data,
     mutate(weights = inv_score / sum(inv_score)) |>
     select(all_of(c(at_level, "location", "target_type", "weights"))) |>
     #add back forecast date
-    mutate(forecast_date = fc_date)
+    mutate(forecast_date = as.IDate(fc_date))
 
   print(inv_score_weights)
   return(inv_score_weights)

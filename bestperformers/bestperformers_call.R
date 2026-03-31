@@ -184,8 +184,14 @@ for(nm in nmods){
 
   ######make according ensembles (weighted mean and median)
   bp_weighted_median_ens <- bp_data |>
+    mutate(
+      forecast_date = as.Date(forecast_date)
+    )|>
     select(-nmod) |>
-    left_join(invscore_weights, by = c("model", "location",
+    left_join(invscore_weights |>
+                mutate(
+                  forecast_date = as.Date(forecast_date)
+                ), by = c("model", "location",
                                        "target_type", "forecast_date")) |>
     select(-nmod) |>
     make_ensemble(summary_function = weighted.median,
@@ -193,8 +199,14 @@ for(nm in nmods){
     filter(model == "weighted.median_ensemble")
 
   bp_weighted_mean_ens <- bp_data |>
+    mutate(
+      forecast_date = as.Date(forecast_date)
+    )|>
     select(-nmod) |>
-    left_join(invscore_weights, by = c("model", "location",
+    left_join(invscore_weights |>
+                mutate(
+                  forecast_date = as.Date(forecast_date)
+                ), by = c("model", "location",
                                        "target_type", "forecast_date")) |>
     select(-nmod) |>
     make_ensemble(summary_function = weighted.mean,
