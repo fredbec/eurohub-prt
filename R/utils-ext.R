@@ -97,6 +97,10 @@ make_ensemble <- function(data,
                      tvsd = stats::sd(true_value),
                      true_value = mean(true_value), #this is not totally clean, so check further down
                      .groups = 'drop') |>
+    dplyr::group_by(across(all_of(c("location", "forecast_date",
+                                    "horizon", "target_type")))) |>
+    dplyr::mutate(prediction = isotone::gpava(quantile, prediction)$x) |>
+    dplyr::ungroup() |>
     dplyr::mutate(model = model_name,
                   availability = 1,
                   model_type = "ensemble") |> #for appending to original data
