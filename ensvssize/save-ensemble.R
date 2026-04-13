@@ -3,25 +3,41 @@ library(data.table)
 library(here)
 library(dplyr)
 library(purrr)
+library(arrow)
+
 DT <- `[`
 source(here("ensvssize", "specs.R"))
 
 #if running code on server
-if(grepl("*kit*", getwd())){
-  args=(commandArgs(TRUE))
-    loctargets <- as.list(as.character(args[[1]]))
+if(grepl("*becker*", getwd())){
+  args <- commandArgs(trailingOnly = TRUE)
+  loctargets <- as.list(args[1])
+  rdseed <- as.numeric(args[2])
+  propense <- as.numeric(args[3])
 
-    #if sampling ensembles (to make code run faster in testing situations)
-    #this always assumes that something is passed
-    #if not wanting to sample, just provide anything for rdseed and set propens
-    #to 1, then nothing is sampled
-    rdseed <- as.numeric(args[[2]])
-    #proportion of ensembles to sample
-    propens <- as.numeric(args[[3]])
+  #if sampling ensembles (to make code run faster in testing situations)
+  #this always assumes that something is passed
+  #if not wanting to sample, just provide anything for rdseed and set propens
+  #to 1, then nothing is sampled
+  rdseed <- as.numeric(args[[2]])
+  #proportion of ensembles to sample
+  propens <- as.numeric(args[[3]])
+
+} else if(grepl("*ka_*", getwd())){
+  args=(commandArgs(TRUE))
+  loctargets <- as.list(as.character(args[[1]]))
+
+  #if sampling ensembles (to make code run faster in testing situations)
+  #this always assumes that something is passed
+  #if not wanting to sample, just provide anything for rdseed and set propens
+  #to 1, then nothing is sampled
+  rdseed <- as.numeric(args[[2]])
+  #proportion of ensembles to sample
+  propens <- as.numeric(args[[3]])
 
 } else { # if running locally
   loctargets <- enscomb_specs$loctargets
-  rdseed <- Sys.time()
+  rdseed <- Sys.time() #random seed is irrelevant in these cases
   propens <- 1
 }
 
@@ -30,6 +46,7 @@ start_date <- enscomb_specs$start_date
 end_date <- enscomb_specs$end_date
 score_horizon <- enscomb_specs$horizon
 with_anomalies <- enscomb_specs$with_anomalies
+
 #which ensemble type to run pairwise comparisons on
 #either median_ensemble or mean_ensemble
 model_types <- c("median_ensemble")
@@ -49,6 +66,7 @@ baselinedat <- fread(here("data", "depldat.csv")) |>
   filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.Date(end_date)) |>
   DT(model == "EuroCOVIDhub-baseline") |>
+  DT(horizon %in% score_horizon) |>
   DT(, prediction_pop := NULL) |>
   DT(, true_value_pop := NULL) |>
   DT(, anomaly := NULL) |>
@@ -135,19 +153,24 @@ scores <- map(loctargets, \(loctarg) {
     DT(,target_type := NULL) |>
     DT(, k := NULL)  |>
     DT(, model := ifelse(model == "median-hubreplica_k0", "median-hubreplica", model)) |>
+    as_forecast_quantile(observed = "true_value", predicted = "prediction",
+                         quantile_level = "quantile") |>
     score() |>
-    pairwise_comparison(score,
-                        by = c("model", "horizon"),
-                        metric = "interval_score",
+    get_pairwise_comparisons(compare = "model",
+                             by = c("horizon"),
+                             metric = "wis",
                         baseline = "median-hubreplica")
 }) |>
   rbindlist() |>
-  DT()
+  DT() |>
+  setnames(c("wis_relative_skill", "wis_scaled_relative_skill"),
+           c("relative_skill", "scaled_rel_skill")) |>
+  DT(compare_against == "median-hubreplica")
 
 
 if(propens == 1){ #leave out random seed from filename, since no randomness is happening
-  data.table::fwrite(scores, file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], ".csv")))
+  arrow::write_parquet(scores, sink = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], ".parquet")))
 } else {
-  data.table::fwrite(scores, file = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "rdseed", rdseed, "propens", 100*propens, ".csv")))
+  arrow::write_parquet(scores, sink = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "rdseed", rdseed, "propens", 100*propens, ".csv")))
 }
 
