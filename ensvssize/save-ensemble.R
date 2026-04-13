@@ -99,7 +99,7 @@ if(with_anomalies){
 all_data <- map(as.list(loctargets), \(loctarg) {
   dattoscore <- map(ks, \(k) {
     #read in recombined ensemble data for given loc-targ and k
-    dt <- data.table::fread(here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".csv")))
+    dt <- read_parquet(here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".parquet")))
     if (nrow(dt) == 0) return(NULL)
 
     if(k %in% 3:8){ #sample in these ranges of k, where the number of recombinations is highest
