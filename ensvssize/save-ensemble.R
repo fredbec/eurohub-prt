@@ -169,8 +169,8 @@ scores <- map(loctargets, \(loctarg) {
 
 
 if(propens == 1){ #leave out random seed from filename, since no randomness is happening
-  arrow::write_parquet(scores, sink = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], ".parquet")))
+  arrow::write_parquet(scores, sink = here("enscomb-data", "pwscores", paste0("ens_comb_pwscores", loctargets[[1]], ".parquet")))
 } else {
-  arrow::write_parquet(scores, sink = here("enscomb-data", paste0("ens_comb_pwscores", loctargets[[1]], "rdseed", rdseed, "propens", 100*propens, ".csv")))
+  arrow::write_parquet(scores, sink = here("enscomb-data", "pwscores", paste0("ens_comb_pwscores", loctargets[[1]], "rdseed", rdseed, "propens", 100*propens, ".csv")))
 }
 
