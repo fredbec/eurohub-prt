@@ -62,7 +62,7 @@ ensdat <- fread(here("data", "median_hubreplica_ensemble.csv")) |>
   DT(, availability := NULL) |>
   DT(, model_type := NULL)
 
-baselinedat <- fread(here("data", "depldat.csv")) |>
+baselinedat <- read_parquet(here("data", "depldat.parquet")) |>
   filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.Date(end_date)) |>
   DT(model == "EuroCOVIDhub-baseline") |>
