@@ -1,6 +1,8 @@
 library(here)
 library(dplyr)
 library(data.table)
+library(tidyr)
+
 source(here("ensvssize", "specs.R"))
 source(here("R", "utils-ext.R"))
 source(here("R", "bestperformers-functions.R"))
@@ -16,12 +18,24 @@ su_cols <- c("model", "forecast_date", "quantile", "horizon",
 start_date <- enscomb_specs$start_date
 end_date <- enscomb_specs$end_date
 loctargets <- enscomb_specs$loctargets
-horizons <- c(1,2)
+horizons <- enscomb_specs$horizons
 
 fcdat <- arrow::read_parquet(here("data", "processed", "fcdat.parquet")) |>
   filter(forecast_date >= data.table::as.IDate(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= data.table::as.IDate(end_date)) |>
   filter(horizon %in% horizons)
+
+median_ens <-
+  data.table::fread(here("data", "processed", "hubreplica-ensemble.csv")) |>
+  filter(horizon %in% horizons)
+
+excl_from_bp <-
+  data.table::fread(here("data", "auxiliary", "selection-ensemble-exclude-instances.csv"))
+
+su_cols <- c("model", "forecast_date", "quantile", "horizon",
+             "target_type", "location", "target_end_date",
+             "prediction", "true_value")
+
 
 data <- fcdat
 hub_data <- fcdat
@@ -166,10 +180,10 @@ for(nm in nmods){
   }
 
   ##########remove
- # bp_data <- bp_data |>
+  # bp_data <- bp_data |>
   #  filter(location == "DE", target_type == "Cases")
-#
- # hub_data <- hub_data |>
+  #
+  # hub_data <- hub_data |>
   #  filter(location == "DE", target_type == "Cases")
   ##########remove
 
@@ -197,7 +211,7 @@ for(nm in nmods){
                 mutate(
                   forecast_date = as.Date(forecast_date)
                 ), by = c("model", "location",
-                                       "target_type", "forecast_date")) |>
+                          "target_type", "forecast_date")) |>
     select(-nmod) |>
     make_ensemble(summary_function = weighted.median,
                   model_name = "weighted.median_ensemble", old_call = TRUE) |>
@@ -212,7 +226,7 @@ for(nm in nmods){
                 mutate(
                   forecast_date = as.Date(forecast_date)
                 ), by = c("model", "location",
-                                       "target_type", "forecast_date")) |>
+                          "target_type", "forecast_date")) |>
     select(-nmod) |>
     make_ensemble(summary_function = weighted.mean,
                   model_name = "weighted.mean_ensemble", old_call = TRUE) |>
@@ -232,3 +246,86 @@ for(nm in nmods){
 
 all_inv_score_weights <- rbindlist(all_inv_score_weights)
 data.table::fwrite(all_inv_score_weights, here("output", "selection-ensemble", "weights", "best_performers_invscore_weights.csv"))
+
+
+
+all_evals <- NULL
+for(nm in c(3,5,8,10)){
+
+  bestperforms_mean <- data.table::fread(here("output", "selection-ensemble", "forecasts",
+                                              paste0("best_performers_ensemble_mean_nmod", nm, ".csv"))) |>
+    mutate(nmod = nm) |>
+    anti_join(excl_from_bp, by = c("location", "target_type", "nmod")) |>
+    select(-nmod)
+
+  bestperforms_median <- data.table::fread(here("output", "selection-ensemble", "forecasts",
+                                                paste0("best_performers_ensemble_median_nmod", nm, ".csv"))) |>
+    mutate(nmod = nm) |>
+    anti_join(excl_from_bp, by = c("location", "target_type", "nmod")) |>
+    select(-nmod)
+
+  bestperforms_invscore_mean <- data.table::fread(here("output", "selection-ensemble", "forecasts",
+                                                       paste0("best_performers_ensemble_invscore_mean_nmod", nm, ".csv"))) |>
+    mutate(nmod = nm) |>
+    anti_join(excl_from_bp, by = c("location", "target_type", "nmod")) |>
+    select(-nmod)
+
+  bestperforms_invscore_median <- data.table::fread(here("output", "selection-ensemble", "forecasts",
+                                                         paste0("best_performers_ensemble_invscore_median_nmod", nm, ".csv"))) |>
+    mutate(nmod = nm) |>
+    anti_join(excl_from_bp, by = c("location", "target_type", "nmod")) |>
+    select(-nmod)
+
+
+
+  eval_mean <- fast_eval(bestperforms_mean, median_ens,
+                         su_cols = su_cols,
+                         strat_by = c("model", "location", "target_type", "forecast_date"),
+                         return_eval = TRUE,
+                         comp_avg_by = c("forecast_date", "target_type")) |>
+    mutate(location = ifelse(is.na(location), "Average", location)) |>
+    comp_avg_by_extra(comp_avg_by = c("target_type", "location")) |>
+    mutate(nmod = nm)
+
+  eval_median <- fast_eval(bestperforms_median, median_ens,
+                           su_cols = su_cols,
+                           strat_by = c("model", "location", "target_type", "forecast_date"),
+                           return_eval = TRUE,
+                           comp_avg_by = c("forecast_date", "target_type")) |>
+    mutate(location = ifelse(is.na(location), "Average", location)) |>
+    comp_avg_by_extra(comp_avg_by = c("target_type", "location")) |>
+    mutate(nmod = nm)
+
+
+  eval_invscore_mean <- fast_eval(bestperforms_invscore_mean, median_ens,
+                                  su_cols = su_cols,
+                                  strat_by = c("model", "location", "target_type", "forecast_date"),
+                                  return_eval = TRUE,
+                                  comp_avg_by = c("forecast_date", "target_type")) |>
+    mutate(location = ifelse(is.na(location), "Average", location)) |>
+    comp_avg_by_extra(comp_avg_by = c("target_type", "location")) |>
+    mutate(nmod = nm)
+
+  eval_invscore_median <- fast_eval(bestperforms_invscore_median, median_ens,
+                                    su_cols = su_cols,
+                                    strat_by = c("model", "location", "target_type", "forecast_date"),
+                                    return_eval = TRUE,
+                                    comp_avg_by = c("forecast_date", "target_type")) |>
+    mutate(location = ifelse(is.na(location), "Average", location)) |>
+    comp_avg_by_extra(comp_avg_by = c("target_type", "location")) |>
+    mutate(nmod = nm)
+
+
+  all_evals <- all_evals |>
+    rbind(eval_mean) |>
+    rbind(eval_median) |>
+    rbind(eval_invscore_mean) |>
+    rbind(eval_invscore_median)
+}
+
+scores_individual <- all_evals |>
+  filter(!is.na(forecast_date))
+scores_average <- all_evals |>
+  filter(is.na(forecast_date))
+data.table::fwrite(scores_individual, here("output", "selection-ensemble", "forecasts", "scores-selection-ens.csv"))
+data.table::fwrite(scores_average, here("output", "selection-ensemble", "forecasts", "avg-scores-selection-ens.csv"))
