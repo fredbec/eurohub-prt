@@ -3,6 +3,7 @@ library(data.table)
 library(here)
 library(MetBrewer)
 library(stringr)
+library(arrow)
 
 source(here("R", "utils-ext.R"))
 source(here("ensvssize", "specs.R"))
@@ -45,7 +46,7 @@ bsmod <- NULL
 for(loctarg in loctargets){
   all_pwscores_med <- vector(mode = "list", length = length(ks))
 
-  all_pwscores_med <- data.table::fread(here("enscomb-data", "pwscores", paste0("ens_comb_pwscores", loctarg, ".csv")))
+  all_pwscores_med <- read_parquet(here("enscomb-data", "pwscores", paste0("ens_comb_pwscores", loctarg, ".parquet")))
 
   loc <- substr(loctarg, 0, 2)
   targ <- substr(loctarg, 3, 100)
