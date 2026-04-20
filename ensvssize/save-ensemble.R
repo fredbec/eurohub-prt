@@ -12,33 +12,9 @@ source(here("ensvssize", "specs.R"))
 if(grepl("*becker*", getwd())){
   args <- commandArgs(trailingOnly = TRUE)
   loctargets <- as.list(args[1])
-  rdseed <- as.numeric(args[2])
-  propense <- as.numeric(args[3])
-
-  #if sampling ensembles (to make code run faster in testing situations)
-  #this always assumes that something is passed
-  #if not wanting to sample, just provide anything for rdseed and set propens
-  #to 1, then nothing is sampled
-  rdseed <- as.numeric(args[[2]])
-  #proportion of ensembles to sample
-  propens <- as.numeric(args[[3]])
-
-} else if(grepl("*ka_*", getwd())){
-  args=(commandArgs(TRUE))
-  loctargets <- as.list(as.character(args[[1]]))
-
-  #if sampling ensembles (to make code run faster in testing situations)
-  #this always assumes that something is passed
-  #if not wanting to sample, just provide anything for rdseed and set propens
-  #to 1, then nothing is sampled
-  rdseed <- as.numeric(args[[2]])
-  #proportion of ensembles to sample
-  propens <- as.numeric(args[[3]])
 
 } else { # if running locally
-  loctargets <- enscomb_specs$loctargets
-  rdseed <- Sys.time() #random seed is irrelevant in these cases
-  propens <- 1
+  loctargets <- as.list(c("FRCases")) #enscomb_specs$loctargets
 }
 
 ks <- enscomb_specs$ks
@@ -50,9 +26,6 @@ with_anomalies <- enscomb_specs$with_anomalies
 #which ensemble type to run pairwise comparisons on
 #either median_ensemble or mean_ensemble
 model_types <- c("median_ensemble")
-
-#set random seed
-set.seed(rdseed)
 
 
 ensdat <- fread(here("data", "median_hubreplica_ensemble.csv")) |>
@@ -102,17 +75,9 @@ all_data <- map(as.list(loctargets), \(loctarg) {
     dt <- read_parquet(here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".parquet")))
     if (nrow(dt) == 0) return(NULL)
 
-    if(k %in% 3:8){ #sample in these ranges of k, where the number of recombinations is highest
-      prop_ensids <- unique(dt$ensid)
-      keep_ensids <- sample(prop_ensids, ceiling(propens*length(prop_ensids)))
-    } else { #keep all ensids
-      keep_ensids <- unique(dt$ensid)
-    }
-
     dt |>
       DT(, k := k) |>
       DT(model %in% model_types) |>
-      DT(ensid %in% keep_ensids) |>
       DT(horizon %in% score_horizon)
   })
   return(rbindlist(dattoscore))
@@ -168,9 +133,5 @@ scores <- map(loctargets, \(loctarg) {
   DT(compare_against == "median-hubreplica")
 
 
-if(propens == 1){ #leave out random seed from filename, since no randomness is happening
-  arrow::write_parquet(scores, sink = here("enscomb-data", "pwscores", paste0("ens_comb_pwscores", loctargets[[1]], ".parquet")))
-} else {
-  arrow::write_parquet(scores, sink = here("enscomb-data", "pwscores", paste0("ens_comb_pwscores", loctargets[[1]], "rdseed", rdseed, "propens", 100*propens, ".csv")))
-}
+arrow::write_parquet(scores, sink = here("enscomb-data", "pwscores", paste0("ens_comb_pwscores", loctargets[[1]], ".parquet")))
 
