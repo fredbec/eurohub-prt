@@ -12,17 +12,17 @@ model_avail <- 0.7
 source(here("R", "utils.R"))
 
 
-fcdat <- fread(here("data", "forecasts.csv"))
-truth <- fread(here("data", "truth.csv"))
+fcdat <- fread(here("data", "raw-downloads", "forecasts.csv"))
+truth <- fread(here("data", "raw-downloads", "truth.csv"))
 
 # Load observations defined as anomalies
-anomalies <- fread(here("data", "anomalies.csv")) |>
+anomalies <- fread(here("data", "raw-downloads",  "anomalies.csv")) |>
   DT(, location_name := NULL)
 
 # Load population data
-population <- fread(here("data", "population.csv"))
+population <- fread(here("data", "raw-downloads", "population.csv"))
 
-period_cats <- fread(here("data", "period_cats.csv"))
+period_cats <- fread(here("data", "auxiliary", "period_cats.csv"))
 
 combdat <- fcdat |>
   filter(location %in% c("DE", "PL", "FR", "CZ", "GB")) |>
@@ -53,7 +53,7 @@ combdat <- fcdat |>
   DT(period_cats, on = c("forecast_date"))
 
 
-arrow::write_parquet(combdat, here("data", "depldat.parquet"))
+arrow::write_parquet(combdat, here("data", "processed", "fcdat.parquet"))
 
 
 

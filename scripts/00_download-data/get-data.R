@@ -6,7 +6,7 @@ DT <- `[`
 repo <- "covid19-forecast-hub-europe/covid19-forecast-hub-europe"
 
 forecasts_unprocessed <- get_hub_forecasts(repo)
-data.table::fwrite(forecasts_unprocessed, here("data", "forecasts_unprocessed.csv"))
+data.table::fwrite(forecasts_unprocessed, here("data", "raw-downloads", "forecasts_unprocessed.csv"))
 
 forecasts_unprocessed <- fread(here("data", "forecasts_unprocessed.csv"))
 #reorganize columns
@@ -33,7 +33,7 @@ forecasts <- forecasts |>
   DT(, n := NULL) |>
   DT()
 
-data.table::fwrite(forecasts, here("data", "forecasts.csv"))
+data.table::fwrite(forecasts, here("data", "raw-downloads", "forecasts.csv"))
 
 
 #anomalies <- download_metadata(repo, branch = "main")

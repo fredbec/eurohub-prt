@@ -73,5 +73,13 @@ data/population.csv
 data/truth.csv
 data/scores_period.csv
 
+#data files that don't need to be on GitHub
+data/raw-downloads/forecasts.csv
+data/raw-downloads/forecasts_unprocessed.csv
+data/raw-downloads/metadata.csv
+data/auxiliary/period_cats.csv
+data/raw-downloads/population.csv
+data/raw-downloads/truth.csv
+
 #misc files that don't need to be on GitHub
 team-metadata.csv
