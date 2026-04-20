@@ -20,7 +20,7 @@ enscomb_specs <- list(
   #"loctargets" = c("DECases", "DEDeaths", "PLCases", "PLDeaths"),
   "loctargets" = c("DECases", "DEDeaths", "PLCases", "PLDeaths", "GBCases", "GBDeaths", "CZCases", "CZDeaths", "FRCases", "FRDeaths"),
   #maximum number of ensembles to consider for each location-target-combination
-  "maxens" = 1000000000000,
+  #"maxens" = 1000000000000,
 
   "horizons" = c(1,2),
 
