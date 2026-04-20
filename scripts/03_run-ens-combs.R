@@ -4,6 +4,8 @@ library(here)
 DT <- `[`
 
 source(here("ensvssize", "specs.R"))
+source(here("R", "utils-enscomb.R"))
+source(here("R", "utils-ext.R"))
 
 model_avail <- enscomb_specs$indmodel_avail
 start_date <- enscomb_specs$start_date
@@ -17,7 +19,10 @@ availproptime <- enscomb_specs$availproptime
 
 
 ##############################Suggest ensembles################################
-fcdat <- arrow::read_parquet(here("data", "processed", "fcdat.parquet"))
+fcdat <- arrow::read_parquet(here("data", "processed", "fcdat.parquet"))|>
+  filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
+  filter(forecast_date <= as.Date(end_date))
+
 for(k in ks){
 
   combdat <- fcdat |>
@@ -39,30 +44,6 @@ for(k in ks){
 }
 
 ##############################Filter ensembles################################
-library(data.table)
-library(dplyr)
-library(here)
-DT <- `[`
-
-source(here("ensvssize", "specs.R"))
-source(here("R", "utils-enscomb.R"))
-
-model_avail <- enscomb_specs$indmodel_avail
-start_date <- enscomb_specs$start_date
-end_date <- enscomb_specs$end_date
-ks <- enscomb_specs$ks
-loctargets <- enscomb_specs$loctargets
-availpropmods <- enscomb_specs$availpropmods
-availpropmodsk3 <- enscomb_specs$availpropmodsk3
-availproptime <- enscomb_specs$availproptime
-
-fcdat <- arrow::read_parquet(here("data", "depldat.parquet")) |>
-  filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
-  filter(forecast_date <= as.Date(end_date))
-
-rdseeds <- data.table::fread(here("enscomb-data", "rdseeds.csv"))
-
-
 
 for(k in ks){
 
