@@ -1,6 +1,6 @@
 library(here)
 library(data.table)
-source(here("R", "download-data", "get-hub-forecasts.R"))
+source(here("scripts", "00_download-data", "get-hub-forecasts.R"))
 
 DT <- `[`
 repo <- "covid19-forecast-hub-europe/covid19-forecast-hub-europe"

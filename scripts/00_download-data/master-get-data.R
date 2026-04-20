@@ -1,0 +1,7 @@
+library(here)
+library(data.table)
+source(here("scripts", "00_download-data", "get-population.R"))
+source(here("scripts", "00_download-data", "get-truth.R"))
+source(here("scripts", "00_download-data", "get-data.R"))
+source(here("scripts", "00_download-data", "get-anomalies.R"))
+source(here("scripts", "00_download-data", "get-metadata.R"))

@@ -1,7 +1,0 @@
-library(here)
-library(data.table)
-source(here("R", "download-data", "get-population.R"))
-source(here("R", "download-data", "get-truth.R"))
-source(here("R", "download-data", "get-data.R"))
-source(here("R", "download-data", "get-anomalies.R"))
-source(here("R", "download-data", "get-metadata.R"))
