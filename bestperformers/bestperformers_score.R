@@ -10,17 +10,17 @@ library(MetBrewer)
 library(here)
 #source(here("specs", "specs.R"))
 
-source(here("bestperformers", "bestperformers_function.R"))
+source(here("R", "bestperformers-functions.R"))
 
 horizons <- c(1,2)
 
 median_ens <-
-  data.table::fread(here("bestperformers-data", "median_ensemble.csv")) |>
+  data.table::fread(here("data", "processed", "hubreplica_ensemble.csv")) |>
   filter(horizon %in% horizons)
 
 
 excl_from_bp <-
-  data.table::fread(here("bestperformers-data", "excl_from_bp.csv"))
+  data.table::fread(here("data", "auxiliary", "selection-ensemble-exclude-instances.csv"))
 
 su_cols <- c("model", "forecast_date", "quantile", "horizon",
              "target_type", "location", "target_end_date",
@@ -33,25 +33,25 @@ plot_location_label <- c(`PL` = "Poland", `DE` = "Germany",
 all_evals <- NULL
 for(nm in c(3,5,8,10)){
 
-  bestperforms_mean <- data.table::fread(here("bestperformers-data",
+  bestperforms_mean <- data.table::fread(here("output", "selection-ensemble", "forecasts",
                                               paste0("best_performers_ensemble_mean_nmod", nm, ".csv"))) |>
     mutate(nmod = nm) |>
     anti_join(excl_from_bp, by = c("location", "target_type", "nmod")) |>
     select(-nmod)
 
-  bestperforms_median <- data.table::fread(here("bestperformers-data",
+  bestperforms_median <- data.table::fread(here("output", "selection-ensemble", "forecasts",
                                                 paste0("best_performers_ensemble_median_nmod", nm, ".csv"))) |>
     mutate(nmod = nm) |>
     anti_join(excl_from_bp, by = c("location", "target_type", "nmod")) |>
     select(-nmod)
 
-  bestperforms_invscore_mean <- data.table::fread(here("bestperformers-data",
+  bestperforms_invscore_mean <- data.table::fread(here("output", "selection-ensemble", "forecasts",
                                                        paste0("best_performers_ensemble_invscore_mean_nmod", nm, ".csv"))) |>
     mutate(nmod = nm) |>
     anti_join(excl_from_bp, by = c("location", "target_type", "nmod")) |>
     select(-nmod)
 
-  bestperforms_invscore_median <- data.table::fread(here("bestperformers-data",
+  bestperforms_invscore_median <- data.table::fread(here("output", "selection-ensemble", "forecasts",
                                                          paste0("best_performers_ensemble_invscore_median_nmod", nm, ".csv"))) |>
     mutate(nmod = nm) |>
     anti_join(excl_from_bp, by = c("location", "target_type", "nmod")) |>
