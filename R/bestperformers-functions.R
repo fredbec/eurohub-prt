@@ -374,7 +374,6 @@ inverse_score_weights <- function(data,
     #add back forecast date
     mutate(forecast_date = as.IDate(fc_date))
 
-  print(inv_score_weights)
   return(inv_score_weights)
 
 }
@@ -503,8 +502,8 @@ fast_eval <- function(target, current, return_eval = FALSE,
   }
 
 
-  myval <- mean(eval$target_va) / mean(eval$current_val)
-  print(myval)
+  sum_val <- mean(eval$target_va) / mean(eval$current_val)
+  message(paste0("relative average score is ",  sum_val))
 
   if(return_eval){
     return(eval)
