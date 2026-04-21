@@ -40,7 +40,7 @@ for(k in ks){
   loctargets_save <- names(combdat)
 
   sapply(loctargets_save,
-         function(loctarg) arrow::write_parquet(combdat[[loctarg]], here("enscomb-data", paste0("enscomb_suggested_", loctarg, "_k", k, ".parquet"))))
+         function(loctarg) arrow::write_parquet(combdat[[loctarg]], here("output", "ensemble-size", "ensemble-combinations", paste0("enscomb_suggested_", loctarg, "_k", k, ".parquet"))))
 }
 
 ##############################Filter ensembles################################
@@ -57,7 +57,7 @@ for(k in ks){
     loc <- substr(loctarg, 0, 2)
     targ <- substr(loctarg, 3, 100)
 
-    combdat <- arrow::read_parquet(here("enscomb-data", paste0("enscomb_suggested_", loctarg, "_k", k, ".parquet")))
+    combdat <- arrow::read_parquet(here("output", "ensemble-size", "ensemble-combinations", paste0("enscomb_suggested_", loctarg, "_k", k, ".parquet")))
 
     results <- enscombcheck(fcdat,
                             combdat,
@@ -71,8 +71,8 @@ for(k in ks){
 
       prop_ensids <- results[[2]]$ensid  |> unique()
 
-      arrow::write_parquet(results[[1]], here("enscomb-data", paste0("ens_unavail_bydate_", loctarg, "_k", k, ".parquet")))
-      arrow::write_parquet(results[[2]], here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
+      arrow::write_parquet(results[[1]], here("output", "ensemble-size", "ensemble-combinations", paste0("ens_unavail_bydate_", loctarg, "_k", k, ".parquet")))
+      arrow::write_parquet(results[[2]], here("output", "ensemble-size", "ensemble-combinations", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
     }
   }
   )
@@ -91,8 +91,8 @@ for(k in ks){
     loc <- substr(loctarg, 0, 2)
     targ <- substr(loctarg, 3, 100)
 
-    sugg <- arrow::read_parquet(here("enscomb-data", paste0("enscomb_suggested_", loctarg, "_k", k, ".parquet")))
-    filt <- arrow::read_parquet(here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
+    sugg <- arrow::read_parquet(here("output", "ensemble-size", "ensemble-combinations",paste0("enscomb_suggested_", loctarg, "_k", k, ".parquet")))
+    filt <- arrow::read_parquet(here("output", "ensemble-size", "ensemble-combinations", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
     nrow_sugg <- length(unique(sugg$ensid))
     nrow_filt <- length(unique(filt$ensid))
 
@@ -108,7 +108,7 @@ for(k in ks){
 
 prop_filtered <- rbindlist(prop_filtered)
 
-data.table::fwrite(prop_filtered, here("enscomb-data", paste0("prop_filterered.csv")))
+data.table::fwrite(prop_filtered, here("output", "ensemble-size", "ensemble-combinations", paste0("prop_filterered.csv")))
 
 
 
@@ -120,10 +120,9 @@ for(k in ks){
     loc <- substr(loctarg, 0, 2)
     targ <- substr(loctarg, 3, 100)
 
-    print(loctarg)
     #READ in data
-    ens_unavail_dat <- arrow::read_parquet(here("enscomb-data", paste0("ens_unavail_bydate_", loctarg, "_k", k, ".parquet")))
-    enscombdat <- arrow::read_parquet(here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
+    ens_unavail_dat <- arrow::read_parquet(here("output", "ensemble-size", "ensemble-combinations",paste0("ens_unavail_bydate_", loctarg, "_k", k, ".parquet")))
+    enscombdat <- arrow::read_parquet(here("output", "ensemble-size", "ensemble-combinations", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
     #make function call
 
 
@@ -131,7 +130,7 @@ for(k in ks){
                         ens_unavail_dat = ens_unavail_dat,
                         fcdat = fcdat)
 
-    arrow::write_parquet(res, here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".parquet")))
+    arrow::write_parquet(res, here("output", "ensemble-size", "ensemble-forecasts", paste0("predictions_enscomb", loctarg, "_k", k, ".parquet")))
     #write data
   }
   )

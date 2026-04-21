@@ -25,14 +25,14 @@ with_anomalies <- enscomb_specs$with_anomalies
 ensemble_type <- enscomb_specs$ensemble_type
 
 
-ensdat <- fread(here("data", "median_hubreplica_ensemble.csv")) |>
+ensdat <- fread(here("data", "processed", "hubreplica-ensemble.csv")) |>
   filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.Date(end_date)) |>
   DT(horizon %in% score_horizon) |>
   DT(, availability := NULL) |>
   DT(, model_type := NULL)
 
-baselinedat <- read_parquet(here("data", "depldat.parquet")) |>
+baselinedat <- read_parquet(here("data", "processed", "fcdat.parquet")) |>
   filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.Date(end_date)) |>
   DT(model == "EuroCOVIDhub-baseline") |>
@@ -51,7 +51,7 @@ ensdat <- rbind(ensdat, baselinedat)
 
 if(with_anomalies){
   #read in anomalies
-  anoms <- data.table::fread(here("anomalies.csv")) |>
+  anoms <- data.table::fread(here("data", "raw-downloads", "anomalies.csv")) |>
     DT(location %in% c("DE", "PL")) |>
     DT(target_variable %in% c("inc case", "inc death")) |>
     DT(, target_type := ifelse(target_variable == "inc case", "Cases", "Deaths")) |>
@@ -69,7 +69,7 @@ if(with_anomalies){
 all_data <- map(as.list(loctargets), \(loctarg) {
   dattoscore <- map(ks, \(k) {
     #read in recombined ensemble data for given loc-targ and k
-    dt <- read_parquet(here("enscomb-data", paste0("predictions_enscomb", loctarg, "_k", k, ".parquet")))
+    dt <- read_parquet(here("output", "ensemble-size" paste0("predictions_enscomb", loctarg, "_k", k, ".parquet")))
     if (nrow(dt) == 0) return(NULL)
 
     dt |>
