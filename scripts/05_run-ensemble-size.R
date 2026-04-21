@@ -14,7 +14,7 @@ if(grepl("*becker*", getwd())){
   loctargets <- as.list(args[1])
 
 } else { # if running locally
-  loctargets <- as.list(c("FRCases")) #enscomb_specs$loctargets
+  loctargets <- enscomb_specs$loctargets
 }
 
 ks <- enscomb_specs$ks
@@ -22,10 +22,7 @@ start_date <- enscomb_specs$start_date
 end_date <- enscomb_specs$end_date
 score_horizon <- enscomb_specs$horizon
 with_anomalies <- enscomb_specs$with_anomalies
-
-#which ensemble type to run pairwise comparisons on
-#either median_ensemble or mean_ensemble
-model_types <- c("median_ensemble")
+ensemble_type <- enscomb_specs$ensemble_type
 
 
 ensdat <- fread(here("data", "median_hubreplica_ensemble.csv")) |>
@@ -77,7 +74,7 @@ all_data <- map(as.list(loctargets), \(loctarg) {
 
     dt |>
       DT(, k := k) |>
-      DT(model %in% model_types) |>
+      DT(model %in% ensemble_type) |>
       DT(horizon %in% score_horizon)
   })
   return(rbindlist(dattoscore))
@@ -124,7 +121,7 @@ scores <- map(loctargets, \(loctarg) {
     get_pairwise_comparisons(compare = "model",
                              by = c("horizon"),
                              metric = "wis",
-                        baseline = "median-hubreplica")
+                             baseline = "median-hubreplica")
 }) |>
   rbindlist() |>
   DT() |>
@@ -133,5 +130,9 @@ scores <- map(loctargets, \(loctarg) {
   DT(compare_against == "median-hubreplica")
 
 
-arrow::write_parquet(scores, sink = here("enscomb-data", "pwscores", paste0("ens_comb_pwscores", loctargets[[1]], ".parquet")))
+arrow::write_parquet(
+  scores,
+  sink = here("output", "ensemble-size",
+              paste0("pwscores", ensemble_type),
+              paste0("ens_comb_pwscores", loctargets[[1]], ".parquet")))
 

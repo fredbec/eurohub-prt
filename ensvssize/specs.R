@@ -23,6 +23,7 @@ enscomb_specs <- list(
   #"maxens" = 1000000000000,
 
   "horizons" = c(1,2),
+  "ensemble_type" = "median_ensemble"
 
   "with_anomalies" = FALSE
 )
