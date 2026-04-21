@@ -53,7 +53,7 @@ for(pcomb in 1:nrow(param_combs)){
     datacombs[nk, "nens"] <- length(unique(enscombs$ensid))
   }
 
-  data.table::fwrite(datacombs, here("enscomb-data", "exp_params",
+  data.table::fwrite(datacombs, here("further-analyses", "exp_params",
                           paste0("modelavail", gsub("\\.", "", model_avail), "_availpropmods", gsub("\\.", "", availpropmods), "_availproptime", gsub("\\.", "", availproptime), ".csv")))
 }
 
