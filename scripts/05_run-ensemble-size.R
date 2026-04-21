@@ -69,7 +69,7 @@ if(with_anomalies){
 all_data <- map(as.list(loctargets), \(loctarg) {
   dattoscore <- map(ks, \(k) {
     #read in recombined ensemble data for given loc-targ and k
-    dt <- read_parquet(here("output", "ensemble-size", paste0("predictions_enscomb", loctarg, "_k", k, ".parquet")))
+    dt <- read_parquet(here("output", "ensemble-size", "ensemble-forecasts", paste0("predictions_enscomb", loctarg, "_k", k, ".parquet")))
     if (nrow(dt) == 0) return(NULL)
 
     dt |>
