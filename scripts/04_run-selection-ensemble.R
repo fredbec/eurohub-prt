@@ -20,6 +20,13 @@ end_date <- enscomb_specs$end_date
 loctargets <- enscomb_specs$loctargets
 horizons <- enscomb_specs$horizons
 
+#appendix results
+if (length(horizons) == 4){
+  suffix <- "_allhor"
+} else {
+  suffix <- ""
+}
+
 fcdat <- arrow::read_parquet(here("data", "processed", "fcdat.parquet")) |>
   filter(forecast_date >= data.table::as.IDate(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= data.table::as.IDate(end_date)) |>
@@ -116,24 +123,24 @@ for(nmod in nmods){
 
   data.table::fwrite(best_performers_ensemble_mean,
                      here("output", "selection-ensemble", "forecasts",
-                          paste0("best_performers_ensemble_mean_nmod", nmod,".csv")))
+                          paste0("best_performers_ensemble_mean_nmod", nmod, suffix, ".csv")))
   data.table::fwrite(best_performers_ensemble_median,
                      here("output", "selection-ensemble", "forecasts",
-                          paste0("best_performers_ensemble_median_nmod", nmod,".csv")))
+                          paste0("best_performers_ensemble_median_nmod", nmod, suffix, ".csv")))
 
 
   k <- k + 1
 }
 
 data.table::fwrite(rbindlist(best_performers_data),
-                   here("output", "selection-ensemble", "weights", "best_performers_incl_mods.csv"))
+                   here("output", "selection-ensemble", "weights", paste0("best_performers_incl_mods", suffix, ".csv")))
 
 
 
 
 ####################Calculate corresponding inverse score weights####################################
 #inverse score weights
-best_performers <- fread(here("output", "selection-ensemble", "weights", "best_performers_incl_mods.csv"))
+best_performers <- fread(here("output", "selection-ensemble", "weights", paste0("best_performers_incl_mods", suffix, ".csv")))
 #score data
 score_data <- fread(here("data","processed", "component-model-scores.csv")) |>
   filter(horizon %in% horizons) |>
@@ -235,17 +242,17 @@ for(nm in nmods){
 
   data.table::fwrite(bp_weighted_mean_ens,
                      here("output", "selection-ensemble", "forecasts",
-                          paste0("best_performers_ensemble_invscore_mean_nmod", nm,".csv")))
+                          paste0("best_performers_ensemble_invscore_mean_nmod", nm, suffix, ".csv")))
   data.table::fwrite(bp_weighted_median_ens,
                      here("output", "selection-ensemble", "forecasts",
-                          paste0("best_performers_ensemble_invscore_median_nmod", nm,".csv")))
+                          paste0("best_performers_ensemble_invscore_median_nmod", nm, suffix, ".csv")))
 
   k <- k + 1
 
 }
 
 all_inv_score_weights <- rbindlist(all_inv_score_weights)
-data.table::fwrite(all_inv_score_weights, here("output", "selection-ensemble", "weights", "best_performers_invscore_weights.csv"))
+data.table::fwrite(all_inv_score_weights, here("output", "selection-ensemble", "weights", paste0("best_performers_invscore_weights", suffix, ".csv")))
 
 
 
@@ -253,25 +260,25 @@ all_evals <- NULL
 for(nm in c(3,5,8,10)){
 
   bestperforms_mean <- data.table::fread(here("output", "selection-ensemble", "forecasts",
-                                              paste0("best_performers_ensemble_mean_nmod", nm, ".csv"))) |>
+                                              paste0("best_performers_ensemble_mean_nmod", nm, suffix, ".csv"))) |>
     mutate(nmod = nm) |>
     anti_join(excl_from_bp, by = c("location", "target_type", "nmod")) |>
     select(-nmod)
 
   bestperforms_median <- data.table::fread(here("output", "selection-ensemble", "forecasts",
-                                                paste0("best_performers_ensemble_median_nmod", nm, ".csv"))) |>
+                                                paste0("best_performers_ensemble_median_nmod", nm, suffix, ".csv"))) |>
     mutate(nmod = nm) |>
     anti_join(excl_from_bp, by = c("location", "target_type", "nmod")) |>
     select(-nmod)
 
   bestperforms_invscore_mean <- data.table::fread(here("output", "selection-ensemble", "forecasts",
-                                                       paste0("best_performers_ensemble_invscore_mean_nmod", nm, ".csv"))) |>
+                                                       paste0("best_performers_ensemble_invscore_mean_nmod", nm, suffix, ".csv"))) |>
     mutate(nmod = nm) |>
     anti_join(excl_from_bp, by = c("location", "target_type", "nmod")) |>
     select(-nmod)
 
   bestperforms_invscore_median <- data.table::fread(here("output", "selection-ensemble", "forecasts",
-                                                         paste0("best_performers_ensemble_invscore_median_nmod", nm, ".csv"))) |>
+                                                         paste0("best_performers_ensemble_invscore_median_nmod", nm, suffix, ".csv"))) |>
     mutate(nmod = nm) |>
     anti_join(excl_from_bp, by = c("location", "target_type", "nmod")) |>
     select(-nmod)
@@ -327,5 +334,5 @@ scores_individual <- all_evals |>
   filter(!is.na(forecast_date))
 scores_average <- all_evals |>
   filter(is.na(forecast_date))
-data.table::fwrite(scores_individual, here("output", "selection-ensemble", "forecasts", "scores-selection-ens.csv"))
-data.table::fwrite(scores_average, here("output", "selection-ensemble", "forecasts", "avg-scores-selection-ens.csv"))
+data.table::fwrite(scores_individual, here("output", "selection-ensemble", "forecasts", paste0("scores-selection-ens", suffix, ".csv")))
+data.table::fwrite(scores_average, here("output", "selection-ensemble", "forecasts", paste0("avg-scores-selection-ens" , suffix, ".csv")))
