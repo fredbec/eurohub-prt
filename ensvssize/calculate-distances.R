@@ -5,7 +5,7 @@ library(here)
 DT <- `[`
 
 source(here("ensvssize", "specs.R"))
-source(here("R", "utils-distance.R"))
+source(here("R", "utils-diversity.R"))
 source(here("R", "utils-ext.R"))
 
 
@@ -15,7 +15,7 @@ ks <- enscomb_specs$ks
 loctargets <- enscomb_specs$loctargets
 maxens <- enscomb_specs$maxens
 
-fcdat <- arrow::read_parquet(here("data", "depldat.parquet")) |>
+fcdat <- arrow::read_parquet(here("data", "processed", "fcdat.parquet")) |>
   filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.IDate(end_date))
 
@@ -32,14 +32,14 @@ for(k in ks){
 
     print(loctarg)
     #READ in data
-    ens_unavail_dat <- arrow::read_parquet(here("enscomb-data", paste0("ens_unavail_bydate_", loctarg, "_k", k, ".parquet")))
-    enscombdat <- arrow::read_parquet(here("enscomb-data", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
+    ens_unavail_dat <- arrow::read_parquet(here("output", "ensemble-size", "ensemble-combinations", paste0("ens_unavail_bydate_", loctarg, "_k", k, ".parquet")))
+    enscombdat <- arrow::read_parquet(here("output", "ensemble-size", "ensemble-combinations", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
     #make function call
     distances <- pairwise_distance(enscombdat = enscombdat,
                                    ens_unavail_dat = ens_unavail_dat,
                                    fcdat = fcdat)
 
-    arrow::write_parquet(distances, here("distance-data", paste0("distances", loctarg, "_k", k, ".parquet")))
+    arrow::write_parquet(distances, here("distance-data", paste0("_distances", loctarg, "_k", k, ".parquet")))
     #write data
     }
   )
