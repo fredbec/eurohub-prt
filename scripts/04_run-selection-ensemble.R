@@ -334,5 +334,5 @@ scores_individual <- all_evals |>
   filter(!is.na(forecast_date))
 scores_average <- all_evals |>
   filter(is.na(forecast_date))
-data.table::fwrite(scores_individual, here("output", "selection-ensemble", "forecasts", paste0("scores-selection-ens", suffix, ".csv")))
-data.table::fwrite(scores_average, here("output", "selection-ensemble", "forecasts", paste0("avg-scores-selection-ens" , suffix, ".csv")))
+data.table::fwrite(scores_individual, here("output", "selection-ensemble", "scores", paste0("scores-selection-ens", suffix, ".csv")))
+data.table::fwrite(scores_average, here("output", "selection-ensemble", "scores", paste0("avg-scores-selection-ens" , suffix, ".csv")))
