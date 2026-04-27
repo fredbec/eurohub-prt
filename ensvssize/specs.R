@@ -25,5 +25,9 @@ enscomb_specs <- list(
   "horizons" = c(1,2),
   "ensemble_type" = "mean_ensemble",
 
-  "with_anomalies" = FALSE
+  "with_anomalies" = FALSE,
+
+  #minimum number of ensembles in heterog./homog. group for loctarget combination
+  #to be considered for the ensemble diversity analysis
+  "min_num_ensembles_diversity" = 10
 )
