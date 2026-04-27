@@ -48,7 +48,7 @@ for(pcomb in 1:nrow(param_combs)){
 
     file <- datacombs[nk,]
 
-    enscombs <- data.table::fread(here("enscomb-data", paste0("enscomb_", file$loctarg, "_k", file$k, ".csv")))
+    enscombs <- data.table::fread(here("output", "ensemble-size", "ensemble-combinations", paste0("enscomb_", file$loctarg, "_k", file$k, ".csv")))
 
     datacombs[nk, "nens"] <- length(unique(enscombs$ensid))
   }

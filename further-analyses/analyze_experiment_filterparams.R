@@ -27,7 +27,7 @@ for(pcomb in 1:nrow(param_combs)){
   availpropmods <- pcombs$qe
   availproptime <- pcombs$qt
 
-  res[[pcomb]] <- data.table::fread(here("enscomb-data", "exp_params",
+  res[[pcomb]] <- data.table::fread(here("further-analyses", "exp_params",
                                      paste0("modelavail", gsub("\\.", "", model_avail), "_availpropmods", gsub("\\.", "", availpropmods), "_availproptime", gsub("\\.", "", availproptime), ".csv"))) |>
     .d(, model_avail := model_avail) |>
     .d(, availpropmods := availpropmods) |>
@@ -49,6 +49,9 @@ plot1 <- ggplot(res1, aes(x = k, y = nens, group = interaction(model_avail, avai
   guides(color=guide_legend(title="qm, qt"), linetype=guide_legend(title="qe"))
   #scale_y_continuous(trans = "log")
 
+pdf(here("further-analyses", "plots", "exp-filterparams.pdf"), width = 12, height = 8)
+print(plot1)
+dev.off()
 
 res2 <- rbindlist(res) |>
   .d(, nens := ifelse(nens > 7550 & loctarg == "DECases", 7550, nens)) |>
@@ -66,3 +69,7 @@ plot2 <- ggplot(res2, aes(x = k, y = nens, group = interaction(model_avail, avai
   theme(legend.position = "bottom") +
   guides(color=guide_legend(title="qm, qt"), linetype=guide_legend(title="qe"))
 #scale_y_continuous(trans = "log")
+
+pdf(here("further-analyses", "plots", "exp-filterparams-cut.pdf"), width = 12, height = 8)
+print(plot2)
+dev.off()
