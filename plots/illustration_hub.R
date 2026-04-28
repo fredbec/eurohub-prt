@@ -5,6 +5,8 @@ library(dplyr)
 library(purrr)
 library(RColorBrewer)
 library(patchwork)
+library(arrow)
+library(ggplot2)
 DT <- `[`
 source(here("ensvssize", "specs.R"))
 
@@ -12,13 +14,13 @@ source(here("ensvssize", "specs.R"))
 start_date <- enscomb_specs$start_date
 end_date <- enscomb_specs$end_date
 
-czdat <- fread(here("data", "depldat.csv")) |>
+czdat <- read_parquet(here("data", "processed", "fcdat.parquet")) |>
   filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.Date(end_date)) |>
   filter(location == "CZ") |>
   filter(target_type == "Cases")
 
-ensdat <- fread(here("data", "median_hubreplica_ensemble.csv")) |>
+ensdat <- fread(here("data", "processed", "hubreplica-ensemble.csv")) |>
   filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.Date(end_date)) |>
   filter(location == "CZ") |>
@@ -145,7 +147,7 @@ plot2 <- ggplot() +
                                      vjust = 6)) +
   ggtitle(label = "Median Ensemble Forecast" , subtitle ="Czech Rep. Cases, October 2021")
 
-pdf("illustration.pdf", width = 10.5, height = 5.5)
+pdf(here("plot_results", "hubdata-illustration.pdf"), width = 10.5, height = 5.5)
 plot1 + plot2 +
   plot_layout(guides = "collect")  &
   theme(legend.position = "bottom")

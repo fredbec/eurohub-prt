@@ -17,7 +17,7 @@ loctargets <- enscomb_specs$loctargets
 cscale <- "Veronese"
 
 ####EDIT
-fcdat <- fread(here("data", "depldat.csv"))
+fcdat <- read_parquet(here("data", "processed", "fcdat.parquet"))
 
 num_mods <- function(
     fcdat,
@@ -95,4 +95,4 @@ avail_plot <- ggplot(aes(x = forecast_date, y = n, group = location, color = loc
   xlab("Forecast Date") +
   ylab("Number of Component Models")
 
-ggsave(here("plots", "availabilityofmodels.pdf"), height = 4, width = 8.5)
+ggsave(here("plot_results", "model-availability.pdf"), height = 4, width = 8.5)
