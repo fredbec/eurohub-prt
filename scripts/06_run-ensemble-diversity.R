@@ -10,6 +10,8 @@ library(data.table)
 
 source(here("ensvssize", "specs.R"))
 source(here("R", "utils-diversity.R"))
+source(here("R", "utils-ext.R"))
+
 
 
 # Get targets  ---------------------------------------------------
@@ -102,5 +104,37 @@ ensemble_scores <- filter(ensemble_scores,
 
 #save data
 arrow::write_parquet(ensemble_scores, here("output", "ensemble-diversity", "enscomb_scores_with_classification.parquet"))
-arrow::write_parquet(model_class, here("output", "ensemble-diversity", "component_model_classification.parquet"))
+arrow::write_parquet(model_class, here("data", "processed", "component_model_classification.parquet"))
 arrow::write_parquet(models, here("output", "ensemble-diversity", "enscomb_with_classification.parquet"))
+
+
+
+####calculate ensemble pairwise distances
+start_date <- enscomb_specs$start_date
+end_date <- enscomb_specs$end_date
+ks <- enscomb_specs$ks
+loctargets <- enscomb_specs$loctargets
+
+fcdat <- arrow::read_parquet(here("data", "processed", "fcdat.parquet")) |>
+  filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
+  filter(forecast_date <= as.IDate(end_date))
+
+for(k in ks){
+
+  lapply(as.list(loctargets), function(loctarg){
+    loc <- substr(loctarg, 0, 2)
+    targ <- substr(loctarg, 3, 100)
+
+    #READ in data
+    ens_unavail_dat <- arrow::read_parquet(here("output", "ensemble-size", "ensemble-combinations", paste0("ens_unavail_bydate_", loctarg, "_k", k, ".parquet")))
+    enscombdat <- arrow::read_parquet(here("output", "ensemble-size", "ensemble-combinations", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
+    #make function call
+    distances <- pairwise_distance(enscombdat = enscombdat,
+                                   ens_unavail_dat = ens_unavail_dat,
+                                   fcdat = fcdat)
+
+    arrow::write_parquet(distances, here("distance-data", paste0("distances", loctarg, "_k", k, ".parquet")))
+    #write data
+  }
+  )
+}
