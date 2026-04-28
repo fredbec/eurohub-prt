@@ -17,7 +17,7 @@ scores_distances <- map(loctargets, \(loctarg) {
   cat(loctarg, "\n")
   scores <- arrow::read_parquet(
     here(
-      "enscomb-data", "pwscores",
+      "output", "ensemble-size", "pwscores-median_ensemble",
       paste0("ens_comb_pwscores", loctarg, ".parquet")
     )
   )
@@ -31,7 +31,7 @@ scores_distances <- map(loctargets, \(loctarg) {
       scoringutils:::as_scores(metrics = "mean_distance") |>
       DT(, model := sub("mean_ensemble", "median_ensemble", model)) |>
       DT(, model := paste0(model, "_k", k))
-    if (nrow(distances) > 0) {
+    if (nrow(distances) > 0 & length(unique(distances$model)) > 1) {
       pw_distances <- scoringutils::get_pairwise_comparisons(
         distances, metric = "mean_distance", by = "horizon"
       ) |>
@@ -59,7 +59,8 @@ scores_distances <- scores_distances |>
                           levels = c("DE", "PL", "CZ", "FR", "GB"),
                           labels = c("Germany", "Poland", "Czech Rep.", "France", "United Kingd."))
   )
-
+saveRDS(scores_distances, here("output", "ensemble-diversity", "scores_distances.rds"))
+arrow::write_parquet(scores_distances, here("output", "ensemble-diversity", "scores_distances.parquet"))
 
 ##############Plotting
 p <- function(score_dist_data,
@@ -70,7 +71,7 @@ p <- function(score_dist_data,
   size_manual <- c(0.35, 0.5, rep(0.75, 3))
   names(size_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")
   alpha_manual <- c(0.25, 0.3, 0.7, 0.7, 0.7)
-  names(size_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")
+  names(alpha_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")
 
   plot_horizon <- paste0(plot_horizon, "-week horizon")
   scp <- ggplot(
@@ -95,16 +96,16 @@ p <- function(score_dist_data,
           plot.subtitle = element_text(hjust = 0.5,
                                        size = textsize_y-2,
                                        vjust = 6)) +
-    facet_grid(target_type + horizon ~ location, scales = "free") +
+    facet_grid(target_type ~ location, scales = "free") +
     xlab("Relative mean Cramér distance") +
     ylab("Relative skill") +
     guides(color = "none", size = "none", alpha = "none")
   return(scp)
 }
 p(scores_distances, 1)
-ggsave(here("plot_results", "distance_vs_skill_1week.pdf"), width = 13, height = 4.25)
+ggsave(here("plot_results", "distance_vs_skill_hor1.pdf"), width = 13, height = 4.25)
 p(scores_distances, 2)
-ggsave(here("plot_results", "distance_vs_skill_2week.pdf"), width = 13, height = 4.25)
+ggsave(here("plot_results", "distance_vs_skill_hor2.pdf"), width = 13, height = 4.25)
 
 scores_distances[,
                  list(pearson = cor(mean_distance_relative_skill, relative_skill)),
@@ -112,4 +113,5 @@ scores_distances[,
 ][, mean(pearson)]
 ## [1] 0.004306724
 
-saveRDS(scores_distances, here("plot_results", "scores_distances.rds"))
+saveRDS(scores_distances, here("output", "ensemble-diversity", "scores_distances.rds"))
+arrow::write_parquet(scores_distances, here("output", "ensemble-diversity", "scores_distances.parquet"))
