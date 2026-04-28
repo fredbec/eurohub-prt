@@ -133,8 +133,8 @@ for(k in ks){
                                    ens_unavail_dat = ens_unavail_dat,
                                    fcdat = fcdat)
 
-    arrow::write_parquet(distances, here("distance-data", paste0("distances", loctarg, "_k", k, ".parquet")))
     #write data
+    arrow::write_parquet(distances, here("output", "ensemble-diversity", "distance-data", paste0("distances", loctarg, "_k", k, ".parquet")))
   }
   )
 }

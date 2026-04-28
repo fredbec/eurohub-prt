@@ -25,7 +25,8 @@ scores_distances <- map(loctargets, \(loctarg) {
     cat(k, "\n")
     distances <- arrow::read_parquet(
       here(
-        "distance-data", paste0("distances", loctarg, "_k", k, ".parquet")
+        "output", "ensemble-diversity", "distance-data",
+        paste0("distances", loctarg, "_k", k, ".parquet")
       )
     ) |>
       scoringutils:::as_scores(metrics = "mean_distance") |>
