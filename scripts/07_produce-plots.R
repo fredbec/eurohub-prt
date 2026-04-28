@@ -9,13 +9,246 @@ library(kableExtra)
 library(colorspace)
 library(MetBrewer)
 library(arrow)
-
 library(here)
 
 source(here("R", "utils-ext.R"))
 source(here("ensvssize", "specs.R"))
 
 DT <- `[`
+
+###############################################################################
+###########################Illustration plots###################################
+###############################################################################
+#####hub data illustration (component and ensemble models)
+start_date <- enscomb_specs$start_date
+end_date <- enscomb_specs$end_date
+
+czdat <- read_parquet(here("data", "processed", "fcdat.parquet")) |>
+  filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
+  filter(forecast_date <= as.Date(end_date)) |>
+  filter(location == "CZ") |>
+  filter(target_type == "Cases")
+
+ensdat <- fread(here("data", "processed", "hubreplica-ensemble.csv")) |>
+  filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
+  filter(forecast_date <= as.Date(end_date)) |>
+  filter(location == "CZ") |>
+  filter(target_type == "Cases") |>
+  filter(forecast_date == "2021-10-11")
+
+ensdat50 <- ensdat |>
+  filter(quantile %in% c(0.5))|>
+  mutate(target_end_date = (as.numeric(target_end_date) %% 18881)/7 + 1)
+
+ensdatshade <- ensdat|>
+  filter(quantile %in% c(0.25, 0.75)) |>
+  select(model, target_end_date, horizon, quantile, prediction) |>
+  setDT() |>
+  DT(, quantile := paste0("q", 100*quantile)) |>
+  dcast(model + target_end_date + horizon ~ quantile) |>
+  mutate(target_end_date = (as.numeric(target_end_date) %% 18881)/7 + 1)
+
+ensdatshade2 <- ensdat|>
+  filter(quantile %in% c(0.05, 0.95)) |>
+  select(model, target_end_date, horizon, quantile, prediction) |>
+  setDT() |>
+  DT(, quantile := paste0("q", 100*quantile)) |>
+  dcast(model + target_end_date + horizon ~ quantile) |>
+  mutate(target_end_date = (as.numeric(target_end_date) %% 18881)/7 + 1)
+
+
+fcdat <- czdat |>
+  filter(forecast_date == "2021-10-11")
+
+fcdat50 <- fcdat |>
+  filter(quantile %in% c(0.5))|>
+  mutate(target_end_date = (as.numeric(target_end_date) %% 18881)/7 + 1)
+
+fcdatshade <- fcdat |>
+  filter(quantile %in% c(0.25, 0.75)) |>
+  select(model, target_end_date, horizon, quantile, prediction) |>
+  setDT() |>
+  DT(, quantile := paste0("q", 100*quantile)) |>
+  dcast(model + target_end_date + horizon ~ quantile) |>
+  mutate(target_end_date = (as.numeric(target_end_date) %% 18881)/7 + 1)
+
+
+realdat <- czdat |>
+  filter(forecast_date < "2021-09-20" & forecast_date > "2021-09-05") |>
+  select(target_end_date, true_value) |>
+  distinct() |>
+  mutate(target_end_date = (as.numeric(target_end_date) %% 18881)/7 + 1)
+
+textsize_y = 14
+
+plot1 <- ggplot() +
+  geom_line(aes(x = target_end_date, y = true_value), data = realdat) +
+  geom_point(aes(x = target_end_date, y = true_value), data = realdat, size = 2.5) +
+  geom_ribbon(aes(x = target_end_date, ymin = q25, ymax = q75, fill = model), alpha = 0.2, data = fcdatshade) +
+  geom_line(aes(x=target_end_date, y = prediction, group = model, color = model),
+            data = fcdat50) +
+  geom_point(aes(x=target_end_date, y = prediction, group = model, color = model),
+             pch = 18,
+             size = 3.5,
+             data = fcdat50) +
+  scale_fill_brewer(palette = "Dark2") +
+  scale_color_brewer(palette = "Dark2") +
+  #scale_x_continuous(breaks = unique(realdat$target_end_date)) +
+  ylab("Incident Cases") +
+  xlab("")+
+  scale_y_continuous(breaks = seq(0, 30000, by = 5000), limits = c(0, 32000)) +
+  scale_x_continuous(breaks = 1:9,,
+                     labels = as.character(seq(18881, 18881 + 8*7, by = 7) |> as.Date() |> format("%b. %d"))) +
+  theme_masterthesis()  %+replace%
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = textsize_y,
+                                   angle = 45, vjust = 1, hjust=1),
+
+        axis.text.y = element_text(size = textsize_y),
+        axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
+        strip.text = element_text(size=textsize_y),
+        legend.text=element_text(size=textsize_y-2),
+        plot.margin = margin(t=20,b=5,r=20,l=20, unit = "pt"),
+        plot.title = element_text(hjust = 0.5,
+                                  size = textsize_y + 3,
+                                  vjust = 5),
+        plot.subtitle = element_text(hjust = 0.5,
+                                     size = textsize_y-2,
+                                     vjust = 6)) +
+  ggtitle(label = "Component Forecasts", subtitle = "Czech Rep. Cases, October 2021")
+
+
+plot2 <- ggplot() +
+  geom_line(aes(x = target_end_date, y = prediction, group = model), color = "grey80", data = fcdat50) +
+  geom_line(aes(x = target_end_date, y = true_value), data = realdat) +
+  geom_point(aes(x = target_end_date, y = true_value), data = realdat, size = 2.5) +
+  geom_ribbon(aes(x = target_end_date, ymin = q25, ymax = q75), fill = "deepskyblue4", alpha = 0.2, data = ensdatshade) +
+  geom_ribbon(aes(x = target_end_date, ymin = q5, ymax = q95), fill = "deepskyblue4", alpha = 0.1, data = ensdatshade2) +
+  geom_line(aes(x=target_end_date, y = prediction, group = model),
+            color = "deepskyblue4",
+            data = ensdat50) +
+  geom_point(aes(x=target_end_date, y = prediction, group = model),
+             color = "deepskyblue4",
+             pch = 18,
+             size = 3.5,
+             data = ensdat50) +
+  #scale_x_continuous(breaks = unique(realdat$target_end_date)) +
+  ylab("Incident Cases") +
+  xlab("")+
+  scale_y_continuous(breaks = seq(0, 30000, by = 5000), limits = c(0, 32000)) +
+  scale_x_continuous(breaks = 1:9,,
+                     labels = as.character(seq(18881, 18881 + 8*7, by = 7) |> as.Date() |> format("%b. %d"))) +
+  theme_masterthesis()  %+replace%
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = textsize_y,
+                                   angle = 45, vjust = 1, hjust=1),
+
+        axis.text.y = element_text(size = textsize_y),
+        axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
+        strip.text = element_text(size=textsize_y),
+        legend.text=element_text(size=textsize_y-2),
+        plot.margin = margin(t=20,b=5,r=20,l=20, unit = "pt"),
+        plot.title = element_text(hjust = 0.5,
+                                  size = textsize_y + 3,
+                                  vjust = 5),
+        plot.subtitle = element_text(hjust = 0.5,
+                                     size = textsize_y-2,
+                                     vjust = 6)) +
+  ggtitle(label = "Median Ensemble Forecast" , subtitle ="Czech Rep. Cases, October 2021")
+
+pdf(here("plot_results", "hubdata-illustration.pdf"), width = 10.5, height = 5.5)
+illustration_plot <- plot1 + plot2 +
+  plot_layout(guides = "collect")  &
+  theme(legend.position = "bottom")
+print(illustration_plot)
+dev.off()
+
+
+##number of available models
+
+cscale <- "Veronese"
+
+####EDIT
+fcdat <- read_parquet(here("data", "processed", "fcdat.parquet"))
+
+num_mods <- function(
+    fcdat,
+    start_date,
+    end_date,
+    model_avail = 0,
+    sampleens = NULL,
+    mode = "long"){
+
+  num_weeks <- fcdat |>
+    filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20
+    filter(forecast_date <= as.IDate(end_date))  |>
+    select(forecast_date) |>
+    pull() |>
+    unique() |>
+    length()
+
+  combdat <- fcdat |>
+    filter(!model == "EuroCOVIDhub-ensemble") |>
+    filter(forecast_date >= as.IDate(start_date)) |>
+    filter(forecast_date <= as.IDate(end_date)) |>
+    select(model, forecast_date, location, target_type) |>
+    distinct() |>
+    setDT() |>
+    DT(,  n := .N, by = c("model", "location", "target_type")) #|>
+  #filter(n >= model_avail*num_weeks) #|>
+  #select(model, location, target_type) |>
+  #distinct()
+
+  return(combdat)
+}
+
+availdat <- fcdat |>
+  setDT() |>
+  DT(, loctarg := paste0(location, target_type)) |>
+  split(by = c("loctarg")) |>
+  lapply(function(dat) num_mods(dat,
+                                start_date,
+                                end_date)) |>
+  rbindlist() |>
+  DT(, n := NULL) |>
+  DT(,  n := .N, by = c("forecast_date", "location", "target_type")) |>
+  DT(, location := factor(location,
+                          levels = c("DE", "PL", "CZ", "FR", "GB"),
+                          labels = c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")))
+
+
+colors_manual <- met.brewer(cscale, 5)
+names(colors_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")
+
+
+avail_plot <- ggplot(aes(x = forecast_date, y = n, group = location, color = location), data = availdat) +
+  geom_line(lwd = 0.85, position = position_dodge(width = 12)) +
+  scale_color_manual(values = colors_manual) +
+  theme_masterthesis() %+replace%
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 11, angle = 45, hjust = 1, vjust = 1),
+        axis.text.y = element_text(size = textsize_y),
+        axis.title.x = element_text(size = textsize_y, vjust = -2),
+        axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
+        strip.text = element_text(size=textsize_y),
+        legend.text=element_text(size=textsize_y-2),
+        plot.margin = margin(t=20,b=5,r=20,l=20, unit = "pt"),
+        plot.title = element_text(hjust = 0.5,
+                                  size = textsize_y + 3,
+                                  vjust = 5),
+        plot.subtitle = element_text(hjust = 0.5,
+                                     size = textsize_y-2,
+                                     vjust = 6)) +
+  facet_wrap(~target_type)+
+  ggplot2::scale_x_date(date_breaks = "1 month",
+                        date_labels = "%b %y",
+                        expand = c(0,0)) +
+  xlab("Forecast Date") +
+  ylab("Number of Component Models")
+print(avail_plot)
+ggsave(here("plot_results", "model-availability.pdf"), height = 4, width = 8.5)
+
+
 
 ###############################################################################
 ###########################Selection ensemble###################################
@@ -571,7 +804,7 @@ retplot <- alldat_scores |>
 
 
 pdf(here("plot_results", "ensemble-diversity.pdf"), width = 7.5, height = 6)
-retplot
+print(retplot)
 dev.off()
 
 ensemble_scores |>
