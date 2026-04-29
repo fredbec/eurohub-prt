@@ -1,29 +1,114 @@
-# The influence of ensemble size and composition on the performance of combined real-time COVID-19 forecasts
+# The influence of ensemble size and composition on performance of combined COVID-19 forecasts
 
-This repo runs analyses on ensemble composition, using data from the European Covid-19 Forecast Hub (henceforth "Hub"), see https://github.com/european-modelling-hubs/covid19-forecast-hub-europe.
+This repository contains the code for the analyses in:
 
-This codebase accompanies work available on medrxiv at: https://www.medrxiv.org/content/10.1101/2025.08.09.25331484v1.full-text
+> Becker F, Sherratt K, Bosse N, Funk S. *The influence of ensemble size and composition on the performance of combined real-time COVID-19 forecasts.* medRxiv 2025. https://doi.org/10.1101/2025.08.09.25331484
 
-## Contents of the repository
-This repo is organized as follows: 
+The analyses use data from the [European COVID-19 Forecast Hub](https://github.com/european-modelling-hubs/covid19-forecast-hub-europe). The dataset is archived on Zenodo: https://doi.org/10.5281/zenodo.7669867
 
-- `R`: Contains scripts needed to load and clean data from the Hub to prep for analyses. Also some utils-type R files containing functions that are loaded in executing scripts (either for data-cleaning scripts or for scripts in e.g. `ensvssize`, see below).
-Data loading scripts are minimally adapted from https://github.com/epiforecasts/simplified-forecaster-evaluation.
+---
 
-- `ensvssize`: Contains scripts that run an ensemble recombination experiment from available host of Hub models:
-  - `master-enscomb.R`: loads the following scripts (all in this folder unless indicated otherwise):
-    - `specs.R`: contains all settings used for this analysis (locations, horizon values, etc.). All documented in this file, with commentary.
-    - `R/util-enscomb.R`: contains all needed functions for recombination, filtering etc. 
-    - *The following scripts are run consecutively, and all use the output of the script before*
-    - `suggested-ens.R`: recombines all models into ensembles of size k, subsequently saves into folder `enscomb-data` (local only due to large files), under name `"enscomb_suggested_<indicator:location_target_k>.csv"`
-    - `filter-ens.R`: filters suggested ensembles from previous step, according to availability constraints in `specs.R`, subsequently saves filtered ensemble combinations into `enscomb-data` under name `"enscomb_<indicator:location_target_k>.csv"` and saves availability data for ensembles (by data) under name `"ens_unavail_bydate_<indicator:location_target_k>.csv"`
-    - `make-ens.R`: actually constructs ensemble predictions according to ensemble combinations from previous step.
-  - `save-ensemble.R`: scores ensemble predictions from previous step, via pairwise comparison (this is not called from `master-enscomb.R` as it takes a long time to run and is thus run practically on a remote server.) 
-  - `stablek3ensemble_basesets.R` identifies the three models with the highest availability for each location - target combination and saves them into folder `specs` under name `stablek3ensemble_basesets.csv`
-  - `select-stablek5ensemblePLDE.R` (older file): identified stable five-model ensembles for Germany and Poland only 
-  - `experiment-filterparams.R` and `analyze_experiment_filterparams.R` analyzed the number of available recombined ensembles of size k, according to the filtering parameters for individual model and ensemble availability 
+## Repository structure
 
-- `specs`: Contains some globally relevant files:
-  - `stablek3ensemble_basesets.csv`: csv file (long format) containing the models that make up the stable three model ensembles for each location-target combination 
-  
+```
+eurohub-prt/
+├── R/                        # Shared R functions loaded by pipeline scripts
+├── scripts/                  # Main analysis pipeline (run in numbered order)
+├── further-analyses/         # Additional analyses
+├── specs/                    # Global settings
+├── data/                     # Input data
+│   ├── auxiliary/            
+│   ├── processed/
+│   └── raw-downloads/
+├── output/                   # Generated results and intermediate files
+│   ├── ensemble-diversity/
+│   ├── ensemble-size/
+│   └── selection-ensemble/
+├── plot_results/             # Output plots
+├── renv/                     # renv environment files
+├── renv.lock                 # Pinned R package versions
+└── DESCRIPTION               # R package metadata
+```
 
+---
+
+## Reproducing the analyses
+
+### 1. Prerequisites
+
+- R (≥ 4.1)
+- The [`renv`](https://rstudio.github.io/renv/) package
+
+### 2. Clone the repository
+
+```bash
+git clone -b repo-restructure https://github.com/fredbec/eurohub-prt.git
+cd eurohub-prt
+```
+
+### 3. Restore the R environment
+
+All package versions are pinned in `renv.lock`. To restore them:
+
+```r
+install.packages("renv")
+renv::restore()
+```
+
+### 4. Download the data
+
+Run the scripts in `scripts/00_download-data/` to fetch the raw Hub forecasts and truth data.
+
+### 5. Run the pipeline
+
+Execute the numbered scripts in `scripts/` in order:
+
+```r
+source("scripts/01_load-data.R")
+source("scripts/02_score-component-models.R")
+source("scripts/03_run-ens-combs.R")
+source("scripts/04_run-selection-ensemble.R")
+source("scripts/05_run-ensemble-size.R")
+source("scripts/06_run-ensemble-diversity.R")
+source("scripts/07_produce-plots.R")
+```
+
+> **Note:** Steps 05 (`run-ensemble-size.R`) and 06 (`run-ensemble-diversity.R`) are computationally intensive and were originally run on a remote server. Expect long runtimes for the full dataset. Each step saves its output on completion, so individual steps can be run independently of one another.
+
+Global settings (target locations, forecast horizons, filtering parameters, etc.) are defined in `specs/`.
+
+---
+
+## R functions
+
+Shared functions used across the pipeline live in `R/`:
+
+| File | Contents |
+|------|----------|
+| `functions-ensemble-diversity.R` | Diversity / distance metrics for ensembles |
+| `functions-ensemble-size.R` | Ensemble size experiment utilities |
+| `functions-selection-ensemble.R` | Selection and weighting logic |
+| `load-data-utils.R` | Data loading helpers (adapted from [epiforecasts/simplified-forecaster-evaluation](https://github.com/epiforecasts/simplified-forecaster-evaluation)) |
+| `own_functions.R` | General-purpose helper functions |
+| `plot.R` | Plotting helpers |
+| `utils-ext.R` | Extended utilities |
+| `utils.R` | Core utility functions |
+
+---
+
+## Citation
+
+If you use this code, please cite the accompanying paper:
+
+```
+Becker F, Sherratt K, Bosse N, Funk S.
+The influence of ensemble size and composition on the performance of
+combined real-time COVID-19 forecasts.
+medRxiv 2025. https://doi.org/10.1101/2025.08.09.25331484
+```
+
+---
+
+## License
+
+Please see [LICENSE](LICENSE) for terms of use.
