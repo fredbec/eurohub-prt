@@ -138,3 +138,54 @@ for(k in ks){
   }
   )
 }
+
+
+
+scores_distances <- map(loctargets, \(loctarg) {
+  cat(loctarg, "\n")
+  scores <- arrow::read_parquet(
+    here(
+      "output", "ensemble-size", "pwscores-median_ensemble",
+      paste0("ens_comb_pwscores", loctarg, ".parquet")
+    )
+  )
+  comparison <- map(ks, \(k) {
+    cat(k, "\n")
+    distances <- arrow::read_parquet(
+      here(
+        "output", "ensemble-diversity", "distance-data",
+        paste0("distances", loctarg, "_k", k, ".parquet")
+      )
+    ) |>
+      scoringutils:::as_scores(metrics = "mean_distance") |>
+      DT(, model := sub("mean_ensemble", "median_ensemble", model)) |>
+      DT(, model := paste0(model, "_k", k))
+    if (nrow(distances) > 0 & length(unique(distances$model)) > 1) {
+      pw_distances <- scoringutils::get_pairwise_comparisons(
+        distances, metric = "mean_distance", by = "horizon"
+      ) |>
+        DT(, list(model, horizon, mean_distance_relative_skill)) |>
+        unique()
+      k_scores <- scores |>
+        DT(grepl(paste0("_k", k, "$"), model))
+      merge.data.table(k_scores, pw_distances, by = c("model", "horizon")) |>
+        DT(, k := k) |>
+        DT(, loctarg := loctarg)
+    } else {
+      NULL
+    }
+  }) |>
+    rbindlist(fill = TRUE)
+})
+
+scores_distances <- rbindlist(scores_distances) |>
+  DT(, location := substr(loctarg, 0, 2)) |>
+  DT(, target_type := substr(loctarg, 3, 8))
+
+scores_distances <- scores_distances |>
+  #DT(, horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon")) |>
+  DT(, location := factor(location,
+                          levels = c("DE", "PL", "CZ", "FR", "GB"),
+                          labels = c("Germany", "Poland", "Czech Rep.", "France", "United Kingd."))
+  )
+arrow::write_parquet(scores_distances, here("output", "ensemble-diversity", "scores-distances.parquet"))
