@@ -3,18 +3,18 @@ library(dplyr)
 library(here)
 DT <- `[`
 
-source(here("ensvssize", "specs.R"))
+source(here("specs", "specs.R"))
 source(here("R", "utils-enscomb.R"))
 source(here("R", "utils-ext.R"))
 
-model_avail <- enscomb_specs$indmodel_avail
-start_date <- enscomb_specs$start_date
-end_date <- enscomb_specs$end_date
-ks <- enscomb_specs$ks
-loctargets <- enscomb_specs$loctargets
-availpropmods <- enscomb_specs$availpropmods
+model_avail <- specs$indmodel_avail
+start_date <- specs$start_date
+end_date <- specs$end_date
+ks <- specs$ks
+loctargets <- specs$loctargets
+availpropmods <- specs$availpropmods
 availpropmodsk3 <- availpropmods #same as above (legacy)
-availproptime <- enscomb_specs$availproptime
+availproptime <- specs$availproptime
 
 
 

@@ -6,7 +6,7 @@ library(purrr)
 library(arrow)
 
 DT <- `[`
-source(here("ensvssize", "specs.R"))
+source(here("specs", "specs.R"))
 
 #if running code on server
 if(grepl("*becker*", getwd())){
@@ -14,15 +14,15 @@ if(grepl("*becker*", getwd())){
   loctargets <- as.list(args[1])
 
 } else { # if running locally
-  loctargets <- enscomb_specs$loctargets
+  loctargets <- specs$loctargets
 }
 
-ks <- enscomb_specs$ks
-start_date <- enscomb_specs$start_date
-end_date <- enscomb_specs$end_date
-score_horizon <- enscomb_specs$horizon
-with_anomalies <- enscomb_specs$with_anomalies
-ensemble_type <- enscomb_specs$ensemble_type
+ks <- specs$ks
+start_date <- specs$start_date
+end_date <- specs$end_date
+score_horizon <- specs$horizon
+with_anomalies <- specs$with_anomalies
+ensemble_type <- specs$ensemble_type
 
 
 ensdat <- fread(here("data", "processed", "hubreplica-ensemble.csv")) |>

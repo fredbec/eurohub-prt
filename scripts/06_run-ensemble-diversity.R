@@ -8,14 +8,14 @@ library(stringr)
 library(forcats)
 library(data.table)
 
-source(here("ensvssize", "specs.R"))
+source(here("specs", "specs.R"))
 source(here("R", "utils-diversity.R"))
 source(here("R", "utils-ext.R"))
 
 
 
 # Get targets  ---------------------------------------------------
-targets <- crossing("loc" = enscomb_specs$loctargets) |>
+targets <- crossing("loc" = specs$loctargets) |>
   mutate(target = loc) |> #for compatibility with merging later on
   #filter(grepl("Deaths", target)) |>
   pull(target)
@@ -31,8 +31,8 @@ model_class <- fread(here("data", "raw-downloads", "model-classifications.csv"))
 # get ensemble component combinations
 #component combinations have k in file name (pwscores don't), so need another
 #version of targets here
-targets_comp_combinations <- crossing("loc" = enscomb_specs$loctargets,
-                                      "k" = enscomb_specs$ks) |>
+targets_comp_combinations <- crossing("loc" = specs$loctargets,
+                                      "k" = specs$ks) |>
   mutate(target = paste(loc, k, sep = "_k")) |>
   #filter(grepl("Deaths", target)) |>
   pull(target)
@@ -110,10 +110,10 @@ arrow::write_parquet(models, here("output", "ensemble-diversity", "enscomb_with_
 
 
 ####calculate ensemble pairwise distances
-start_date <- enscomb_specs$start_date
-end_date <- enscomb_specs$end_date
-ks <- enscomb_specs$ks
-loctargets <- enscomb_specs$loctargets
+start_date <- specs$start_date
+end_date <- specs$end_date
+ks <- specs$ks
+loctargets <- specs$loctargets
 
 fcdat <- arrow::read_parquet(here("data", "processed", "fcdat.parquet")) |>
   filter(forecast_date >= as.IDate(start_date)) |> #before: 2021-03-20

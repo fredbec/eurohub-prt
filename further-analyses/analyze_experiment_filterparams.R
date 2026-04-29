@@ -2,12 +2,12 @@ library(here)
 library(data.table)
 library(ggplot2)
 library(MetBrewer)
-source(here("ensvssize", "specs.R"))
+source(here("specs", "specs.R"))
 
 .d <- `[`
 
-ks <- enscomb_specs$ks
-loctargets <- enscomb_specs$loctargets
+ks <- specs$ks
+loctargets <- specs$loctargets
 
 maxens <- 1000000
 

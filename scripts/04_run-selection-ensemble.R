@@ -3,7 +3,7 @@ library(dplyr)
 library(data.table)
 library(tidyr)
 
-source(here("ensvssize", "specs.R"))
+source(here("specs", "specs.R"))
 source(here("R", "utils-ext.R"))
 source(here("R", "bestperformers-functions.R"))
 library(spatstat.geom)
@@ -15,10 +15,10 @@ su_cols <- c("model", "forecast_date", "quantile", "horizon",
              "target_type", "location", "target_end_date",
              "prediction", "true_value")
 
-start_date <- enscomb_specs$start_date
-end_date <- enscomb_specs$end_date
-loctargets <- enscomb_specs$loctargets
-horizons <- enscomb_specs$horizons
+start_date <- specs$start_date
+end_date <- specs$end_date
+loctargets <- specs$loctargets
+horizons <- specs$horizons
 
 #appendix results
 if (length(horizons) == 4){

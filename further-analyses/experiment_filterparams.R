@@ -10,9 +10,9 @@
 
 library(here)
 library(data.table)
-source(here("ensvssize", "specs.R"))
-ks <- enscomb_specs$ks
-loctargets <- enscomb_specs$loctargets
+source(here("specs", "specs.R"))
+ks <- specs$ks
+loctargets <- specs$loctargets
 #loctargets <- "DEDeaths"
 
 maxens <- 1000000
@@ -41,8 +41,8 @@ for(pcomb in 1:nrow(param_combs)){
     availpropmodsk3 <- 0
   }
 
-  source(here("ensvssize", "suggested-ens.R"))
-  source(here("ensvssize", "filter-ens.R"))
+  source(here("specs", "suggested-ens.R"))
+  source(here("specs", "filter-ens.R"))
 
   for(nk in 1:nrow(datacombs)){
 

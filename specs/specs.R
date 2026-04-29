@@ -1,7 +1,7 @@
 #this file holds the main specifications used throughout the analysis of ensemble
 #vs size
 
-enscomb_specs <- list(
+specs <- list(
   #threshold for individual model availability -> models below this threshold are filtered out
   "indmodel_avail" = 0.5,
   #threshold for model availability within ensemble at a given data, for ensemble to be considered 'available'
@@ -23,7 +23,7 @@ enscomb_specs <- list(
   #"maxens" = 1000000000000,
 
   "horizons" = c(1,2),
-  "ensemble_type" = "mean_ensemble",
+  "ensemble_type" = "median_ensemble",
 
   "with_anomalies" = FALSE,
 

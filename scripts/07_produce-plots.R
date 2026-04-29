@@ -12,7 +12,7 @@ library(arrow)
 library(here)
 
 source(here("R", "utils-ext.R"))
-source(here("ensvssize", "specs.R"))
+source(here("specs", "specs.R"))
 
 DT <- `[`
 
@@ -20,8 +20,8 @@ DT <- `[`
 ###########################Illustration plots###################################
 ###############################################################################
 #####hub data illustration (component and ensemble models)
-start_date <- enscomb_specs$start_date
-end_date <- enscomb_specs$end_date
+start_date <- specs$start_date
+end_date <- specs$end_date
 
 czdat <- read_parquet(here("data", "processed", "fcdat.parquet")) |>
   filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
@@ -516,8 +516,8 @@ dev.off()
 #############################ensemble size#####################################
 ###############################################################################
 
-loctargets <- enscomb_specs$loctargets #exclude PL and DE for now, since not done yet
-ks <- enscomb_specs$ks
+loctargets <- specs$loctargets #exclude PL and DE for now, since not done yet
+ks <- specs$ks
 enstypes <- c("median_ensemble", "mean_ensemble")
 
 #model to compare to
@@ -696,7 +696,7 @@ plot_cols <- c("Heterogeneous" = "grey30",
 
 source(here("R", "utils-ext.R"))
 
-min_num_ensembles <- enscomb_specs$min_num_ensembles
+min_num_ensembles <- specs$min_num_ensembles
 
 ensemble_scores <- arrow::read_parquet(here("output", "ensemble-diversity", "enscomb_scores_with_classification.parquet"))
 model_class <- arrow::read_parquet(here("output", "ensemble-diversity", "component_model_classification.parquet"))

@@ -4,15 +4,15 @@ library(dplyr)
 library(data.table)
 
 
-source(here("ensvssize", "specs.R"))
+source(here("specs", "specs.R"))
 source(here("R", "utils-ext.R"))
 
 su_cols <- c("model", "forecast_date", "quantile", "horizon",
              "target_type", "location", "target_end_date",
              "prediction", "true_value")
-start_date <- enscomb_specs$start_date
-end_date <- enscomb_specs$end_date
-loctargets <- enscomb_specs$loctargets
+start_date <- specs$start_date
+end_date <- specs$end_date
+loctargets <- specs$loctargets
 
 fcdat <- arrow::read_parquet(here("data", "processed", "fcdat.parquet")) |>
   filter(forecast_date >= data.table::as.IDate(start_date)) |> #before: 2021-03-20
