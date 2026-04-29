@@ -2,7 +2,7 @@
 
 This repository contains the code for the analyses in:
 
-> Becker F, Sherratt K, Bosse N, Funk S. *The influence of ensemble size and composition on the performance of combined real-time COVID-19 forecasts.* medRxiv 2025. https://doi.org/10.1101/2025.08.09.25331484
+> Becker F, Sherratt K, Bosse N, Funk S. *The influence of ensemble size and composition on the performance of combined real-time COVID-19 forecasts.* medRxiv 2025. https://www.medrxiv.org/content/10.1101/2025.08.09.25331484v1
 
 The analyses use data from the [European COVID-19 Forecast Hub](https://github.com/european-modelling-hubs/covid19-forecast-hub-europe). The dataset is archived on Zenodo: https://doi.org/10.5281/zenodo.7669867
 
