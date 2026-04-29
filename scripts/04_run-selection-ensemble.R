@@ -121,6 +121,8 @@ for(nmod in nmods){
     rename(model = variable)
 
 
+  dir.create(here("output", "selection-ensemble", "forecasts"),
+             recursive = TRUE, showWarnings = FALSE)
   data.table::fwrite(best_performers_ensemble_mean,
                      here("output", "selection-ensemble", "forecasts",
                           paste0("best_performers_ensemble_mean_nmod", nmod, suffix, ".csv")))
@@ -132,6 +134,8 @@ for(nmod in nmods){
   k <- k + 1
 }
 
+dir.create(here("output", "selection-ensemble", "weights"),
+           recursive = TRUE, showWarnings = FALSE)
 data.table::fwrite(rbindlist(best_performers_data),
                    here("output", "selection-ensemble", "weights", paste0("best_performers_incl_mods", suffix, ".csv")))
 
@@ -334,5 +338,7 @@ scores_individual <- all_evals |>
   filter(!is.na(forecast_date))
 scores_average <- all_evals |>
   filter(is.na(forecast_date))
+dir.create(here("output", "selection-ensemble", "scores"),
+           recursive = TRUE, showWarnings = FALSE)
 data.table::fwrite(scores_individual, here("output", "selection-ensemble", "scores", paste0("scores-selection-ens", suffix, ".csv")))
 data.table::fwrite(scores_average, here("output", "selection-ensemble", "scores", paste0("avg-scores-selection-ens" , suffix, ".csv")))

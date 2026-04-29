@@ -8,12 +8,13 @@ library(arrow)
 DT <- `[`
 source(here("specs", "specs.R"))
 
-#if running code on server
-if(grepl("*becker*", getwd())){
-  args <- commandArgs(trailingOnly = TRUE)
+#allow a single loc-target combination to be passed as a command-line argument
+#(useful when running each loc-target as a separate job on a cluster);
+#otherwise process all loc-targets defined in specs.
+args <- commandArgs(trailingOnly = TRUE)
+if (length(args) >= 1 && nzchar(args[1])) {
   loctargets <- as.list(args[1])
-
-} else { # if running locally
+} else {
   loctargets <- specs$loctargets
 }
 
