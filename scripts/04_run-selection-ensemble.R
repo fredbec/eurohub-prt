@@ -5,7 +5,7 @@ library(tidyr)
 
 source(here("specs", "specs.R"))
 source(here("R", "utils-ext.R"))
-source(here("R", "bestperformers-functions.R"))
+source(here("R", "functions-selection-ensemble.R"))
 library(spatstat.geom)
 
 ###############################from function call####################################

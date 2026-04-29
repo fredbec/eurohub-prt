@@ -254,7 +254,7 @@ ggsave(here("plot_results", "model-availability.pdf"), height = 4, width = 8.5)
 ###########################Selection ensemble###################################
 ###############################################################################
 
-source(here("R", "bestperformers-functions.R"))
+source(here("R", "functions-selection-ensemble.R"))
 
 plot_location_label <- c(`PL` = "Poland", `DE` = "Germany",
                          `CZ` = "Czech Rep.", `GB` = "United Kingd.",

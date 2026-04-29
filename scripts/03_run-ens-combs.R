@@ -4,7 +4,7 @@ library(here)
 DT <- `[`
 
 source(here("specs", "specs.R"))
-source(here("R", "utils-enscomb.R"))
+source(here("R", "functions-ensemble-size.R"))
 source(here("R", "utils-ext.R"))
 
 model_avail <- specs$indmodel_avail

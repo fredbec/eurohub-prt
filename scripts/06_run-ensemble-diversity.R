@@ -9,7 +9,7 @@ library(forcats)
 library(data.table)
 
 source(here("specs", "specs.R"))
-source(here("R", "utils-diversity.R"))
+source(here("R", "functions-ensemble-diversity.R"))
 source(here("R", "utils-ext.R"))
 
 
@@ -22,7 +22,7 @@ targets <- crossing("loc" = specs$loctargets) |>
 
 # get model classifications
 model_class <- fread(here("data", "raw-downloads", "model-classifications.csv")) |>
-  classify_models() |> #applies majority vote; from Kath's project, here locally saved in R/utils-diversity
+  classify_models() |> #applies majority vote; from Kath's project, here locally saved in R/functions-ensemble-diversity
   filter(!is.na(classification)) |> #all models used here are classified
   select(model, classification) |>
   mutate(classification = as.character(classification)) #needed for function later on
