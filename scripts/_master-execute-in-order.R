@@ -1,0 +1,10 @@
+library(here)
+
+source(here("scripts", "00_download-data", "master-get-data.R"))
+source(here("scripts", "01_load-data.R"))
+source(here("scripts", "02_score-component-models.R"))
+source(here("scripts", "03_run-ens-combs.R"))
+source(here("scripts", "04_run-selection-ensemble.R"))
+source(here("scripts", "05_run-ensemble-size.R"))
+source(here("scripts", "06_run-ensemble-diversity.R"))
+source(here("scripts", "07_produce-plots.R"))
