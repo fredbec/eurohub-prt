@@ -71,6 +71,7 @@ for(k in ks){
 
       prop_ensids <- results[[2]]$ensid  |> unique()
 
+      dir.create(here("output", "ensemble-size", "ensemble-combinations"), recursive = TRUE, showWarnings = FALSE)
       arrow::write_parquet(results[[1]], here("output", "ensemble-size", "ensemble-combinations", paste0("ens_unavail_bydate_", loctarg, "_k", k, ".parquet")))
       arrow::write_parquet(results[[2]], here("output", "ensemble-size", "ensemble-combinations", paste0("enscomb_", loctarg, "_k", k, ".parquet")))
     }
@@ -130,6 +131,7 @@ for(k in ks){
                         ens_unavail_dat = ens_unavail_dat,
                         fcdat = fcdat)
 
+    dir.create(here("output", "ensemble-size", "ensemble-forecasts"), recursive = TRUE, showWarnings = FALSE)
     arrow::write_parquet(res, here("output", "ensemble-size", "ensemble-forecasts", paste0("predictions_enscomb", loctarg, "_k", k, ".parquet")))
     #write data
   }

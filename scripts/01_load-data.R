@@ -52,7 +52,7 @@ combdat <- fcdat |>
                 "anomaly")) |>
   DT(period_cats, on = c("forecast_date"))
 
-
+dir.create(here("data", "processed"), recursive = TRUE, showWarnings = FALSE)
 arrow::write_parquet(combdat, here("data", "processed", "fcdat.parquet"))
 
 

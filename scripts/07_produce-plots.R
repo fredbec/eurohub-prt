@@ -156,6 +156,7 @@ plot2 <- ggplot() +
                                      vjust = 6)) +
   ggtitle(label = "Median Ensemble Forecast" , subtitle ="Czech Rep. Cases, October 2021")
 
+dir.create(here("plot_results"), recursive = TRUE, showWarnings = FALSE)
 pdf(here("plot_results", "hubdata-illustration.pdf"), width = 10.5, height = 5.5)
 illustration_plot <- plot1 + plot2 +
   plot_layout(guides = "collect")  &
