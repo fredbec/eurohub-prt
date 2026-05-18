@@ -4,8 +4,11 @@ source(here("scripts", "00_download-data", "get-hub-forecasts.R"))
 
 DT <- `[`
 repo <- "covid19-forecast-hub-europe/covid19-forecast-hub-europe"
+#pin to a specific commit so re-runs are reproducible
+hub_commit <- "f6922c3e4bdcb055abcbba8e73472afacac4cf40"
 
-forecasts_unprocessed <- get_hub_forecasts(repo)
+dir.create(here("data", "raw-downloads"), recursive = TRUE, showWarnings = FALSE)
+forecasts_unprocessed <- get_hub_forecasts(repo, branch = hub_commit)
 data.table::fwrite(forecasts_unprocessed, here("data", "raw-downloads", "forecasts_unprocessed.csv"))
 
 forecasts_unprocessed <- fread(here("data", "forecasts_unprocessed.csv"))

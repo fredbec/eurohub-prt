@@ -88,7 +88,8 @@ median_ens <- fcdat |>
 
 
 
-data.table::fwrite(score_all_mods, here("output", "selection-ensemble", "intermediate", "component-model-scores.csv"))
+dir.create(here("data", "processed"), recursive = TRUE, showWarnings = FALSE)
+data.table::fwrite(score_all_mods, here("data", "processed", "component-model-scores.csv"))
 #data.table::fwrite(score_all_mods_with_relwis, here("bestperformers-data","scores", "score_all_mods_with_relwis.csv"))
 #data.table::fwrite(score_all_mods_with_relwis_avg, here("bestperformers-data","scores", "score_all_mods_with_relwis_avg.csv"))
 #data.table::fwrite(mean_ens_scores, here("bestperformers-data","scores", "mean_ensemble_scores.csv"))

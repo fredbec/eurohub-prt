@@ -103,8 +103,10 @@ ensemble_scores <- filter(ensemble_scores,
                         labels = c("Heterogeneous", "Homogeneous")))
 
 #save data
+dir.create(here("output", "ensemble-diversity"), recursive = TRUE, showWarnings = FALSE)
+dir.create(here("output", "ensemble-diversity", "distance-data"), recursive = TRUE, showWarnings = FALSE)
 arrow::write_parquet(ensemble_scores, here("output", "ensemble-diversity", "enscomb_scores_with_classification.parquet"))
-arrow::write_parquet(model_class, here("data", "processed", "component_model_classification.parquet"))
+arrow::write_parquet(model_class, here("output", "ensemble-diversity", "component_model_classification.parquet"))
 arrow::write_parquet(models, here("output", "ensemble-diversity", "enscomb_with_classification.parquet"))
 
 
