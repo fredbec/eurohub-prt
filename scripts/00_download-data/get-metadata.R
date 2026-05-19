@@ -10,7 +10,7 @@ source(here("R", "utils.R"))
 DT <- `[`
 
 # Load already processed forecasts and get target date range
-target_forecasts <- fread(here("data", "forecasts.csv"))
+target_forecasts <- fread(here("data", "raw-downloads", "forecasts.csv"))
 
 forecast_dates <- target_forecasts |>
   DT(, forecast_date) |>
@@ -84,4 +84,4 @@ metadata <- metadata |>
   unique()
 
 # Save metadata
-fwrite(metadata, here("data", "metadata.csv"))
+fwrite(metadata, here("data", "raw-downloads", "metadata.csv"))

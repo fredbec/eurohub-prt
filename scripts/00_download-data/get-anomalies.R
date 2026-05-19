@@ -3,7 +3,7 @@ library(data.table)
 library(here)
 
 # Load already processed forecasts and get target date range
-target_forecasts <- fread(here("data", "forecasts.csv")) |>
+target_forecasts <- fread(here("data", "raw-downloads", "forecasts.csv")) |>
   DT(, .(target_end_date, location)) |>
   unique()
 
@@ -30,4 +30,4 @@ in_scope_anomalies <- anomalies[
 setkey(in_scope_anomalies, location_name, target_end_date)
 
 # Save anomalies
-fwrite(in_scope_anomalies, here("data", "anomalies.csv"))
+fwrite(in_scope_anomalies, here("data", "raw-downloads", "anomalies.csv"))

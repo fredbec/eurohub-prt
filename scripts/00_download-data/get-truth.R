@@ -37,4 +37,4 @@ truth <- truth[weekdays(date) %in% "Saturday"]
 set(truth, j = c("value"), value = NULL)
 
 # Save data
-fwrite(truth, here("data", "truth.csv"))
+fwrite(truth, here("data", "raw-downloads", "truth.csv"))
