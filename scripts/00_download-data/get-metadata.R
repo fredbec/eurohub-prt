@@ -35,7 +35,7 @@ forecast_dates <- target_forecasts |>
 hub_forecasts <- target_forecasts
 
 # Load anomalies
-anomalies <- fread(here("data", "anomalies.csv")) |>
+anomalies <- fread(here("data", "raw-downloads", "anomalies.csv")) |>
   DT(, location_name := NULL) |>
   DT(, anomaly := TRUE)
 
