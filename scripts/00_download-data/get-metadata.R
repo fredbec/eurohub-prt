@@ -43,7 +43,7 @@ anomalies <- fread(here("data", "raw-downloads", "anomalies.csv")) |>
 # Based on: https://github.com/covid19-forecast-hub-europe/covid19-forecast-hub-europe/blob/39823425e9ea5d66c3dc0e7a55fa7ba5433d7df2/code/evaluation/load_and_score_models.r#L29 # nolint
 metadata <- anomalies |>
   copy() |>
-  DT(hub_forecasts, on = c("location", "target_end_date")) |>
+  DT(hub_forecasts, on = c("location", "target_type", "target_end_date")) |>
   DT(,
      previous_end_date := ceiling_date(
        forecast_date - 4, week_start = 6, unit = "week"
@@ -52,7 +52,7 @@ metadata <- anomalies |>
 
 metadata <- anomalies |>
   DT(metadata,
-     on = c("target_end_date" = "previous_end_date", "location")
+     on = c("target_end_date" = "previous_end_date", "location", "target_type")
   ) |>
   DT(, c("target_end_date", "anomaly") := NULL) |>
   setnames(
