@@ -23,6 +23,7 @@ fcdat <- arrow::read_parquet(here("data", "processed", "fcdat.parquet"))|>
   filter(forecast_date >= as.Date(start_date)) |> #before: 2021-03-20
   filter(forecast_date <= as.Date(end_date))
 
+dir.create(here("output", "ensemble-size", "ensemble-combinations"), recursive = TRUE, showWarnings = FALSE)
 for(k in ks){
 
   combdat <- fcdat |>
