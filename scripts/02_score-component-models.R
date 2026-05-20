@@ -32,7 +32,10 @@ tg_end_map <- fcdat |>
 #score all models
 score_all_mods <- fcdat |>
   select(su_cols) |>
-  score() |>
+  scoringutils::as_forecast_quantile(predicted = "prediction",
+                                     observed = "true_value",
+                                     quantile_level = "quantile") |>
+  scoringutils::score() |>
   summarise_scores(by = c("model", "location", "target_type",
                           "forecast_date", "horizon")) |>
   left_join(tg_end_map, by = c("forecast_date", "horizon"))
