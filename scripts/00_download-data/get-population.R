@@ -8,4 +8,4 @@ population <- fread(
   "https://raw.githubusercontent.com/covid19-forecast-hub-europe/covid19-forecast-hub-europe/f6922c3e4bdcb055abcbba8e73472afacac4cf40/data-locations/locations_eu.csv" # nolint
 )
 
-fwrite(population, here("data", "population.csv"))
+fwrite(population, here("data", "raw_downloads", "population.csv"))
