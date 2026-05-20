@@ -31,7 +31,7 @@ truth <- copy(jhu)[,
 
 # Filter from the 15th of January 2022 to keep only observations with forecasts
 truth <- truth[date >= as.Date("2021-03-11")]
-truth <- truth[weekdays(date) %in% "Saturday"]
+truth <- truth[wday(date) %in% 7] #returns Saturday
 
 # Drop unnecessary columns
 set(truth, j = c("value"), value = NULL)
