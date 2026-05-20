@@ -8,5 +8,5 @@ population <- fread(
   "https://raw.githubusercontent.com/covid19-forecast-hub-europe/covid19-forecast-hub-europe/f6922c3e4bdcb055abcbba8e73472afacac4cf40/data-locations/locations_eu.csv" # nolint
 )
 
-dir.create(here("data", "raw_downloads"), recursive = TRUE, showWarnings = FALSE)
+dir.create(here("data", "raw-downloads"), recursive = TRUE, showWarnings = FALSE)
 fwrite(population, here("data", "raw-downloads", "population.csv"))
