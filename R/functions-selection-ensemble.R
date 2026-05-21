@@ -224,7 +224,7 @@ inverse_score_weights <- function(data,
                                   window = 4,
                                   exp_smooth = NULL,
                                   by_target_end_date = TRUE,
-                                  score_fun = "interval_score",
+                                  score_fun = "wis",
                                   may_miss = 1){
 
   #####IMPUTE SCORES#######
