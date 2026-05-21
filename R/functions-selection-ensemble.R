@@ -327,8 +327,9 @@ inverse_score_weights <- function(data,
     )
   names(full_sets)[1] <- at_level
 
-  #print(horizons)
+  browser()
 
+  #print(horizons)
   #compute ivnerse score weights
   inv_score_weights <- score_data |>
     mutate(forecast_date = as.Date(forecast_date)) |>
