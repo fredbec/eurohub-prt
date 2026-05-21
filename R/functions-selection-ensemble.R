@@ -230,12 +230,6 @@ inverse_score_weights <- function(data,
   #####IMPUTE SCORES#######
   horizons <- unique(data$horizon)
 
-  #warning if baseline or ensemble in data
-  if(score_fun != "interval_score"){
-    stop("can only impute scores for the WIS")
-  }
-
-
   if(is.null(score_data) & is.null(su_cols)){
     stop("if not supplying scores, must supply su_cols")
   } else if (is.null(score_data)){
@@ -327,8 +321,6 @@ inverse_score_weights <- function(data,
     )
   names(full_sets)[1] <- at_level
 
-  browser()
-
   #print(horizons)
   #compute ivnerse score weights
   inv_score_weights <- score_data |>
@@ -352,8 +344,8 @@ inverse_score_weights <- function(data,
     mutate(maxscore = max(get(score_fun), na.rm = TRUE)) |>
     filter(maxscore >= 0) |>
     ungroup() |>
-    mutate(interval_score = ifelse(is.na(interval_score),  #actual imputation
-                                   maxscore, interval_score)) |>
+    mutate(wis = ifelse(is.na(wis),  #actual imputation
+                                   maxscore, wis)) |>
     select(-c(present, maxscore)) |>
     #join with exponential smoothing values
     left_join(smoothing_vals |>
@@ -363,7 +355,7 @@ inverse_score_weights <- function(data,
               by = c("forecast_date", "target_end_date", "horizon")) |>
     #calculate inverse scores
     group_by(across(all_of(c(at_level, "location", "target_type")))) |>
-    summarise(interval_score = weighted.mean(get(score_fun),
+    summarise(wis = weighted.mean(get(score_fun),
                                              w = smoother),
               .groups = "drop") |>
     select(all_of(c(at_level, "target_type", "location", score_fun))) |>
