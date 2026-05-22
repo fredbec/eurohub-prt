@@ -104,14 +104,15 @@ dattoscore <- dattoscore |>
   DT(, forecast_date := NULL)
 
 ## score by location / target
-scores <- map(loctargets, \(loctarg) {
+dir.create(here("output", "ensemble-size", paste0("pwscores-", ensemble_type)),
+           recursive = TRUE, showWarnings = FALSE)
+
+walk(loctargets, \(loctarg) {
   loc <- substr(loctarg, 0, 2)
   targ <- substr(loctarg, 3, 100)
-  dattoscore |>
+  scores <- dattoscore |>
     DT(location == loc) |>
     DT(target_type == targ) |>
-    #remove unnecessary columns
-    #this only leaves horizon, model, target_end_date (for identifying instances), as well as quantile, prediction, true_value
     DT(,location := NULL) |>
     DT(,target_type := NULL) |>
     DT(, k := NULL)  |>
@@ -122,13 +123,18 @@ scores <- map(loctargets, \(loctarg) {
     get_pairwise_comparisons(compare = "model",
                              by = c("horizon"),
                              metric = "wis",
-                             baseline = "median-hubreplica")
-}) |>
-  rbindlist() |>
-  DT() |>
-  setnames(c("wis_relative_skill", "wis_scaled_relative_skill"),
-           c("relative_skill", "scaled_rel_skill")) |>
-  DT(compare_against == "median-hubreplica")
+                             baseline = "median-hubreplica") |>
+    DT() |>
+    setnames(c("wis_relative_skill", "wis_scaled_relative_skill"),
+             c("relative_skill", "scaled_rel_skill")) |>
+    DT(compare_against == "median-hubreplica")
+
+  arrow::write_parquet(
+    scores,
+    sink = here("output", "ensemble-size",
+                paste0("pwscores-", ensemble_type),
+                paste0("ens_comb_pwscores", loctarg, ".parquet")))
+})
 
 
 
