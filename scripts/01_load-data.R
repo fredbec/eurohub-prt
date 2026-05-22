@@ -15,6 +15,9 @@ source(here("R", "utils.R"))
 fcdat <- fread(here("data", "raw-downloads", "forecasts.csv"))
 truth <- fread(here("data", "raw-downloads", "truth.csv"))
 
+loctargets <- specs$loctargets
+locs <- unique(substr(loctargets, 1, 2))
+
 # Load observations defined as anomalies
 anomalies <- fread(here("data", "raw-downloads",  "anomalies.csv")) |>
   DT(, location_name := NULL)
@@ -25,7 +28,7 @@ population <- fread(here("data", "raw-downloads", "population.csv"))
 period_cats <- fread(here("data", "auxiliary", "period_cats.csv"))
 
 combdat <- fcdat |>
-  filter(location %in% c("DE", "PL", "FR", "CZ", "GB")) |>
+  filter(location %in% locs) |>
   rename(prediction = value) |>
   mutate(forecast_date =
            lubridate::ceiling_date(forecast_date,
