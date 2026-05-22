@@ -22,15 +22,17 @@ horizon_sets <- specs$horizons
 
 
 
-#appendix results
-if (length(horizons) == 4){
-  suffix <- "_allhor"
-} else {
-  suffix <- ""
-}
 
 
 for(horizons in horizon_sets){
+
+  #appendix results
+  if (length(horizons) == 4){
+    suffix <- "_allhor"
+  } else {
+    suffix <- ""
+  }
+
   fcdat <- arrow::read_parquet(here("data", "processed", "fcdat.parquet")) |>
     filter(forecast_date >= data.table::as.IDate(start_date)) |> #before: 2021-03-20
     filter(forecast_date <= data.table::as.IDate(end_date)) |>
