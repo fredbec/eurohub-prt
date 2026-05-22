@@ -29,7 +29,7 @@ forecasts <- forecasts |>
   DT(!type == "point") |> #remove point forecasts
   DT(!model == "data-processed") |> #remove evaluation data
   DT(, type := NULL) |>
-  DT(, n_models := NULL) |>
+  #DT(, n_models := NULL) |>
   #only keep models that submit full forecasts
   DT(,  n := .N, by = c("model", "forecast_date", "target_type", "location")) |>
   DT(n == 92) |>
