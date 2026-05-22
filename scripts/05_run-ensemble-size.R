@@ -138,5 +138,5 @@ arrow::write_parquet(
   scores,
   sink = here("output", "ensemble-size",
               paste0("pwscores-", ensemble_type),
-              paste0("ens_comb_pwscores", loctargets[[1]], ".parquet")))
+              paste0("ens_comb_pwscores", loctargets, ".parquet")))
 
