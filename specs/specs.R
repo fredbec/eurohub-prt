@@ -18,7 +18,7 @@ specs <- list(
   "ks" = seq(2,14),
   #combinations of locations and targets to consider
   #"loctargets" = c("DECases", "DEDeaths", "PLCases", "PLDeaths"),
-  "loctargets" = c("CZCases", "CZDeaths", "FRCases", "FRDeaths"),
+  "loctargets" = c("CZCases", "CZDeaths", "FRCases", "FRDeaths", "GBCases", "GBDeaths", "PLCases", "PLDeaths", "DECases", "DEDeaths"),
   #maximum number of ensembles to consider for each location-target-combination
   #"maxens" = 1000000000000,
 
