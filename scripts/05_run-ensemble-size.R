@@ -21,7 +21,7 @@ if (length(args) >= 1 && nzchar(args[1])) {
 ks <- specs$ks
 start_date <- specs$start_date
 end_date <- specs$end_date
-score_horizon <- specs$horizon
+score_horizon <- specs$horizon[[1]]
 with_anomalies <- specs$with_anomalies
 ensemble_types <- specs$ensemble_types
 
