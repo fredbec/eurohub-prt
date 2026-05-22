@@ -10,6 +10,7 @@ plength <- 10
 model_avail <- 0.7
 
 source(here("R", "utils.R"))
+source(here("specs", "specs.R"))
 
 
 fcdat <- fread(here("data", "raw-downloads", "forecasts.csv"))
