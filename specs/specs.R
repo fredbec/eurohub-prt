@@ -22,7 +22,7 @@ specs <- list(
   #maximum number of ensembles to consider for each location-target-combination
   #"maxens" = 1000000000000,
 
-  "horizons" = c(1,2),
+  "horizons" = list(c(1,2), c(1,2,3,4)),
   "ensemble_types" = c("median_ensemble", "mean_ensemble"), #for aggregating recombined ensembles
 
   "with_anomalies" = FALSE,
