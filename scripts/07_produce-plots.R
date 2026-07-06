@@ -821,7 +821,8 @@ ensemble_scores |>
 
 
 ##############Plotting
-scores_distances <- arrow::read_parquet(here("output", "ensemble-diversity", "scores-distances.parquet"))
+scores_distances <- arrow::read_parquet(here("output", "ensemble-diversity", "scores-distances.parquet")) |>
+  DT(, horizon := paste0(horizon, "-week horizon"))
 
 p <- function(score_dist_data,
               plot_horizon){
