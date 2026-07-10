@@ -38,8 +38,8 @@ combdat <- fcdat |>
                                    week_start = getOption("lubridate.week.start", 1)) #round down to Saturday
   ) |>
   filter(!model == "EuroCOVIDhub-ensemble") |>
-  filter(forecast_date >= as.Date("2021-03-11")) |> #before: 2021-03-20
-  filter(forecast_date <= as.Date("2023-03-11")) |>
+  filter(forecast_date >= as.Date(specs$start_date)) |>
+  filter(forecast_date <= as.Date(specs$end_date)) |>
   DT(prediction<0, prediction := 0) |>
   mutate(forecast_date = as.IDate(forecast_date)) |>
   merge_forecasts_with_truth(truth) |>
@@ -55,7 +55,7 @@ combdat <- fcdat |>
                 "quantile", "prediction", "true_value",
                 "prediction_pop", "true_value_pop",
                 "anomaly")) |>
-  DT(period_cats, on = c("forecast_date"))
+  DT(period_cats, on = "forecast_date", period_cat := i.period_cat)
 
 dir.create(here("data", "processed"), recursive = TRUE, showWarnings = FALSE)
 arrow::write_parquet(combdat, here("data", "processed", "fcdat.parquet"))
