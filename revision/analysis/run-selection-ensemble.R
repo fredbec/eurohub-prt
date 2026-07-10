@@ -20,10 +20,12 @@ su_cols <- c("model", "forecast_date", "quantile", "horizon",
 
 
 
-best_performers_data <- NULL
-k <- 1
-
 for(horizons in horizon_sets){
+
+  #reset the accumulator for each horizon set, otherwise the _allhor output
+  #inherits the rows written during the 2-week run
+  best_performers_data <- NULL
+  k <- 1
 
   #appendix results
   if (length(horizons) == 4){
