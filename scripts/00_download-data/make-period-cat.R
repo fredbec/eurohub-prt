@@ -24,4 +24,5 @@ period_cat_dt <- lapply(seq_along(period_cat),
          forecast_date = as.Date(forecast_date))
 
 
-data.table::fwrite(period_cat_dt, here::here("data", "period_cats.csv"))
+dir.create(here::here("data", "auxiliary"), recursive = TRUE, showWarnings = FALSE)
+data.table::fwrite(period_cat_dt, here::here("data", "auxiliary", "period_cats.csv"))
