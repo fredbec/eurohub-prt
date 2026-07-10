@@ -189,7 +189,7 @@ num_mods <- function(
     length()
 
   combdat <- fcdat |>
-    filter(!model == "EuroCOVIDhub-ensemble") |>
+    filter(!model %in% c("EuroCOVIDhub-ensemble", "EuroCOVIDhub-baseline")) |>
     filter(forecast_date >= as.IDate(start_date)) |>
     filter(forecast_date <= as.IDate(end_date)) |>
     select(model, forecast_date, location, target_type) |>
