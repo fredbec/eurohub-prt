@@ -84,13 +84,20 @@ ensemble_scores <- left_join(scores, ensemble_mix,
   filter(!is.na(classification))
 
 
-# restrict to k < possible single-type ensembles
-k_max <- filter(ensemble_scores, homog) |>
-  group_by(target, horizon) |>
-  summarise(k = max(k))
+# restrict to k <= the largest k at which a single-type (homogeneous) ensemble
+# is possible for that location-target. target encodes k (loc_kN), so strip it
+# before taking the max, otherwise every (target, horizon) group holds a single k.
+k_max <- ensemble_scores |>
+  filter(homog) |>
+  mutate(loctarget = sub("_k[0-9]+$", "", target)) |>
+  group_by(loctarget, horizon) |>
+  summarise(k_max = max(k), .groups = "drop")
 
-ensemble_scores <- filter(ensemble_scores,
-                          target %in% k_max$target) |>
+ensemble_scores <- ensemble_scores |>
+  mutate(loctarget = sub("_k[0-9]+$", "", target)) |>
+  left_join(k_max, by = c("loctarget", "horizon")) |>
+  filter(!is.na(k_max), k <= k_max) |>
+  select(-loctarget, -k_max) |>
   # clean variables
   mutate(location = str_remove_all(target, "Deaths_k[:digit:]"),
          location = str_remove_all(target, "Cases_k[:digit:]"),
