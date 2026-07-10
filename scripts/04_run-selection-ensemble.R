@@ -84,8 +84,7 @@ for(horizons in horizon_sets){
 
       lwr <- 1
       upr <- 6 #was 7 before!
-    }
-    if(nmod == 10){
+    } else if(nmod == 10){
       #exclude loc-target combs if they don't have enough models
       #here: only include DE&PL Deaths and Cases
       bp_data <- hub_data |>
