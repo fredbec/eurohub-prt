@@ -7,7 +7,7 @@ library(ggplot2)
 
 DT <- `[`
 
-fcdat <- read_parquet(here("data", "processed", "fcdat.parquet"))
+fcdat <- read_parquet(here("revision", "data", "fcdat_allcountries_filtered.parquet"))
 
 #scoredat <- fcdat |>
 #  DT(, .SD, .SDcols = c("model", "location", "target_type", "forecast_date",
@@ -16,7 +16,7 @@ fcdat <- read_parquet(here("data", "processed", "fcdat.parquet"))
 #                       quantile_level = "quantile") |>
 #  score()
 
-scoredat <- fread(here("data", "processed", "component-model-scores.csv"))
+scoredat <- fread(here("revision", "data", "component-model-scores.csv"))
 
 percdat <- scoredat |>
   DT(, q_wis := (frank(wis, ties.method = "average") - 1) / (.N - 1),

@@ -3,7 +3,7 @@ library(tidyr)
 library(here)
 library(dplyr)
 
-fcdat <- arrow::read_parquet(here("data", "processed", "fcdat.parquet"))
+fcdat <- arrow::read_parquet(here("revision", "data", "fcdat_allcountries_filtered.parquet"))
 
 # Create complete grid and mark availability
 plot_data <- fcdat |>
