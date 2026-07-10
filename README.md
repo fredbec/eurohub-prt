@@ -36,7 +36,7 @@ eurohub-prt/
 
 ### 1. Prerequisites
 
-- R (≥ 4.1)
+- R (≥ 4.5; `renv.lock` was built with R 4.5.3)
 - The [`renv`](https://rstudio.github.io/renv/) package
 
 ### 2. Clone the repository
