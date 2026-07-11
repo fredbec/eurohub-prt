@@ -173,7 +173,7 @@ for(horizons in horizon_sets){
 
   data.table::fwrite(rbindlist(all_inv_score_weights),
                      here("revision", "output", "selection-ensemble", "weights",
-                          "best_performers_invscore_weights.csv"))
+                          paste0("best_performers_invscore_weights", suffix, ".csv")))
 
 
   ####################Evaluation####################################
