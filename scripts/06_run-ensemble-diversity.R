@@ -92,8 +92,7 @@ k_max <- filter(ensemble_scores, homog) |>
 ensemble_scores <- filter(ensemble_scores,
                           target %in% k_max$target) |>
   # clean variables
-  mutate(location = str_remove_all(target, "Deaths_k[:digit:]"),
-         location = str_remove_all(target, "Cases_k[:digit:]"),
+  mutate(location = substr(target, 1, 2),
          location = fct_infreq(location),
          horizon = ordered(horizon, levels = c(1,2),
                            labels = c("1 week", "2 week")),
