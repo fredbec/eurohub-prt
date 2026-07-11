@@ -1,17 +1,46 @@
 Package: eurohub-prt
-Title: What the Package Does (One Line, Title Case)
+Title: Ensemble Size and Composition in Combined COVID-19 Forecasts
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Authors@R: c(
+    person("Friederike", "Becker", role = c("aut", "cre")),
+    person("Katharine", "Sherratt", role = "aut"),
+    person("Nikos I.", "Bosse", role = "aut"),
+    person("Sebastian", "Funk", role = "aut",
+           comment = c(ORCID = "0000-0002-2842-3406")))
+Description: Analysis code for Becker et al., "The influence of ensemble size
+    and composition on the performance of combined real-time COVID-19
+    forecasts", using data from the European COVID-19 Forecast Hub. This is a
+    research compendium rather than an installable package; exact package
+    versions are pinned in renv.lock.
+License: TODO: choose a license (e.g. use_mit_license()) and add a LICENSE file
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Suggests: 
+Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-Imports: 
-    data.table
+Imports:
+    arrow,
+    colorspace,
+    data.table,
+    dplyr,
+    forcats,
+    ggplot2,
+    gh,
+    glue,
+    here,
+    isotone,
+    kableExtra,
+    knitr,
+    lubridate,
+    memoise,
+    MetBrewer,
+    patchwork,
+    purrr,
+    readr,
+    scoringutils,
+    spatstat.geom,
+    stringr,
+    tidyr
+Remotes:
+    reichlab/covidHubUtils
