@@ -663,7 +663,7 @@ best_performers_boxplot <- function(best_performers_data,
 
   if(!is.null(avg_points_data)){
     plot <- plot +
-      geom_point(data = all_evals_avg, aes(x = factor(nmod),
+      geom_point(data = avg_points_data, aes(x = factor(nmod),
                                            y = rel_score),
                  shape = 18, color = "black", size = 2)
   }
