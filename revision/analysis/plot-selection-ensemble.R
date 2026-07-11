@@ -182,7 +182,7 @@ tileplot <- function(horizons = c(1,2)){
 
   if(length(horizons) == 4){
     suffix <- "_allhor"
-    range_tileplot <- c(0.831,2.05)
+    range_tileplot <- c(0.790,2.05)
   } else {
     suffix <- ""
     range_tileplot <- c(0.862,1.55)
