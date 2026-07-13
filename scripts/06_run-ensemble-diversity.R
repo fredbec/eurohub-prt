@@ -84,13 +84,11 @@ ensemble_scores <- left_join(scores, ensemble_mix,
   filter(!is.na(classification))
 
 
-# restrict to k < possible single-type ensembles
-k_max <- filter(ensemble_scores, homog) |>
-  group_by(target, horizon) |>
-  summarise(k = max(k))
+# drop location-target-k combinations with zero homogeneous ensembles
+k_avail <- filter(ensemble_scores, homog) |>
+  distinct(target)
 
-ensemble_scores <- filter(ensemble_scores,
-                          target %in% k_max$target) |>
+ensemble_scores <- filter(ensemble_scores, target %in% k_avail$target) |>
   # clean variables
   mutate(location = substr(target, 1, 2),
          location = fct_infreq(location),
