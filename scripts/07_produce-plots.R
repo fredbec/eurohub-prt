@@ -703,10 +703,6 @@ ensemble_scores <- arrow::read_parquet(here("output", "ensemble-diversity", "ens
 model_class <- arrow::read_parquet(here("output", "ensemble-diversity", "component_model_classification.parquet"))
 models <- arrow::read_parquet(here("output", "ensemble-diversity", "enscomb_with_classification.parquet"))
 
-k_max <- filter(ensemble_scores, homog == "Homogeneous") |>
-  group_by(target, horizon) |>
-  summarise(k = max(k))
-
 # Count number of ensembles by homogeneous/heterogeneous type
 num_ensembles <- ensemble_scores |>
   select(target, homog, ensid, k) |>
