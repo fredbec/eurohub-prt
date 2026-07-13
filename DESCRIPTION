@@ -12,7 +12,7 @@ Description: Analysis code for Becker et al., "The influence of ensemble size
     forecasts", using data from the European COVID-19 Forecast Hub. This is a
     research compendium rather than an installable package; exact package
     versions are pinned in renv.lock.
-License: TODO: choose a license (e.g. use_mit_license()) and add a LICENSE file
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
