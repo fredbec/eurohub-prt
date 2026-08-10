@@ -240,6 +240,7 @@ avail_plot <- ggplot(aes(x = forecast_date, y = n, group = location, color = loc
         plot.subtitle = element_text(hjust = 0.5,
                                      size = textsize_y-2,
                                      vjust = 6)) +
+  scale_x_date(labels = scales::label_date(locale="en")) +
   facet_wrap(~target_type)+
   ggplot2::scale_x_date(date_breaks = "1 month",
                         date_labels = "%b %y",
