@@ -79,7 +79,7 @@ realdat <- czdat |>
   distinct() |>
   mutate(target_end_date = (as.numeric(target_end_date) %% 18881)/7 + 1)
 
-textsize_y = 14
+textsize_y = 9
 
 plot1 <- ggplot() +
   geom_line(aes(x = target_end_date, y = true_value), data = realdat) +
@@ -223,11 +223,11 @@ names(colors_manual) <- c("Germany", "Poland", "Czech Rep.", "France", "United K
 
 
 avail_plot <- ggplot(aes(x = forecast_date, y = n, group = location, color = location), data = availdat) +
-  geom_line(lwd = 0.85, position = position_dodge(width = 12)) +
+  geom_line(lwd = 0.65, position = position_dodge(width = 12)) +
   scale_color_manual(values = colors_manual) +
   theme_masterthesis() %+replace%
   theme(legend.title = element_blank(),
-        axis.text.x = element_text(size = 11, angle = 45, hjust = 1, vjust = 1),
+        axis.text.x = element_text(size = 8, angle = 45, hjust = 1, vjust = 1.15),
         axis.text.y = element_text(size = textsize_y),
         axis.title.x = element_text(size = textsize_y, vjust = -2),
         axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
@@ -249,6 +249,11 @@ avail_plot <- ggplot(aes(x = forecast_date, y = n, group = location, color = loc
   ylab("Number of Component Models")
 print(avail_plot)
 ggsave(here("plot_results", "model-availability.pdf"), height = 4, width = 8.5)
+ggsave(here("plot_results", "Fig1.tiff"), plot = avail_plot,
+       device = "tiff", compression = "lzw",
+       dpi = 600,
+       width = 19.05, height = 10, units = "cm",
+       bg = "white")
 
 
 
@@ -379,7 +384,8 @@ dev.off()
 
 
 
-tileplot <- function(horizons = c(1,2)){
+tileplot <- function(horizons = c(1,2),
+                     tiff = FALSE){
 
   if(length(horizons) == 4){
     suffix <- "_allhor"
@@ -445,7 +451,7 @@ tileplot <- function(horizons = c(1,2)){
           axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
           strip.text = element_text(size=textsize_y),
           legend.text=element_text(size=textsize_y-2),
-          plot.margin = margin(t=0,b=0,r=0,l=0, unit = "pt"),
+          plot.margin = margin(t=10,b=20,r=0,l=0, unit = "pt"),
           plot.title = element_text(hjust = 0.5,
                                     size = textsize_y + 3,
                                     vjust = 2),
@@ -498,16 +504,32 @@ tileplot <- function(horizons = c(1,2)){
         barheight = 1.5 # Height of the color bar
       ))
 
-  ovr_plot <- plot1 + plot2 +
-    plot_layout(guides = "collect")  &
-    theme(legend.position = "bottom")
+  if(tiff){
+    plot2 <- plot2 +
+      theme(axis.text.y = element_text(size = 12))
+    ovr_plot <- plot1 /
+      plot2 +
+      plot_layout(guides = "collect")  &
+      theme(legend.position = "bottom")
 
-  ovr_plot
+    return(ovr_plot)
+  } else {
+    ovr_plot <- plot1 + plot2 +
+      plot_layout(guides = "collect")  &
+      theme(legend.position = "bottom")
+
+    return(ovr_plot)
+  }
 }
 
 pdf(here("plot_results", "selection-ensemble_tileplot.pdf"), width = 13, height = 4.25)
 print(tileplot())
 dev.off()
+ggsave(here("plot_results", "Fig4.tiff"), plot = tileplot(tiff = TRUE),
+       device = "tiff", compression = "lzw",
+       dpi = 600,
+       width = 19.05, height = 20, units = "cm",
+       bg = "white")
 
 pdf(here("plot_results", "selection-ensemble_tileplot_allhor.pdf"), width = 13, height = 4.25)
 print(tileplot(horizons = 1:4))
@@ -589,20 +611,20 @@ make_recomb_plot <- function(enstype, annotation = FALSE){
   }
   #baseline model
   bsmod <- bsmod |>
-    DT(,horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon")) |>
+    DT(,horizon := ifelse(horizon == 1, "1-week", "2-week")) |>
     DT(, location := factor(location,
                             levels = c("DE", "PL", "CZ", "FR", "GB"),
                             labels = c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")))
 
   all_pwscores <- all_pwscores |>
-    DT(,horizon := ifelse(horizon == 1, "1-week horizon", "2-week horizon")) |>
+    DT(,horizon := ifelse(horizon == 1, "1-week", "2-week")) |>
     DT(, location := factor(location,
                             levels = c("DE", "PL", "CZ", "FR", "GB"),
                             labels = c("Germany", "Poland", "Czech Rep.", "France", "United Kingd.")))
 
   colors = met.brewer(name="Hokusai3", n=3)
 
-  textsize_y <- 14
+  textsize_y <- 10
   col_hlines <- "black" #"grey50" for appendix plot
   plot_name <- "pwscores_pivot" #"pwscores_pivot_withrelchanges"  for appendix plot
 
@@ -610,10 +632,10 @@ make_recomb_plot <- function(enstype, annotation = FALSE){
   colfills <- c("min-max range: recombined\nensembles scaled rel. skill" = 0.28, "5%-95% quantile: recombined\nensembles scaled rel. skill" = 0.45)
   recomb_plot <- ggplot(data = all_pwscores) +
     #ggplot(data = all_pwscores) +
-    geom_line(aes(x = k, y = medrelskill, linetype = "recombined ensembles\nmedian scaled rel. skill", color = location), lwd = 1, show.legend = F) +
+    geom_line(aes(x = k, y = medrelskill, linetype = "recombined ensembles\nmedian scaled rel. skill", color = location), lwd = 0.75) +
     geom_ribbon(aes(x = k, ymin = minrelskill, ymax = maxrelskill, alpha = "min-max range: recombined\nensembles scaled rel. skill", fill = location)) +
     geom_ribbon(aes(x = k, ymin = q05relskill, ymax = q95relskill, alpha = "5%-95% quantile: recombined\nensembles scaled rel. skill", fill = location)) +
-    geom_hline(aes(yintercept = 1, linetype = "Hub ensemble scaled\nrel. skill (=1 by definition)"), show.legend = F, col = col_hlines) +
+    geom_hline(aes(yintercept = 1, linetype = "Hub ensemble scaled\nrel. skill (=1 by definition)"), col = col_hlines) +
     geom_hline(aes(yintercept = scaled_rel_skill, linetype = "Baseline scaled\nrelative skill"), data = bsmod, col = col_hlines) +
     scale_x_continuous(breaks = ks) + # Adjust the x-axis limits
     ylab("Scaled relative skill") +
@@ -624,14 +646,17 @@ make_recomb_plot <- function(enstype, annotation = FALSE){
     scale_alpha_manual(name="",values=colfills) +
     theme_masterthesis()  %+replace%
     theme(legend.title = element_blank(),
-          axis.text.x = element_text(size = 11),
+          legend.key.width = unit(1.1, "cm"),
+          strip.text.y = element_text(size = textsize_y, angle = -90,
+                                      margin = margin(t = 4, b = 4, l = 4, r = 1, unit = "pt")),
+          axis.text.x = element_text(size = 7, vjust = 1),
           axis.text.y = element_text(size = textsize_y),
           axis.title.x = element_text(size = textsize_y, vjust = -2),
           axis.title.y = element_text(size = textsize_y, angle = 90, vjust = 2),
           strip.text = element_text(size=textsize_y,
                                     margin = unit(rep(8, 4), "pt")),
           legend.text=element_text(size=textsize_y-2),
-          plot.margin = margin(t=20,b=5,r=20,l=20, unit = "pt"),
+          plot.margin = margin(t=20,b=5,r=10,l=10, unit = "pt"),
           plot.title = element_text(hjust = 0.5,
                                     size = textsize_y + 3,
                                     vjust = 5),
@@ -639,7 +664,8 @@ make_recomb_plot <- function(enstype, annotation = FALSE){
                                        size = textsize_y-2,
                                        vjust = 6)) +
     guides(fill = "none", color = "none") +
-    guides(linetype = guide_legend(override.aes = list(size = 1))) +
+    guides(alpha = guide_legend(nrow = 2)) +
+    guides(linetype = guide_legend(nrow = 2)) +
     #ggtitle(loctarg) +
     facet_grid(target_type + horizon ~ location, scales = "free")
 
@@ -675,6 +701,11 @@ pdf(here("plot_results", paste0("ensemble-size_", "median_ensemble",".pdf")), wi
 median_plot <- make_recomb_plot("median_ensemble")
 print(median_plot)
 dev.off()
+ggsave(here("plot_results", "Fig2.tiff"), plot = median_plot,
+       device = ragg::agg_tiff, compression = "lzw",
+       dpi = 600,
+       width = 19.05, height = 12.07, units = "cm",
+       bg = "white")
 
 pdf(here("plot_results", paste0("ensemble-size_", "mean_ensemble",".pdf")), width = 12, height = 8)
 mean_plot <- make_recomb_plot("mean_ensemble")
@@ -804,6 +835,11 @@ retplot <- alldat_scores |>
 pdf(here("plot_results", "ensemble-diversity.pdf"), width = 7.5, height = 6)
 print(retplot)
 dev.off()
+ggsave(here("plot_results", "Fig3.tiff"), plot = retplot,
+       device = "tiff", compression = "lzw",
+       dpi = 600,
+       width = 19.05, height = 15.24, units = "cm",
+       bg = "white")
 
 ensemble_scores |>
   group_by(homog, k, location) |>
